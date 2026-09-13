@@ -1,6 +1,9 @@
 node_modules/
 .worktrees/
 dist/
+bin/
+custom_theme.json
+custom_theme.example.json
 .env*
 *.local
 .temp/

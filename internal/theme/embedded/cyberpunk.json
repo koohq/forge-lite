@@ -1,0 +1,137 @@
+{
+	"id": "cyberpunk",
+	"ja": {
+		"name": "サイバーパンク (Cyberpunk)",
+		"targetNameLabel": "サイバー兵装",
+		"defaultTargetName": "パルスブレード",
+		"enhanceVerb": "システムオーバークロック",
+		"resourceName": "ナノチップ",
+		"orbs": {
+			"MULTI_HIT": { "name": "多段バースト", "desc": "2連撃/出力65%×2" },
+			"CRITICAL": { "name": "クリティカル注入", "desc": "25%で2倍電圧" },
+			"VAMP": { "name": "ナノ修復ドレイン", "desc": "与ダメの15%で機体修復" },
+			"POISON": { "name": "神経汚染", "desc": "攻撃時毒+1/ターン末毒x3ダメ" },
+			"MULTI_HIT_PLUS": { "name": "多段バースト+", "desc": "2連撃/出力75%×2" },
+			"CRITICAL_PLUS": { "name": "クリティカル注入+", "desc": "40%で2倍電圧" },
+			"VAMP_PLUS": {
+				"name": "ナノ修復ドレイン+",
+				"desc": "与ダメの25%で機体修復"
+			},
+			"POISON_PLUS": {
+				"name": "神経汚染+",
+				"desc": "攻撃時毒+2/ターン末毒x3ダメ"
+			}
+		},
+		"dungeons": {
+			"starter": "閉鎖ネットワーク",
+			"deep": "企業中枢サーバー",
+			"abyss": "無限の電脳網"
+		},
+		"enemyPrefixes": [
+			"グリッチの",
+			"暴走した",
+			"オーバークロックの",
+			"侵食された",
+			"強化型の",
+			"ステルス",
+			"試作型",
+			"自律型の"
+		],
+		"enemyBases": [
+			"セキュリティドローン",
+			"偵察ボット",
+			"戦闘アンドロイド",
+			"重装歩行メカ",
+			"中枢メインフレーム",
+			"電脳ドラゴン",
+			"ウイルスロード",
+			"暴走AI"
+		],
+		"retreatMessage": "機体の致命的なシャットダウンを防ぐため、戦闘から離脱した。",
+		"hubTitle": "【セーフハウス・端末】",
+		"hpLabel": "最大耐久",
+		"targetPrefix": "主兵装",
+		"statLabel": "出力",
+		"plusPrefix": "+",
+		"storageLabel": "ストレージ",
+		"orbLabel": "モジュール",
+		"enhanceHpVerb": "生体フレーム拡張",
+		"installVerb": "インストール"
+	},
+	"en": {
+		"name": "Cyberpunk Protocol",
+		"targetNameLabel": "Cyber Weapon",
+		"defaultTargetName": "Pulse Blade",
+		"enhanceVerb": "Overclock System",
+		"resourceName": "Nanite Chip",
+		"orbs": {
+			"MULTI_HIT": {
+				"name": "Multi-Burst",
+				"desc": "2 strikes at 65% output each"
+			},
+			"CRITICAL": {
+				"name": "Critical Injection",
+				"desc": "25% chance for 2x voltage"
+			},
+			"VAMP": {
+				"name": "Nano-Drain",
+				"desc": "Siphon 15% damage as chassis repair"
+			},
+			"POISON": {
+				"name": "Neuro-Toxin",
+				"desc": "Inject +1 corrosive payload on hit"
+			},
+			"MULTI_HIT_PLUS": {
+				"name": "Multi-Burst+",
+				"desc": "2 strikes at 75% output each"
+			},
+			"CRITICAL_PLUS": {
+				"name": "Critical Injection+",
+				"desc": "40% chance for 2x voltage"
+			},
+			"VAMP_PLUS": {
+				"name": "Nano-Drain+",
+				"desc": "Siphon 25% damage as chassis repair"
+			},
+			"POISON_PLUS": {
+				"name": "Neuro-Toxin+",
+				"desc": "+2 corrosive payload on hit"
+			}
+		},
+		"dungeons": {
+			"starter": "Subnet Alpha",
+			"deep": "Corporate Core",
+			"abyss": "Infinite Cyberspace"
+		},
+		"enemyPrefixes": [
+			"Glitch",
+			"Rogue",
+			"Overclocked",
+			"Corrupted",
+			"Augmented",
+			"Stealth",
+			"Prototype",
+			"Autonomous"
+		],
+		"enemyBases": [
+			"Security Drone",
+			"Recon Bot",
+			"Combat Android",
+			"Heavy Mech",
+			"Mainframe Core",
+			"Cyber Dragon",
+			"Virus Lord",
+			"Rogue AI"
+		],
+		"retreatMessage": "Disengaged from combat to prevent terminal hardware shutdown.",
+		"hubTitle": "【Safehouse Terminal】",
+		"hpLabel": "Max Hull",
+		"targetPrefix": "Main Armament",
+		"statLabel": "Output",
+		"plusPrefix": "+",
+		"storageLabel": "Storage",
+		"orbLabel": "Module",
+		"enhanceHpVerb": "Upgrade Chassis",
+		"installVerb": "Install"
+	}
+}

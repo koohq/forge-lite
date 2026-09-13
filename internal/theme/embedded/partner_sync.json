@@ -1,0 +1,155 @@
+{
+	"id": "partner_sync",
+	"ja": {
+		"name": "パートナー・シンクロ (相棒育成)",
+		"targetNameLabel": "相棒",
+		"defaultTargetName": "戦術アンドロイド「アイリス」",
+		"enhanceVerb": "同期率を向上させる",
+		"resourceName": "メモリコア",
+		"orbs": {
+			"MULTI_HIT": {
+				"name": "連携戦術",
+				"desc": "息の合った2連撃を行う (威力65%×2)"
+			},
+			"CRITICAL": {
+				"name": "弱点看破",
+				"desc": "隙を突いて致命打を与える (25%で2倍)"
+			},
+			"VAMP": {
+				"name": "自己修復",
+				"desc": "戦闘データから装甲をナノ修復 (与ダメの15%回復)"
+			},
+			"POISON": {
+				"name": "浸食ノイズ",
+				"desc": "敵システムに持続ダメージ (毒+1/ターン末毒x3)"
+			},
+			"MULTI_HIT_PLUS": {
+				"name": "連携戦術・極",
+				"desc": "息の合った2連撃を行う (威力75%×2)"
+			},
+			"CRITICAL_PLUS": {
+				"name": "弱点看破・極",
+				"desc": "隙を突いて致命打を与える (40%で2倍)"
+			},
+			"VAMP_PLUS": {
+				"name": "自己修復・極",
+				"desc": "戦闘データから装甲をナノ修復 (与ダメの25%回復)"
+			},
+			"POISON_PLUS": {
+				"name": "浸食ノイズ・極",
+				"desc": "敵システムに持続ダメージ (毒+2/ターン末毒x3)"
+			}
+		},
+		"dungeons": {
+			"starter": "廃墟区域",
+			"deep": "汚染中枢",
+			"abyss": "未知の最深部"
+		},
+		"enemyPrefixes": [
+			"暴走した",
+			"変異型",
+			"侵略型",
+			"警戒態勢の",
+			"重装甲",
+			"高機動",
+			"汚染された",
+			"古代遺産の"
+		],
+		"enemyBases": [
+			"暴走ドローン",
+			"変異体",
+			"侵略尖兵",
+			"防衛要塞",
+			"掃討機兵",
+			"自律兵器",
+			"殲滅ユニット",
+			"支配者コア"
+		],
+		"retreatMessage": "アイリスの負荷を考慮し、一時帰還した。",
+		"hubTitle": "【司令室・ドック】",
+		"hpLabel": "生存限界",
+		"targetPrefix": "相棒",
+		"statLabel": "戦闘能力",
+		"plusPrefix": " Sync:+",
+		"storageLabel": "データバンク",
+		"orbLabel": "プロトコル",
+		"enhanceHpVerb": "防護プロトコル強化",
+		"installVerb": "セット"
+	},
+	"en": {
+		"name": "Partner Sync",
+		"targetNameLabel": "Partner",
+		"defaultTargetName": "Tactical Android \"Iris\"",
+		"enhanceVerb": "Deepen Sync",
+		"resourceName": "Memory Core",
+		"orbs": {
+			"MULTI_HIT": {
+				"name": "Tandem Tactics",
+				"desc": "2 coordinated strikes at 65% power each"
+			},
+			"CRITICAL": {
+				"name": "Exploit Weakness",
+				"desc": "25% chance for 2x fatal damage"
+			},
+			"VAMP": {
+				"name": "Self-Repair",
+				"desc": "Restore 15% damage dealt as nanite repairs"
+			},
+			"POISON": {
+				"name": "Corrosive Noise",
+				"desc": "+1 corrosive noise on hit, 3x dmg per turn"
+			},
+			"MULTI_HIT_PLUS": {
+				"name": "Tandem Tactics+",
+				"desc": "2 coordinated strikes at 75% power each"
+			},
+			"CRITICAL_PLUS": {
+				"name": "Exploit Weakness+",
+				"desc": "40% chance for 2x fatal damage"
+			},
+			"VAMP_PLUS": {
+				"name": "Self-Repair+",
+				"desc": "Restore 25% damage dealt as nanite repairs"
+			},
+			"POISON_PLUS": {
+				"name": "Corrosive Noise+",
+				"desc": "+2 corrosive noise on hit, 3x dmg per turn"
+			}
+		},
+		"dungeons": {
+			"starter": "Ruined Sector",
+			"deep": "Contaminated Core",
+			"abyss": "Unknown Depths"
+		},
+		"enemyPrefixes": [
+			"Rampaging",
+			"Mutant",
+			"Invading",
+			"Alert",
+			"Armored",
+			"High-Mobility",
+			"Contaminated",
+			"Relic"
+		],
+		"enemyBases": [
+			"Rogue Drone",
+			"Mutant Beast",
+			"Vanguard Scout",
+			"Defense Bastion",
+			"Sweeper Mech",
+			"Autonomous Weapon",
+			"Annihilator Unit",
+			"Overlord Core"
+		],
+		"retreatMessage": "Retreated to base to reduce load on Iris.",
+		"hubTitle": "【Command Dock】",
+		"hpLabel": "Vitality",
+		"targetPrefix": "Partner",
+		"statLabel": "Combat Power",
+		"plusPrefix": " Sync:+",
+		"storageLabel": "Data Bank",
+		"orbLabel": "Protocol",
+		"enhanceHpVerb": "Reinforce Shields",
+		"installVerb": "Set"
+	}
+}

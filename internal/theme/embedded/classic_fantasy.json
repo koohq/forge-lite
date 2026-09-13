@@ -1,0 +1,134 @@
+{
+	"id": "classic_fantasy",
+	"ja": {
+		"name": "王道ファンタジー (Classic Fantasy)",
+		"targetNameLabel": "所持装備",
+		"defaultTargetName": "どうのつるぎ",
+		"enhanceVerb": "鍛冶屋で鍛える",
+		"resourceName": "強化の書",
+		"orbs": {
+			"MULTI_HIT": { "name": "連撃の印", "desc": "2回攻撃/威力65%" },
+			"CRITICAL": { "name": "会心の印", "desc": "25%で2倍" },
+			"VAMP": { "name": "吸血の印", "desc": "与ダメの15%回復" },
+			"POISON": { "name": "猛毒の印", "desc": "攻撃時毒+1/ターン末毒x3ダメ" },
+			"MULTI_HIT_PLUS": { "name": "連撃の印+", "desc": "2回攻撃/威力75%" },
+			"CRITICAL_PLUS": { "name": "会心の印+", "desc": "40%で2倍" },
+			"VAMP_PLUS": { "name": "吸血の印+", "desc": "与ダメの25%回復" },
+			"POISON_PLUS": {
+				"name": "猛毒の印+",
+				"desc": "攻撃時毒+2/ターン末毒x3ダメ"
+			}
+		},
+		"dungeons": {
+			"starter": "始まりの洞窟",
+			"deep": "灼熱の深層",
+			"abyss": "無限の深淵"
+		},
+		"enemyPrefixes": [
+			"凶暴な",
+			"深淵の",
+			"古代の",
+			"紅蓮の",
+			"漆黒の",
+			"彷徨える",
+			"狂気の",
+			"奈落の"
+		],
+		"enemyBases": [
+			"スライム",
+			"コボルト",
+			"オーク",
+			"ゴーレム",
+			"ドラゴン",
+			"ワイバーン",
+			"デーモン",
+			"死霊騎士"
+		],
+		"retreatMessage": "慎重に撤退を選択し、拠点へ帰還した。",
+		"hubTitle": "【冒険者の酒場】",
+		"hpLabel": "最大体力",
+		"targetPrefix": "所持装備",
+		"statLabel": "攻撃力",
+		"plusPrefix": "+",
+		"storageLabel": "倉庫",
+		"orbLabel": "オーブ",
+		"enhanceHpVerb": "体力を強化する",
+		"installVerb": "装着"
+	},
+	"en": {
+		"name": "Classic Fantasy",
+		"targetNameLabel": "Equipment",
+		"defaultTargetName": "Bronze Sword",
+		"enhanceVerb": "Forge at Blacksmith",
+		"resourceName": "Upgrade Scroll",
+		"orbs": {
+			"MULTI_HIT": {
+				"name": "Twin Strike",
+				"desc": "2 hits at 65% power each"
+			},
+			"CRITICAL": {
+				"name": "Critical Strike",
+				"desc": "25% chance for 2x damage"
+			},
+			"VAMP": {
+				"name": "Vampiric Drain",
+				"desc": "Heal for 15% of damage dealt"
+			},
+			"POISON": {
+				"name": "Deadly Poison",
+				"desc": "+1 poison on hit, 3x dmg per turn"
+			},
+			"MULTI_HIT_PLUS": {
+				"name": "Twin Strike+",
+				"desc": "2 hits at 75% power each"
+			},
+			"CRITICAL_PLUS": {
+				"name": "Critical Strike+",
+				"desc": "40% chance for 2x damage"
+			},
+			"VAMP_PLUS": {
+				"name": "Vampiric Drain+",
+				"desc": "Heal for 25% of damage dealt"
+			},
+			"POISON_PLUS": {
+				"name": "Deadly Poison+",
+				"desc": "+2 poison on hit, 3x dmg per turn"
+			}
+		},
+		"dungeons": {
+			"starter": "Cave of Beginnings",
+			"deep": "Scorching Depths",
+			"abyss": "Infinite Abyss"
+		},
+		"enemyPrefixes": [
+			"Fierce",
+			"Abyssal",
+			"Ancient",
+			"Crimson",
+			"Dark",
+			"Wandering",
+			"Mad",
+			"Infernal"
+		],
+		"enemyBases": [
+			"Slime",
+			"Kobold",
+			"Orc",
+			"Golem",
+			"Dragon",
+			"Wyvern",
+			"Demon",
+			"Death Knight"
+		],
+		"retreatMessage": "Carefully chose to retreat and returned to base.",
+		"hubTitle": "【Adventurer's Guild】",
+		"hpLabel": "Max HP",
+		"targetPrefix": "Equipment",
+		"statLabel": "ATK",
+		"plusPrefix": "+",
+		"storageLabel": "Storage",
+		"orbLabel": "Orb",
+		"enhanceHpVerb": "Fortify Vitality",
+		"installVerb": "Equip"
+	}
+}
