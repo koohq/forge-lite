@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "node src/game.ts",
+		"test": "node --test",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome check .",
 		"format": "biome format --write .",

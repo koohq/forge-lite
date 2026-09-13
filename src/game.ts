@@ -72,10 +72,8 @@ export interface DungeonDef {
 	getEnemy: (floor: number) => EnemyTemplate;
 }
 
-export interface Theme {
-	id: string;
+export interface ThemeLocaleData {
 	name: string;
-	language: Language;
 	targetNameLabel: string;
 	defaultTargetName: string;
 	enhanceVerb: string;
@@ -85,6 +83,26 @@ export interface Theme {
 	enemyPrefixes: string[];
 	enemyBases: string[];
 	retreatMessage: string;
+}
+
+export interface ThemeDefinition {
+	id: string;
+	ja: ThemeLocaleData;
+	en: ThemeLocaleData;
+}
+
+export interface Theme extends ThemeLocaleData {
+	id: string;
+	language: Language;
+}
+
+export function resolveTheme(def: ThemeDefinition, lang: Language): Theme {
+	const locale = def[lang] ?? def.ja ?? def.en;
+	return {
+		id: def.id,
+		language: lang,
+		...locale,
+	};
 }
 
 // ============================================================================
@@ -863,257 +881,405 @@ export function detectDefaultLanguage(): Language {
 // Themes & Built-in Presets
 // ============================================================================
 
-export const PRESET_CLASSIC_FANTASY_JA: Theme = {
+export const PRESET_CLASSIC_FANTASY: ThemeDefinition = {
 	id: "classic_fantasy",
-	name: "王道ファンタジー (Classic Fantasy)",
-	language: "ja",
-	targetNameLabel: "所持装備",
-	defaultTargetName: "どうのつるぎ",
-	enhanceVerb: "鍛冶屋で鍛える",
-	resourceName: "強化の書",
-	orbs: {
-		MULTI_HIT: { name: "連撃の印", desc: "2回攻撃/威力65%" },
-		CRITICAL: { name: "会心の印", desc: "25%で2倍" },
-		VAMP: { name: "吸血の印", desc: "与ダメの15%回復" },
-		POISON: { name: "猛毒の印", desc: "攻撃時毒+1/ターン末毒x3ダメ" },
-		MULTI_HIT_PLUS: { name: "連撃の印+", desc: "2回攻撃/威力75%" },
-		CRITICAL_PLUS: { name: "会心の印+", desc: "40%で2倍" },
-		VAMP_PLUS: { name: "吸血の印+", desc: "与ダメの25%回復" },
-		POISON_PLUS: { name: "猛毒の印+", desc: "攻撃時毒+2/ターン末毒x3ダメ" },
+	ja: {
+		name: "王道ファンタジー (Classic Fantasy)",
+		targetNameLabel: "所持装備",
+		defaultTargetName: "どうのつるぎ",
+		enhanceVerb: "鍛冶屋で鍛える",
+		resourceName: "強化の書",
+		orbs: {
+			MULTI_HIT: { name: "連撃の印", desc: "2回攻撃/威力65%" },
+			CRITICAL: { name: "会心の印", desc: "25%で2倍" },
+			VAMP: { name: "吸血の印", desc: "与ダメの15%回復" },
+			POISON: { name: "猛毒の印", desc: "攻撃時毒+1/ターン末毒x3ダメ" },
+			MULTI_HIT_PLUS: { name: "連撃の印+", desc: "2回攻撃/威力75%" },
+			CRITICAL_PLUS: { name: "会心の印+", desc: "40%で2倍" },
+			VAMP_PLUS: { name: "吸血の印+", desc: "与ダメの25%回復" },
+			POISON_PLUS: { name: "猛毒の印+", desc: "攻撃時毒+2/ターン末毒x3ダメ" },
+		},
+		dungeons: {
+			starter: "始まりの洞窟",
+			deep: "灼熱の深層",
+			abyss: "無限の深淵",
+		},
+		enemyPrefixes: [
+			"凶暴な",
+			"深淵の",
+			"古代の",
+			"紅蓮の",
+			"漆黒の",
+			"彷徨える",
+			"狂気の",
+			"奈落の",
+		],
+		enemyBases: [
+			"スライム",
+			"コボルト",
+			"オーク",
+			"ゴーレム",
+			"ドラゴン",
+			"ワイバーン",
+			"デーモン",
+			"死霊騎士",
+		],
+		retreatMessage: "慎重に撤退を選択し、拠点へ帰還した。",
 	},
-	dungeons: {
-		starter: "始まりの洞窟",
-		deep: "灼熱の深層",
-		abyss: "無限の深淵",
+	en: {
+		name: "Classic Fantasy",
+		targetNameLabel: "Equipment",
+		defaultTargetName: "Bronze Sword",
+		enhanceVerb: "Forge at Blacksmith",
+		resourceName: "Upgrade Scroll",
+		orbs: {
+			MULTI_HIT: { name: "Twin Strike", desc: "2 hits at 65% power each" },
+			CRITICAL: { name: "Critical Strike", desc: "25% chance for 2x damage" },
+			VAMP: { name: "Vampiric Drain", desc: "Heal for 15% of damage dealt" },
+			POISON: {
+				name: "Deadly Poison",
+				desc: "+1 poison on hit, 3x dmg per turn",
+			},
+			MULTI_HIT_PLUS: {
+				name: "Twin Strike+",
+				desc: "2 hits at 75% power each",
+			},
+			CRITICAL_PLUS: {
+				name: "Critical Strike+",
+				desc: "40% chance for 2x damage",
+			},
+			VAMP_PLUS: {
+				name: "Vampiric Drain+",
+				desc: "Heal for 25% of damage dealt",
+			},
+			POISON_PLUS: {
+				name: "Deadly Poison+",
+				desc: "+2 poison on hit, 3x dmg per turn",
+			},
+		},
+		dungeons: {
+			starter: "Cave of Beginnings",
+			deep: "Scorching Depths",
+			abyss: "Infinite Abyss",
+		},
+		enemyPrefixes: [
+			"Fierce",
+			"Abyssal",
+			"Ancient",
+			"Crimson",
+			"Dark",
+			"Wandering",
+			"Mad",
+			"Infernal",
+		],
+		enemyBases: [
+			"Slime",
+			"Kobold",
+			"Orc",
+			"Golem",
+			"Dragon",
+			"Wyvern",
+			"Demon",
+			"Death Knight",
+		],
+		retreatMessage: "Carefully chose to retreat and returned to base.",
 	},
-	enemyPrefixes: [
-		"凶暴な",
-		"深淵の",
-		"古代の",
-		"紅蓮の",
-		"漆黒の",
-		"彷徨える",
-		"狂気の",
-		"奈落の",
-	],
-	enemyBases: [
-		"スライム",
-		"コボルト",
-		"オーク",
-		"ゴーレム",
-		"ドラゴン",
-		"ワイバーン",
-		"デーモン",
-		"死霊騎士",
-	],
-	retreatMessage: "慎重に撤退を選択し、拠点へ帰還した。",
 };
 
-export const PRESET_CLASSIC_FANTASY_EN: Theme = {
-	id: "classic_fantasy",
-	name: "Classic Fantasy",
-	language: "en",
-	targetNameLabel: "Equipment",
-	defaultTargetName: "Bronze Sword",
-	enhanceVerb: "Forge weapon",
-	resourceName: "Upgrade Scroll",
-	orbs: {
-		MULTI_HIT: { name: "Combo Orb", desc: "2 hits at 65% power each" },
-		CRITICAL: { name: "Critical Orb", desc: "25% chance for 2x damage" },
-		VAMP: { name: "Vampiric Orb", desc: "Heal for 15% of damage dealt" },
-		POISON: { name: "Poison Orb", desc: "+1 poison on hit, 3x dmg per turn" },
-		MULTI_HIT_PLUS: { name: "Combo Orb+", desc: "2 hits at 75% power each" },
-		CRITICAL_PLUS: { name: "Critical Orb+", desc: "40% chance for 2x damage" },
-		VAMP_PLUS: {
-			name: "Vampiric Orb+",
-			desc: "Heal for 25% of damage dealt",
-		},
-		POISON_PLUS: {
-			name: "Poison Orb+",
-			desc: "+2 poison on hit, 3x dmg per turn",
-		},
-	},
-	dungeons: {
-		starter: "Starter Cave",
-		deep: "Scorching Depths",
-		abyss: "Infinite Abyss",
-	},
-	enemyPrefixes: [
-		"Fierce",
-		"Abyssal",
-		"Ancient",
-		"Crimson",
-		"Dark",
-		"Wandering",
-		"Mad",
-		"Infernal",
-	],
-	enemyBases: [
-		"Slime",
-		"Kobold",
-		"Orc",
-		"Golem",
-		"Dragon",
-		"Wyvern",
-		"Demon",
-		"Death Knight",
-	],
-	retreatMessage: "Carefully chose to retreat and returned to base.",
-};
-
-export const PRESET_CYBERPUNK: Theme = {
+export const PRESET_CYBERPUNK: ThemeDefinition = {
 	id: "cyberpunk",
-	name: "Cyberpunk Protocol",
-	language: "en",
-	targetNameLabel: "Cyber Weapon",
-	defaultTargetName: "Pulse Blade",
-	enhanceVerb: "Overclock System",
-	resourceName: "Nanite Chip",
-	orbs: {
-		MULTI_HIT: { name: "Multi-Burst", desc: "2 strikes at 65% output each" },
-		CRITICAL: { name: "Critical Injection", desc: "25% chance for 2x voltage" },
-		VAMP: {
-			name: "Nano-Drain",
-			desc: "Siphon 15% damage as chassis repair",
+	ja: {
+		name: "サイバーパンク (Cyberpunk)",
+		targetNameLabel: "サイバー兵装",
+		defaultTargetName: "パルスブレード",
+		enhanceVerb: "システムオーバークロック",
+		resourceName: "ナノチップ",
+		orbs: {
+			MULTI_HIT: { name: "多段バースト", desc: "2連撃/出力65%×2" },
+			CRITICAL: { name: "クリティカル注入", desc: "25%で2倍電圧" },
+			VAMP: {
+				name: "ナノ修復ドレイン",
+				desc: "与ダメの15%で機体修復",
+			},
+			POISON: {
+				name: "神経汚染",
+				desc: "攻撃時毒+1/ターン末毒x3ダメ",
+			},
+			MULTI_HIT_PLUS: {
+				name: "多段バースト+",
+				desc: "2連撃/出力75%×2",
+			},
+			CRITICAL_PLUS: {
+				name: "クリティカル注入+",
+				desc: "40%で2倍電圧",
+			},
+			VAMP_PLUS: {
+				name: "ナノ修復ドレイン+",
+				desc: "与ダメの25%で機体修復",
+			},
+			POISON_PLUS: {
+				name: "神経汚染+",
+				desc: "攻撃時毒+2/ターン末毒x3ダメ",
+			},
 		},
-		POISON: {
-			name: "Neuro-Toxin",
-			desc: "Inject +1 corrosive payload on hit",
+		dungeons: {
+			starter: "閉鎖ネットワーク",
+			deep: "企業中枢サーバー",
+			abyss: "無限の電脳網",
 		},
-		MULTI_HIT_PLUS: {
-			name: "Multi-Burst+",
-			desc: "2 strikes at 75% output each",
-		},
-		CRITICAL_PLUS: {
-			name: "Critical Injection+",
-			desc: "40% chance for 2x voltage",
-		},
-		VAMP_PLUS: {
-			name: "Nano-Drain+",
-			desc: "Siphon 25% damage as chassis repair",
-		},
-		POISON_PLUS: {
-			name: "Neuro-Toxin+",
-			desc: "Inject +2 corrosive payload on hit",
-		},
+		enemyPrefixes: [
+			"グリッチの",
+			"暴走した",
+			"オーバークロックの",
+			"侵食された",
+			"強化型の",
+			"ステルス",
+			"試作型",
+			"自律型の",
+		],
+		enemyBases: [
+			"セキュリティドローン",
+			"偵察ボット",
+			"戦闘アンドロイド",
+			"重装歩行メカ",
+			"中枢メインフレーム",
+			"電脳ドラゴン",
+			"ウイルスロード",
+			"暴走AI",
+		],
+		retreatMessage:
+			"機体の致命的なシャットダウンを防ぐため、戦闘から離脱した。",
 	},
-	dungeons: {
-		starter: "Subgrid Alpha",
-		deep: "Core Meltdown",
-		abyss: "Neural Net Singularity",
+	en: {
+		name: "Cyberpunk Protocol",
+		targetNameLabel: "Cyber Weapon",
+		defaultTargetName: "Pulse Blade",
+		enhanceVerb: "Overclock System",
+		resourceName: "Nanite Chip",
+		orbs: {
+			MULTI_HIT: { name: "Multi-Burst", desc: "2 strikes at 65% output each" },
+			CRITICAL: {
+				name: "Critical Injection",
+				desc: "25% chance for 2x voltage",
+			},
+			VAMP: {
+				name: "Nano-Drain",
+				desc: "Siphon 15% damage as chassis repair",
+			},
+			POISON: {
+				name: "Neuro-Toxin",
+				desc: "Inject +1 corrosive payload on hit",
+			},
+			MULTI_HIT_PLUS: {
+				name: "Multi-Burst+",
+				desc: "2 strikes at 75% output each",
+			},
+			CRITICAL_PLUS: {
+				name: "Critical Injection+",
+				desc: "40% chance for 2x voltage",
+			},
+			VAMP_PLUS: {
+				name: "Nano-Drain+",
+				desc: "Siphon 25% damage as chassis repair",
+			},
+			POISON_PLUS: {
+				name: "Neuro-Toxin+",
+				desc: "Inject +2 corrosive payload on hit",
+			},
+		},
+		dungeons: {
+			starter: "Subnet Alpha",
+			deep: "Corporate Core",
+			abyss: "Infinite Cyberspace",
+		},
+		enemyPrefixes: [
+			"Glitch",
+			"Rogue",
+			"Overclocked",
+			"Corrupted",
+			"Augmented",
+			"Stealth",
+			"Prototype",
+			"Autonomous",
+		],
+		enemyBases: [
+			"Security Drone",
+			"Recon Bot",
+			"Combat Android",
+			"Heavy Mech",
+			"Mainframe Core",
+			"Cyber Dragon",
+			"Virus Lord",
+			"Rogue AI",
+		],
+		retreatMessage:
+			"Disengaged from combat to prevent terminal hardware shutdown.",
 	},
-	enemyPrefixes: [
-		"Glitch",
-		"Rogue",
-		"Overclocked",
-		"Corrupted",
-		"Augmented",
-		"Stealth",
-		"Prototype",
-		"Autonomous",
-	],
-	enemyBases: [
-		"Security Drone",
-		"Recon Bot",
-		"Combat Android",
-		"Heavy Mech",
-		"Mainframe Core",
-		"Cyber Dragon",
-		"Virus Lord",
-		"Rogue AI",
-	],
-	retreatMessage:
-		"Disengaged from combat to prevent terminal hardware shutdown.",
 };
 
-export const PRESET_PARTNER_SYNC: Theme = {
+export const PRESET_PARTNER_SYNC: ThemeDefinition = {
 	id: "partner_sync",
-	name: "パートナー・シンクロ (相棒育成)",
-	language: "ja",
-	targetNameLabel: "相棒",
-	defaultTargetName: "戦術アンドロイド「アイリス」",
-	enhanceVerb: "同期率を向上させる",
-	resourceName: "メモリコア",
-	orbs: {
-		MULTI_HIT: {
-			name: "連携戦術",
-			desc: "息の合った2連撃を行う (威力65%×2)",
+	ja: {
+		name: "パートナー・シンクロ (相棒育成)",
+		targetNameLabel: "相棒",
+		defaultTargetName: "戦術アンドロイド「アイリス」",
+		enhanceVerb: "同期率を向上させる",
+		resourceName: "メモリコア",
+		orbs: {
+			MULTI_HIT: {
+				name: "連携戦術",
+				desc: "息の合った2連撃を行う (威力65%×2)",
+			},
+			CRITICAL: {
+				name: "弱点看破",
+				desc: "隙を突いて致命打を与える (25%で2倍)",
+			},
+			VAMP: {
+				name: "自己修復",
+				desc: "戦闘データから装甲をナノ修復 (与ダメの15%回復)",
+			},
+			POISON: {
+				name: "浸食ノイズ",
+				desc: "敵システムに持続ダメージ (毒+1/ターン末毒x3)",
+			},
+			MULTI_HIT_PLUS: {
+				name: "連携戦術・極",
+				desc: "息の合った2連撃を行う (威力75%×2)",
+			},
+			CRITICAL_PLUS: {
+				name: "弱点看破・極",
+				desc: "隙を突いて致命打を与える (40%で2倍)",
+			},
+			VAMP_PLUS: {
+				name: "自己修復・極",
+				desc: "戦闘データから装甲をナノ修復 (与ダメの25%回復)",
+			},
+			POISON_PLUS: {
+				name: "浸食ノイズ・極",
+				desc: "敵システムに持続ダメージ (毒+2/ターン末毒x3)",
+			},
 		},
-		CRITICAL: {
-			name: "弱点看破",
-			desc: "隙を突いて致命打を与える (25%で2倍)",
+		dungeons: {
+			starter: "廃墟区域",
+			deep: "汚染中枢",
+			abyss: "未知の最深部",
 		},
-		VAMP: {
-			name: "自己修復",
-			desc: "戦闘データから装甲をナノ修復 (与ダメの15%回復)",
-		},
-		POISON: {
-			name: "浸食ノイズ",
-			desc: "敵システムに持続ダメージ (毒+1/ターン末毒x3)",
-		},
-		MULTI_HIT_PLUS: {
-			name: "連携戦術・極",
-			desc: "息の合った2連撃を行う (威力75%×2)",
-		},
-		CRITICAL_PLUS: {
-			name: "弱点看破・極",
-			desc: "隙を突いて致命打を与える (40%で2倍)",
-		},
-		VAMP_PLUS: {
-			name: "自己修復・極",
-			desc: "戦闘データから装甲をナノ修復 (与ダメの25%回復)",
-		},
-		POISON_PLUS: {
-			name: "浸食ノイズ・極",
-			desc: "敵システムに持続ダメージ (毒+2/ターン末毒x3)",
-		},
+		enemyPrefixes: [
+			"暴走した",
+			"変異型",
+			"侵略型",
+			"警戒態勢の",
+			"重装甲",
+			"高機動",
+			"汚染された",
+			"古代遺産の",
+		],
+		enemyBases: [
+			"暴走ドローン",
+			"変異体",
+			"侵略尖兵",
+			"防衛要塞",
+			"掃討機兵",
+			"自律兵器",
+			"殲滅ユニット",
+			"支配者コア",
+		],
+		retreatMessage: "アイリスの負荷を考慮し、一時帰還した。",
 	},
-	dungeons: {
-		starter: "演習場第7区画",
-		deep: "汚染中枢施設",
-		abyss: "境界ゼロ特異点",
+	en: {
+		name: "Partner Sync",
+		targetNameLabel: "Partner",
+		defaultTargetName: 'Tactical Android "Iris"',
+		enhanceVerb: "Deepen Sync",
+		resourceName: "Memory Core",
+		orbs: {
+			MULTI_HIT: {
+				name: "Tandem Tactics",
+				desc: "2 coordinated strikes at 65% power each",
+			},
+			CRITICAL: {
+				name: "Exploit Weakness",
+				desc: "25% chance for 2x fatal damage",
+			},
+			VAMP: {
+				name: "Self-Repair",
+				desc: "Restore 15% damage dealt as nanite repairs",
+			},
+			POISON: {
+				name: "Corrosive Noise",
+				desc: "+1 corrosive noise on hit, 3x dmg per turn",
+			},
+			MULTI_HIT_PLUS: {
+				name: "Tandem Tactics+",
+				desc: "2 coordinated strikes at 75% power each",
+			},
+			CRITICAL_PLUS: {
+				name: "Exploit Weakness+",
+				desc: "40% chance for 2x fatal damage",
+			},
+			VAMP_PLUS: {
+				name: "Self-Repair+",
+				desc: "Restore 25% damage dealt as nanite repairs",
+			},
+			POISON_PLUS: {
+				name: "Corrosive Noise+",
+				desc: "+2 corrosive noise on hit, 3x dmg per turn",
+			},
+		},
+		dungeons: {
+			starter: "Ruined Sector",
+			deep: "Contaminated Core",
+			abyss: "Unknown Depths",
+		},
+		enemyPrefixes: [
+			"Rampaging",
+			"Mutant",
+			"Invading",
+			"Alert",
+			"Armored",
+			"High-Mobility",
+			"Contaminated",
+			"Relic",
+		],
+		enemyBases: [
+			"Rogue Drone",
+			"Mutant Beast",
+			"Vanguard Scout",
+			"Defense Bastion",
+			"Sweeper Mech",
+			"Autonomous Weapon",
+			"Annihilator Unit",
+			"Overlord Core",
+		],
+		retreatMessage: "Retreated to base to reduce load on Iris.",
 	},
-	enemyPrefixes: [
-		"暴走した",
-		"変異型",
-		"侵略型",
-		"警戒態勢の",
-		"重装甲",
-		"高機動",
-		"汚染された",
-		"古代遺産の",
-	],
-	enemyBases: [
-		"暴走ドローン",
-		"変異体",
-		"侵略尖兵",
-		"防衛要塞",
-		"掃討機兵",
-		"自律兵器",
-		"殲滅ユニット",
-		"支配者コア",
-	],
-	retreatMessage: "アイリスの負荷を考慮し、一時帰還した。",
 };
+
+export const PRESETS: Record<string, ThemeDefinition> = {
+	classic_fantasy: PRESET_CLASSIC_FANTASY,
+	cyberpunk: PRESET_CYBERPUNK,
+	partner_sync: PRESET_PARTNER_SYNC,
+};
+
+export const PRESET_CLASSIC_FANTASY_JA: Theme = resolveTheme(
+	PRESET_CLASSIC_FANTASY,
+	"ja",
+);
+export const PRESET_CLASSIC_FANTASY_EN: Theme = resolveTheme(
+	PRESET_CLASSIC_FANTASY,
+	"en",
+);
 
 export function getPresetTheme(themeId: string, lang: Language): Theme {
-	if (themeId === "cyberpunk") {
-		return PRESET_CYBERPUNK;
-	}
-	if (themeId === "partner_sync") {
-		return PRESET_PARTNER_SYNC;
-	}
-	// Default to classic_fantasy in current language
-	return lang === "ja" ? PRESET_CLASSIC_FANTASY_JA : PRESET_CLASSIC_FANTASY_EN;
+	const preset = PRESETS[themeId] ?? PRESET_CLASSIC_FANTASY;
+	return resolveTheme(preset, lang);
 }
 
-export function validateTheme(data: unknown): Theme | null {
+export function validateThemeLocaleData(data: unknown): ThemeLocaleData | null {
 	if (!data || typeof data !== "object") return null;
-	const obj = data as Partial<Theme>;
+	const obj = data as Partial<ThemeLocaleData>;
 	if (
-		typeof obj.id !== "string" ||
 		typeof obj.name !== "string" ||
-		(obj.language !== "en" && obj.language !== "ja") ||
 		typeof obj.targetNameLabel !== "string" ||
 		typeof obj.defaultTargetName !== "string" ||
 		typeof obj.enhanceVerb !== "string" ||
@@ -1164,19 +1330,62 @@ export function validateTheme(data: unknown): Theme | null {
 		return null;
 	}
 
-	return obj as Theme;
+	return obj as ThemeLocaleData;
 }
 
-export function loadCustomThemeIfExists(
-	filePath = CUSTOM_THEME_FILE_PATH,
+interface RawThemeDef {
+	id?: unknown;
+	ja?: unknown;
+	en?: unknown;
+}
+
+export function validateThemeDefinition(data: unknown): ThemeDefinition | null {
+	if (!data || typeof data !== "object") return null;
+	const obj = data as RawThemeDef;
+	if (typeof obj.id !== "string") return null;
+
+	const jaLocale = validateThemeLocaleData(obj.ja);
+	const enLocale = validateThemeLocaleData(obj.en);
+	if (jaLocale && enLocale) {
+		return {
+			id: obj.id,
+			ja: jaLocale,
+			en: enLocale,
+		};
+	}
+
+	// Fallback for legacy flat format
+	const legacyLocale = validateThemeLocaleData(obj);
+	if (legacyLocale) {
+		return {
+			id: obj.id,
+			ja: jaLocale ?? legacyLocale,
+			en: enLocale ?? legacyLocale,
+		};
+	}
+
+	return null;
+}
+
+export function validateTheme(
+	data: unknown,
+	lang: Language = "ja",
 ): Theme | null {
+	const def = validateThemeDefinition(data);
+	if (!def) return null;
+	return resolveTheme(def, lang);
+}
+
+export function loadCustomThemeDefIfExists(
+	filePath = CUSTOM_THEME_FILE_PATH,
+): ThemeDefinition | null {
 	try {
 		if (!existsSync(filePath)) {
 			return null;
 		}
 		const raw = readFileSync(filePath, "utf-8");
 		const parsed = JSON.parse(raw);
-		const valid = validateTheme(parsed);
+		const valid = validateThemeDefinition(parsed);
 		if (valid) {
 			return valid;
 		}
@@ -1190,79 +1399,157 @@ export function loadCustomThemeIfExists(
 	}
 }
 
+export function loadCustomThemeIfExists(
+	filePath = CUSTOM_THEME_FILE_PATH,
+	lang: Language = "ja",
+): Theme | null {
+	const def = loadCustomThemeDefIfExists(filePath);
+	if (!def) return null;
+	return resolveTheme(def, lang);
+}
+
 export function exportCustomThemeTemplate(
 	filePath = CUSTOM_THEME_EXAMPLE_PATH,
 ): boolean {
 	try {
-		const template: Theme = {
+		const template: ThemeDefinition = {
 			id: "custom_scifi",
-			name: "Sci-Fi Star Explorer",
-			language: "en",
-			targetNameLabel: "Flagship Weapon",
-			defaultTargetName: "Photon Lance",
-			enhanceVerb: "Calibrate Reactor",
-			resourceName: "Plasma Core",
-			orbs: {
-				MULTI_HIT: {
-					name: "Twin Beam",
-					desc: "Fire dual beams at 65% energy each",
+			ja: {
+				name: "SF星間探査 (Sci-Fi Star Explorer)",
+				targetNameLabel: "旗艦武装",
+				defaultTargetName: "フォトンランス",
+				enhanceVerb: "リアクターを調整する",
+				resourceName: "プラズマコア",
+				orbs: {
+					MULTI_HIT: {
+						name: "ツインビーム",
+						desc: "2連照射/威力65%",
+					},
+					CRITICAL: {
+						name: "クリティカルパルス",
+						desc: "25%で2倍",
+					},
+					VAMP: {
+						name: "シールドドレイン",
+						desc: "与ダメの15%回復",
+					},
+					POISON: {
+						name: "アシッド腐食",
+						desc: "攻撃時毒+1/ターン末毒x3ダメ",
+					},
+					MULTI_HIT_PLUS: {
+						name: "ツインビーム+",
+						desc: "2連照射/威力75%",
+					},
+					CRITICAL_PLUS: {
+						name: "クリティカルパルス+",
+						desc: "40%で2倍",
+					},
+					VAMP_PLUS: {
+						name: "シールドドレイン+",
+						desc: "与ダメの25%回復",
+					},
+					POISON_PLUS: {
+						name: "アシッド腐食+",
+						desc: "攻撃時毒+2/ターン末毒x3ダメ",
+					},
 				},
-				CRITICAL: {
-					name: "Critical Pulse",
-					desc: "25% chance for 2x focused damage",
+				dungeons: {
+					starter: "小惑星前哨基地",
+					deep: "遺棄された弩級艦",
+					abyss: "事象の地平線",
 				},
-				VAMP: {
-					name: "Shield Siphon",
-					desc: "Absorb 15% damage dealt as shield energy",
-				},
-				POISON: {
-					name: "Corrosive Acid",
-					desc: "+1 chemical payload on hit, deals 3x dmg per tick",
-				},
-				MULTI_HIT_PLUS: {
-					name: "Twin Beam+",
-					desc: "Fire dual beams at 75% energy each",
-				},
-				CRITICAL_PLUS: {
-					name: "Critical Pulse+",
-					desc: "40% chance for 2x focused damage",
-				},
-				VAMP_PLUS: {
-					name: "Shield Siphon+",
-					desc: "Absorb 25% damage dealt as shield energy",
-				},
-				POISON_PLUS: {
-					name: "Corrosive Acid+",
-					desc: "+2 chemical payload on hit, deals 3x dmg per tick",
-				},
+				enemyPrefixes: [
+					"敵対的な",
+					"過負荷の",
+					"変異した",
+					"未知生命の",
+					"サイバネの",
+					"凶暴な",
+					"古代の",
+					"コズミック",
+				],
+				enemyBases: [
+					"偵察ドローン",
+					"バイオスウォーム",
+					"宇宙海賊",
+					"戦闘メカ",
+					"虚空の怪異",
+					"星喰らい",
+					"ナノ集合体",
+					"タイタン弩級艦",
+				],
+				retreatMessage:
+					"ワープドライブを緊急起動し、軌道ステーションへ退避した。",
 			},
-			dungeons: {
-				starter: "Asteroid Outpost",
-				deep: "Derelict Dreadnought",
-				abyss: "Event Horizon Void",
+			en: {
+				name: "Sci-Fi Star Explorer",
+				targetNameLabel: "Flagship Weapon",
+				defaultTargetName: "Photon Lance",
+				enhanceVerb: "Calibrate Reactor",
+				resourceName: "Plasma Core",
+				orbs: {
+					MULTI_HIT: {
+						name: "Twin Beam",
+						desc: "Fire dual beams at 65% energy each",
+					},
+					CRITICAL: {
+						name: "Critical Pulse",
+						desc: "25% chance for 2x focused damage",
+					},
+					VAMP: {
+						name: "Shield Siphon",
+						desc: "Absorb 15% damage dealt as shield energy",
+					},
+					POISON: {
+						name: "Corrosive Acid",
+						desc: "+1 chemical payload on hit, deals 3x dmg per tick",
+					},
+					MULTI_HIT_PLUS: {
+						name: "Twin Beam+",
+						desc: "Fire dual beams at 75% energy each",
+					},
+					CRITICAL_PLUS: {
+						name: "Critical Pulse+",
+						desc: "40% chance for 2x focused damage",
+					},
+					VAMP_PLUS: {
+						name: "Shield Siphon+",
+						desc: "Absorb 25% damage dealt as shield energy",
+					},
+					POISON_PLUS: {
+						name: "Corrosive Acid+",
+						desc: "+2 chemical payload on hit, deals 3x dmg per tick",
+					},
+				},
+				dungeons: {
+					starter: "Asteroid Outpost",
+					deep: "Derelict Dreadnought",
+					abyss: "Event Horizon Void",
+				},
+				enemyPrefixes: [
+					"Hostile",
+					"Overcharged",
+					"Mutated",
+					"Alien",
+					"Cybernetic",
+					"Vicious",
+					"Ancient",
+					"Cosmic",
+				],
+				enemyBases: [
+					"Scout Drone",
+					"Bio-Swarm",
+					"Pirate Raider",
+					"War Mech",
+					"Void Beast",
+					"Star Devourer",
+					"Nanite Hive",
+					"Titan Dreadnought",
+				],
+				retreatMessage:
+					"Warp drive engaged; executed emergency tactical jump back to orbital station.",
 			},
-			enemyPrefixes: [
-				"Hostile",
-				"Overcharged",
-				"Mutated",
-				"Alien",
-				"Cybernetic",
-				"Vicious",
-				"Ancient",
-				"Cosmic",
-			],
-			enemyBases: [
-				"Scout Drone",
-				"Bio-Swarm",
-				"Pirate Raider",
-				"War Mech",
-				"Void Beast",
-				"Star Devourer",
-				"Nanite Hive",
-				"Titan Dreadnought",
-			],
-			retreatMessage:
-				"Warp drive engaged; executed emergency tactical jump back to orbital station.",
 		};
 		writeFileSync(filePath, JSON.stringify(template, null, 2), "utf-8");
 		return true;
@@ -1505,7 +1792,7 @@ export class Game {
 	private readonly rl: readline.Interface;
 	private language: Language;
 	private theme: Theme;
-	private customTheme: Theme | null = null;
+	private customThemeDef: ThemeDefinition | null = null;
 	private readonly player: Player;
 	private stockScrolls = 0;
 	private stockOrbs: OrbType[] = [];
@@ -1515,10 +1802,10 @@ export class Game {
 	constructor() {
 		this.rl = readline.createInterface({ input, output });
 		this.language = detectDefaultLanguage();
-		this.customTheme = loadCustomThemeIfExists();
+		this.customThemeDef = loadCustomThemeDefIfExists();
 
-		if (this.customTheme) {
-			this.theme = this.customTheme;
+		if (this.customThemeDef) {
+			this.theme = resolveTheme(this.customThemeDef, this.language);
 		} else {
 			this.theme = getPresetTheme("classic_fantasy", this.language);
 		}
@@ -1583,8 +1870,8 @@ export class Game {
 					this.language = data.language;
 				}
 
-				if (this.customTheme) {
-					this.theme = this.customTheme;
+				if (this.customThemeDef) {
+					this.theme = resolveTheme(this.customThemeDef, this.language);
 				} else if (data.themeId) {
 					this.theme = getPresetTheme(data.themeId, this.language);
 				} else {
@@ -1739,13 +2026,15 @@ export class Game {
 
 			if (trimmed === "1") {
 				const nextLang: Language = this.language === "ja" ? "en" : "ja";
+				const oldDefaultName = this.theme.defaultTargetName;
 				this.language = nextLang;
-				if (this.theme.id === "classic_fantasy") {
-					const oldDefaultName = this.theme.defaultTargetName;
-					this.theme = getPresetTheme("classic_fantasy", this.language);
-					if (this.player.weapon.name === oldDefaultName) {
-						this.player.weapon.name = this.theme.defaultTargetName;
-					}
+				if (this.customThemeDef && this.theme.id === this.customThemeDef.id) {
+					this.theme = resolveTheme(this.customThemeDef, this.language);
+				} else {
+					this.theme = getPresetTheme(this.theme.id, this.language);
+				}
+				if (this.player.weapon.name === oldDefaultName) {
+					this.player.weapon.name = this.theme.defaultTargetName;
 				}
 				this.saveGame();
 				console.log(this.msg.settingsLangChanged(this.language));
@@ -1778,20 +2067,20 @@ export class Game {
 
 		const themeOptions: Theme[] = [];
 
-		if (this.customTheme) {
-			themeOptions.push(this.customTheme);
+		if (this.customThemeDef) {
+			themeOptions.push(resolveTheme(this.customThemeDef, this.language));
 		} else {
-			const checkedCustom = loadCustomThemeIfExists();
+			const checkedCustom = loadCustomThemeDefIfExists();
 			if (checkedCustom) {
-				this.customTheme = checkedCustom;
-				themeOptions.push(checkedCustom);
+				this.customThemeDef = checkedCustom;
+				themeOptions.push(resolveTheme(checkedCustom, this.language));
 			}
 		}
 
 		themeOptions.push(
 			getPresetTheme("classic_fantasy", this.language),
-			PRESET_CYBERPUNK,
-			PRESET_PARTNER_SYNC,
+			getPresetTheme("cyberpunk", this.language),
+			getPresetTheme("partner_sync", this.language),
 		);
 
 		for (let i = 0; i < themeOptions.length; i++) {
