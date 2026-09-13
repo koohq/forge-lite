@@ -1,0 +1,10 @@
+{
+	"weapon": {
+		"name": "どうのつるぎ",
+		"baseAtk": 10,
+		"plus": 38,
+		"slots": ["VAMP_PLUS", "POISON_PLUS", "MULTI_HIT_PLUS"]
+	},
+	"stockScrolls": 1,
+	"stockOrbs": ["CRITICAL", "CRITICAL", "CRITICAL"]
+}

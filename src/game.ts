@@ -1,5 +1,8 @@
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { stdin as input, stdout as output } from "node:process";
 import * as readline from "node:readline/promises";
+
+const SAVE_FILE_PATH = "save.json";
 
 type NormalOrbType = "MULTI_HIT" | "CRITICAL" | "VAMP" | "POISON";
 type PlusOrbType =
@@ -35,6 +38,26 @@ interface RunInventory {
 	orbs: OrbType[];
 }
 
+interface SaveData {
+	weapon: Weapon;
+	stockScrolls: number;
+	stockOrbs: OrbType[];
+}
+
+interface EnemyTemplate {
+	name: string;
+	hp: number;
+	atk: number;
+	getDrops: () => RunInventory;
+}
+
+interface DungeonDef {
+	name: string;
+	floors: number;
+	recommended?: string | undefined;
+	getEnemy: (floor: number) => EnemyTemplate;
+}
+
 const ORB_NAMES: Record<OrbType, string> = {
 	MULTI_HIT: "連撃の印 (2回攻撃/威力65%)",
 	CRITICAL: "会心の印 (25%で2倍)",
@@ -60,17 +83,24 @@ const DROP_ORBS: readonly NormalOrbType[] = [
 	"POISON",
 ];
 
+const PLUS_ORBS: readonly PlusOrbType[] = [
+	"MULTI_HIT_PLUS",
+	"CRITICAL_PLUS",
+	"VAMP_PLUS",
+	"POISON_PLUS",
+];
+
 function getRandomOrb(): NormalOrbType {
 	const orb = DROP_ORBS[Math.floor(Math.random() * DROP_ORBS.length)];
 	return orb ?? "MULTI_HIT";
 }
 
-const FLOOR_ENEMIES: Array<{
-	name: string;
-	hp: number;
-	atk: number;
-	getDrops: () => RunInventory;
-}> = [
+function getRandomPlusOrb(): PlusOrbType {
+	const orb = PLUS_ORBS[Math.floor(Math.random() * PLUS_ORBS.length)];
+	return orb ?? "MULTI_HIT_PLUS";
+}
+
+const FLOOR_ENEMIES_CAVE: readonly EnemyTemplate[] = [
 	{
 		name: "スライム",
 		hp: 15,
@@ -103,11 +133,96 @@ const FLOOR_ENEMIES: Array<{
 	},
 ];
 
+const CAVE_DUNGEON: DungeonDef = {
+	name: "始まりの洞窟",
+	floors: 5,
+	getEnemy: (floor: number): EnemyTemplate => {
+		const template = FLOOR_ENEMIES_CAVE[floor - 1];
+		if (!template) {
+			throw new Error(`Invalid floor: ${floor}`);
+		}
+		return template;
+	},
+};
+
+const DEEP_DUNGEON: DungeonDef = {
+	name: "灼熱の深層",
+	floors: 10,
+	recommended: "推奨+25以上の上級ダンジョン",
+	getEnemy: (floor: number): EnemyTemplate => {
+		const getRandomItem = <T>(items: readonly T[]): T => {
+			const item = items[Math.floor(Math.random() * items.length)];
+			if (!item) {
+				throw new Error("Empty array");
+			}
+			return item;
+		};
+
+		const getDeepFloorScrolls = () => Math.floor(Math.random() * 4) + 2; // 2〜5枚
+
+		if (floor >= 1 && floor <= 3) {
+			const candidates = [
+				{ name: "狂暴なオーク", hp: 80, atk: 12 },
+				{ name: "サンダードラゴン", hp: 120, atk: 16 },
+			];
+			const picked = getRandomItem(candidates);
+			return {
+				name: picked.name,
+				hp: picked.hp,
+				atk: picked.atk,
+				getDrops: () => ({ scrolls: getDeepFloorScrolls(), orbs: [] }),
+			};
+		}
+
+		if (floor >= 4 && floor <= 6) {
+			const candidates = [
+				{ name: "アイアンゴーレム", hp: 180, atk: 20 },
+				{ name: "デスナイト", hp: 220, atk: 24 },
+			];
+			const picked = getRandomItem(candidates);
+			return {
+				name: picked.name,
+				hp: picked.hp,
+				atk: picked.atk,
+				getDrops: () => ({ scrolls: getDeepFloorScrolls(), orbs: [] }),
+			};
+		}
+
+		if (floor >= 7 && floor <= 9) {
+			const candidates = [
+				{ name: "エンシェントワイバーン", hp: 280, atk: 28 },
+				{ name: "ベヒモス", hp: 350, atk: 32 },
+			];
+			const picked = getRandomItem(candidates);
+			return {
+				name: picked.name,
+				hp: picked.hp,
+				atk: picked.atk,
+				getDrops: () => ({ scrolls: getDeepFloorScrolls(), orbs: [] }),
+			};
+		}
+
+		if (floor === 10) {
+			return {
+				name: "冥王 (BOSS)",
+				hp: 500,
+				atk: 36,
+				getDrops: () => ({
+					scrolls: 10,
+					orbs: [getRandomPlusOrb()],
+				}),
+			};
+		}
+
+		throw new Error(`Invalid floor: ${floor}`);
+	},
+};
+
 class Game {
 	private readonly rl: readline.Interface;
 	private readonly player: Player;
 	private stockScrolls = 0;
-	private readonly stockOrbs: OrbType[] = [];
+	private stockOrbs: OrbType[] = [];
 	private isRunning = true;
 
 	constructor() {
@@ -128,10 +243,76 @@ class Game {
 		return this.player.weapon.baseAtk + this.player.weapon.plus * 2;
 	}
 
+	private saveGame(): void {
+		try {
+			const data: SaveData = {
+				weapon: this.player.weapon,
+				stockScrolls: this.stockScrolls,
+				stockOrbs: this.stockOrbs,
+			};
+			writeFileSync(SAVE_FILE_PATH, JSON.stringify(data, null, 2), "utf-8");
+			console.log(">> セーブデータを保存しました。(save.json)");
+		} catch (error) {
+			console.error(">> セーブデータの保存に失敗しました:", error);
+		}
+	}
+
+	private loadGame(): boolean {
+		try {
+			if (!existsSync(SAVE_FILE_PATH)) {
+				return false;
+			}
+			const raw = readFileSync(SAVE_FILE_PATH, "utf-8");
+			const data = JSON.parse(raw) as SaveData;
+			if (
+				data?.weapon &&
+				typeof data.stockScrolls === "number" &&
+				Array.isArray(data.stockOrbs)
+			) {
+				this.player.weapon = {
+					name: data.weapon.name,
+					baseAtk: data.weapon.baseAtk,
+					plus: data.weapon.plus,
+					slots: Array.isArray(data.weapon.slots) ? [...data.weapon.slots] : [],
+				};
+				this.stockScrolls = data.stockScrolls;
+				this.stockOrbs = [...data.stockOrbs];
+				return true;
+			}
+			return false;
+		} catch (error) {
+			console.error(">> セーブデータの読み込みに失敗しました:", error);
+			return false;
+		}
+	}
+
 	async start(): Promise<void> {
 		console.log("==============================================");
 		console.log("   Minimal Rogue-lite Prototype (CUI Ver)   ");
 		console.log("==============================================");
+
+		console.log("\n1: つづきから (save.json を読み込んで開始)");
+		console.log("2: はじめから (初期状態で開始)");
+
+		while (true) {
+			const choice = await this.rl.question("\n選択してください: ");
+			const trimmed = choice.trim();
+			if (trimmed === "1") {
+				if (this.loadGame()) {
+					console.log(">> セーブデータを読み込みました！");
+				} else {
+					console.log(
+						">> save.json が見つからないか破損しています。新規データで開始します。",
+					);
+				}
+				break;
+			}
+			if (trimmed === "2") {
+				console.log(">> はじめからゲームを開始します。");
+				break;
+			}
+			console.log(">> 無効な選択です。1 または 2 を入力してください。");
+		}
 
 		while (this.isRunning) {
 			await this.hubPhase();
@@ -156,8 +337,8 @@ class Game {
 			}`,
 		);
 		console.log("----------------------------------------------");
-		console.log("1: ダンジョンへ出撃 (全5階)");
-		console.log("2: 武器を鍛える (強化の書を1枚消費)");
+		console.log("1: ダンジョンへ出撃");
+		console.log("2: 武器を鍛える");
 		console.log("3: オーブを武器に装着");
 		console.log("4: オーブを分解 (任意のオーブ2個 -> 強化の書1枚)");
 		console.log("5: オーブを合成 (同種オーブ2個 -> 上位オーブ)");
@@ -167,10 +348,10 @@ class Game {
 
 		switch (choice.trim()) {
 			case "1":
-				await this.dungeonPhase();
+				await this.chooseDungeonPhase();
 				break;
 			case "2":
-				this.upgradeWeapon();
+				await this.upgradeWeaponPhase();
 				break;
 			case "3":
 				await this.attachOrbPhase();
@@ -191,16 +372,73 @@ class Game {
 		}
 	}
 
-	private upgradeWeapon(): void {
+	private async chooseDungeonPhase(): Promise<void> {
+		console.log("\n--- 出撃ダンジョン選択 ---");
+		console.log(`1: ${CAVE_DUNGEON.name} (全${CAVE_DUNGEON.floors}階 / 初級)`);
+		console.log(
+			`2: ${DEEP_DUNGEON.name} (全${DEEP_DUNGEON.floors}階 / ${DEEP_DUNGEON.recommended})`,
+		);
+		console.log("0: キャンセル (拠点に戻る)");
+
+		const choice = await this.rl.question("\nダンジョンを選択してください: ");
+		switch (choice.trim()) {
+			case "1":
+				await this.dungeonPhase(CAVE_DUNGEON);
+				break;
+			case "2":
+				await this.dungeonPhase(DEEP_DUNGEON);
+				break;
+			case "0":
+				console.log(">> 出撃を取りやめました。");
+				break;
+			default:
+				console.log(">> 無効な選択です。");
+				break;
+		}
+	}
+
+	private async upgradeWeaponPhase(): Promise<void> {
 		if (this.stockScrolls <= 0) {
 			console.log(">> 強化の書がありません！");
 			return;
 		}
-		this.stockScrolls--;
-		this.player.weapon.plus++;
+
+		console.log("\n--- 武器の強化 ---");
+		console.log(`現在の所持強化の書: ${this.stockScrolls}枚`);
+		console.log("1: 1枚だけ消費して鍛える (+1)");
 		console.log(
-			`>> 武器を鍛えました！ ${this.player.weapon.name}+${this.player.weapon.plus} (攻撃力: ${this.getWeaponAtk()})`,
+			`2: 所持している強化の書をすべて消費して一括で鍛える (+${this.stockScrolls})`,
 		);
+		console.log("0: キャンセル");
+
+		const choice = await this.rl.question("選択してください: ");
+		switch (choice.trim()) {
+			case "1": {
+				this.stockScrolls--;
+				this.player.weapon.plus++;
+				console.log(
+					`>> 武器を鍛えました！ ${this.player.weapon.name}+${this.player.weapon.plus} (攻撃力: ${this.getWeaponAtk()})`,
+				);
+				this.saveGame();
+				break;
+			}
+			case "2": {
+				const count = this.stockScrolls;
+				this.player.weapon.plus += count;
+				this.stockScrolls = 0;
+				console.log(
+					`>> 強化の書をすべて(${count}枚)消費して一括で鍛えました！ ${this.player.weapon.name}+${this.player.weapon.plus} (攻撃力: ${this.getWeaponAtk()})`,
+				);
+				this.saveGame();
+				break;
+			}
+			case "0":
+				console.log(">> 強化をキャンセルしました。");
+				break;
+			default:
+				console.log(">> 無効な選択です。");
+				break;
+		}
 	}
 
 	private async attachOrbPhase(): Promise<void> {
@@ -234,6 +472,7 @@ class Game {
 			this.player.weapon.slots.push(targetOrb);
 			this.stockOrbs.splice(idx, 1);
 			console.log(`>> スロットに [${targetOrb}] を装着しました！`);
+			this.saveGame();
 		} else {
 			console.log("\nスロットが満杯です。上書きする枠を選んでください:");
 			for (let sIdx = 0; sIdx < this.player.weapon.slots.length; sIdx++) {
@@ -253,6 +492,7 @@ class Game {
 					console.log(
 						`>> [${removed}] を破棄し、[${targetOrb}] を装着しました！`,
 					);
+					this.saveGame();
 				}
 			}
 		}
@@ -308,6 +548,7 @@ class Game {
 		console.log(
 			`>> [${orb1}] と [${orb2}] を分解し、強化の書 x1 を獲得しました！ (所持: 強化の書 x${this.stockScrolls})`,
 		);
+		this.saveGame();
 	}
 
 	private async synthesizeOrbPhase(): Promise<void> {
@@ -384,17 +625,15 @@ class Game {
 		console.log(
 			`>> [${targetRecipe.from}] を2個消費し、上位オーブ [${targetRecipe.to}] を合成しました！`,
 		);
+		this.saveGame();
 	}
 
-	private async dungeonPhase(): Promise<void> {
-		console.log("\n>>> ダンジョンに突入しました！ <<<");
+	private async dungeonPhase(dungeon: DungeonDef): Promise<void> {
+		console.log(`\n>>> 【${dungeon.name}】に突入しました！ <<<`);
 		const runInv: RunInventory = { scrolls: 0, orbs: [] };
 
-		for (let floor = 1; floor <= 5; floor++) {
-			const template = FLOOR_ENEMIES[floor - 1];
-			if (!template) {
-				break;
-			}
+		for (let floor = 1; floor <= dungeon.floors; floor++) {
+			const template = dungeon.getEnemy(floor);
 
 			const enemy: Enemy = {
 				name: template.name,
@@ -405,7 +644,9 @@ class Game {
 			};
 
 			console.log("\n==============================================");
-			console.log(`   B${floor}F : ${enemy.name} が現れた！`);
+			console.log(
+				`   B${floor}F / B${dungeon.floors}F : ${enemy.name} が現れた！`,
+			);
 			console.log("==============================================");
 
 			const survived = await this.battle(enemy);
@@ -416,6 +657,7 @@ class Game {
 					`[!] 今回獲得したアイテム（書: ${runInv.scrolls}枚, オーブ: ${runInv.orbs.length}個）は失われました。`,
 				);
 				console.log("[!] 命からがら拠点へ運ばれました。（所持武器は無事です）");
+				this.saveGame();
 				return;
 			}
 
@@ -428,15 +670,18 @@ class Game {
 			if (drops.scrolls > 0)
 				console.log(`   戦利品獲得: 強化の書 x${drops.scrolls}`);
 			for (const o of drops.orbs) {
-				console.log(`   戦利品獲得: オーブ [${o}]`);
+				console.log(`   戦利品獲得: オーブ [${o}] (${ORB_NAMES[o]})`);
 			}
 
-			if (floor === 5) {
+			if (floor === dungeon.floors) {
 				console.log("\n**********************************************");
-				console.log("   ダンジョン完全踏破！おめでとうございます！   ");
+				console.log(
+					`   【${dungeon.name}】完全踏破！おめでとうございます！   `,
+				);
 				console.log("**********************************************");
 				this.stockScrolls += runInv.scrolls;
 				this.stockOrbs.push(...runInv.orbs);
+				this.saveGame();
 				return;
 			}
 
@@ -455,6 +700,7 @@ class Game {
 				console.log(
 					`>> 戦利品（書: ${runInv.scrolls}枚, オーブ: ${runInv.orbs.length}個）を持ち帰りました！`,
 				);
+				this.saveGame();
 				return;
 			}
 		}
