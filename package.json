@@ -1,0 +1,22 @@
+{
+	"name": "forge-lite",
+	"version": "0.1.0",
+	"description": "Minimal rogue-lite prototype to verify the forge-and-dive loop",
+	"type": "module",
+	"scripts": {
+		"start": "node src/game.ts",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check .",
+		"format": "biome format --write .",
+		"deps:semver": "pnpm up -r",
+		"deps:latest": "pnpm up -r --latest",
+		"deps:interactive": "pnpm up -r -i --latest"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.12",
+		"@tsconfig/node26": "^26.0.1",
+		"@tsconfig/strictest": "^2.0.8",
+		"@types/node": "^26.5.1",
+		"typescript": "^7.0.2"
+	}
+}
