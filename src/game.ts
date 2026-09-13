@@ -1,7 +1,13 @@
 import { stdin as input, stdout as output } from "node:process";
 import * as readline from "node:readline/promises";
 
-type OrbType = "MULTI_HIT" | "CRITICAL" | "VAMP" | "POISON";
+type NormalOrbType = "MULTI_HIT" | "CRITICAL" | "VAMP" | "POISON";
+type PlusOrbType =
+	| "MULTI_HIT_PLUS"
+	| "CRITICAL_PLUS"
+	| "VAMP_PLUS"
+	| "POISON_PLUS";
+type OrbType = NormalOrbType | PlusOrbType;
 
 interface Weapon {
 	name: string;
@@ -34,17 +40,28 @@ const ORB_NAMES: Record<OrbType, string> = {
 	CRITICAL: "会心の印 (25%で2倍)",
 	VAMP: "吸血の印 (与ダメの15%回復)",
 	POISON: "猛毒の印 (攻撃時毒+1/ターン末毒x3ダメ)",
+	MULTI_HIT_PLUS: "連撃の印+ (2回攻撃/威力75%)",
+	CRITICAL_PLUS: "会心の印+ (40%で2倍)",
+	VAMP_PLUS: "吸血の印+ (与ダメの25%回復)",
+	POISON_PLUS: "猛毒の印+ (攻撃時毒+2/ターン末毒x3ダメ)",
 };
 
-const ALL_ORBS: readonly OrbType[] = [
+const SYNTHESIS_RECIPES: Record<NormalOrbType, PlusOrbType> = {
+	MULTI_HIT: "MULTI_HIT_PLUS",
+	CRITICAL: "CRITICAL_PLUS",
+	VAMP: "VAMP_PLUS",
+	POISON: "POISON_PLUS",
+};
+
+const DROP_ORBS: readonly NormalOrbType[] = [
 	"MULTI_HIT",
 	"CRITICAL",
 	"VAMP",
 	"POISON",
 ];
 
-function getRandomOrb(): OrbType {
-	const orb = ALL_ORBS[Math.floor(Math.random() * ALL_ORBS.length)];
+function getRandomOrb(): NormalOrbType {
+	const orb = DROP_ORBS[Math.floor(Math.random() * DROP_ORBS.length)];
 	return orb ?? "MULTI_HIT";
 }
 
@@ -142,6 +159,8 @@ class Game {
 		console.log("1: ダンジョンへ出撃 (全5階)");
 		console.log("2: 武器を鍛える (強化の書を1枚消費)");
 		console.log("3: オーブを武器に装着");
+		console.log("4: オーブを分解 (任意のオーブ2個 -> 強化の書1枚)");
+		console.log("5: オーブを合成 (同種オーブ2個 -> 上位オーブ)");
 		console.log("0: ゲーム終了");
 
 		const choice = await this.rl.question("\n行動を選択してください: ");
@@ -155,6 +174,12 @@ class Game {
 				break;
 			case "3":
 				await this.attachOrbPhase();
+				break;
+			case "4":
+				await this.disassembleOrbPhase();
+				break;
+			case "5":
+				await this.synthesizeOrbPhase();
 				break;
 			case "0":
 				console.log("お疲れ様でした。");
@@ -233,6 +258,134 @@ class Game {
 		}
 	}
 
+	private async disassembleOrbPhase(): Promise<void> {
+		if (this.stockOrbs.length < 2) {
+			console.log(">> 分解には倉庫にオーブが2個以上必要です！");
+			return;
+		}
+
+		console.log("\n--- オーブの分解 (任意のオーブ2個 -> 強化の書1枚) ---");
+		for (let i = 0; i < this.stockOrbs.length; i++) {
+			const orb = this.stockOrbs[i];
+			if (orb) {
+				console.log(`${i + 1}: [${orb}] ${ORB_NAMES[orb]}`);
+			}
+		}
+		console.log("0: キャンセル");
+
+		const select1 = await this.rl.question(
+			"1つ目に分解するオーブの番号を選択: ",
+		);
+		const idx1 = Number.parseInt(select1.trim(), 10) - 1;
+		if (Number.isNaN(idx1) || idx1 < 0 || idx1 >= this.stockOrbs.length) {
+			return;
+		}
+		const orb1 = this.stockOrbs[idx1];
+		if (!orb1) return;
+
+		console.log(`>> 1つ目: [${orb1}] を選択しました。`);
+
+		const select2 = await this.rl.question(
+			"2つ目に分解するオーブの番号を選択: ",
+		);
+		const idx2 = Number.parseInt(select2.trim(), 10) - 1;
+		if (Number.isNaN(idx2) || idx2 < 0 || idx2 >= this.stockOrbs.length) {
+			return;
+		}
+		if (idx1 === idx2) {
+			console.log(">> 1つ目と同じオーブは選択できません！");
+			return;
+		}
+		const orb2 = this.stockOrbs[idx2];
+		if (!orb2) return;
+
+		const firstRemoveIdx = Math.max(idx1, idx2);
+		const secondRemoveIdx = Math.min(idx1, idx2);
+		this.stockOrbs.splice(firstRemoveIdx, 1);
+		this.stockOrbs.splice(secondRemoveIdx, 1);
+
+		this.stockScrolls++;
+		console.log(
+			`>> [${orb1}] と [${orb2}] を分解し、強化の書 x1 を獲得しました！ (所持: 強化の書 x${this.stockScrolls})`,
+		);
+	}
+
+	private async synthesizeOrbPhase(): Promise<void> {
+		const normalOrbs: NormalOrbType[] = [
+			"MULTI_HIT",
+			"CRITICAL",
+			"VAMP",
+			"POISON",
+		];
+
+		const orbCounts = new Map<NormalOrbType, number>();
+		for (const orb of this.stockOrbs) {
+			if (normalOrbs.includes(orb as NormalOrbType)) {
+				const nOrb = orb as NormalOrbType;
+				orbCounts.set(nOrb, (orbCounts.get(nOrb) ?? 0) + 1);
+			}
+		}
+
+		const availableRecipes: Array<{
+			from: NormalOrbType;
+			to: PlusOrbType;
+			count: number;
+		}> = [];
+
+		for (const orb of normalOrbs) {
+			const count = orbCounts.get(orb) ?? 0;
+			if (count >= 2) {
+				availableRecipes.push({
+					from: orb,
+					to: SYNTHESIS_RECIPES[orb],
+					count,
+				});
+			}
+		}
+
+		if (availableRecipes.length === 0) {
+			console.log(
+				">> 合成可能なオーブ（同種の通常オーブ2個以上）が倉庫にありません！",
+			);
+			return;
+		}
+
+		console.log(
+			"\n--- オーブの合成 (同種の通常オーブ2個 -> 上位オーブ1個) ---",
+		);
+		for (let i = 0; i < availableRecipes.length; i++) {
+			const recipe = availableRecipes[i];
+			if (recipe) {
+				console.log(
+					`${i + 1}: [${recipe.from}] (所持: ${recipe.count}個) -> [${recipe.to}] ${ORB_NAMES[recipe.to]} を合成`,
+				);
+			}
+		}
+		console.log("0: キャンセル");
+
+		const select = await this.rl.question("合成するオーブの番号を選択: ");
+		const idx = Number.parseInt(select.trim(), 10) - 1;
+		if (Number.isNaN(idx) || idx < 0 || idx >= availableRecipes.length) {
+			return;
+		}
+
+		const targetRecipe = availableRecipes[idx];
+		if (!targetRecipe) return;
+
+		let removedCount = 0;
+		for (let i = this.stockOrbs.length - 1; i >= 0 && removedCount < 2; i--) {
+			if (this.stockOrbs[i] === targetRecipe.from) {
+				this.stockOrbs.splice(i, 1);
+				removedCount++;
+			}
+		}
+
+		this.stockOrbs.push(targetRecipe.to);
+		console.log(
+			`>> [${targetRecipe.from}] を2個消費し、上位オーブ [${targetRecipe.to}] を合成しました！`,
+		);
+	}
+
 	private async dungeonPhase(): Promise<void> {
 		console.log("\n>>> ダンジョンに突入しました！ <<<");
 		const runInv: RunInventory = { scrolls: 0, orbs: [] };
@@ -309,10 +462,17 @@ class Game {
 
 	private async battle(enemy: Enemy): Promise<boolean> {
 		const slots = this.player.weapon.slots;
-		const hasMulti = slots.includes("MULTI_HIT");
-		const hasCrit = slots.includes("CRITICAL");
-		const hasVamp = slots.includes("VAMP");
-		const hasPoison = slots.includes("POISON");
+		const hasMultiPlus = slots.includes("MULTI_HIT_PLUS");
+		const hasMulti = hasMultiPlus || slots.includes("MULTI_HIT");
+
+		const hasCritPlus = slots.includes("CRITICAL_PLUS");
+		const hasCrit = hasCritPlus || slots.includes("CRITICAL");
+
+		const hasVampPlus = slots.includes("VAMP_PLUS");
+		const hasVamp = hasVampPlus || slots.includes("VAMP");
+
+		const hasPoisonPlus = slots.includes("POISON_PLUS");
+		const hasPoison = hasPoisonPlus || slots.includes("POISON");
 
 		while (this.player.hp > 0 && enemy.hp > 0) {
 			console.log(
@@ -334,14 +494,17 @@ class Game {
 			// プレイヤー攻撃
 			const baseDmg = this.getWeaponAtk();
 			const hits = hasMulti ? 2 : 1;
-			const rate = hasMulti ? 0.65 : 1.0;
+			const rate = hasMultiPlus ? 0.75 : hasMulti ? 0.65 : 1.0;
+			const critChance = hasCritPlus ? 0.4 : hasCrit ? 0.25 : 0;
+			const vampRate = hasVampPlus ? 0.25 : hasVamp ? 0.15 : 0;
+			const poisonAdd = hasPoisonPlus ? 2 : hasPoison ? 1 : 0;
 
 			for (let i = 1; i <= hits; i++) {
 				if (enemy.hp <= 0) break;
 				let isCrit = false;
 				let dmg = Math.max(1, Math.floor(baseDmg * rate));
 
-				if (hasCrit && Math.random() < 0.25) {
+				if (critChance > 0 && Math.random() < critChance) {
 					isCrit = true;
 					dmg *= 2;
 				}
@@ -353,18 +516,18 @@ class Game {
 					}${enemy.name}に ${dmg} ダメージ！`,
 				);
 
-				if (hasVamp) {
-					const heal = Math.max(1, Math.floor(dmg * 0.15));
+				if (vampRate > 0) {
+					const heal = Math.max(1, Math.floor(dmg * vampRate));
 					this.player.hp = Math.min(this.player.maxHp, this.player.hp + heal);
 					console.log(
 						`   [吸血] HPが ${heal} 回復した！ (現在HP: ${this.player.hp})`,
 					);
 				}
 
-				if (hasPoison) {
-					enemy.poison += 1;
+				if (poisonAdd > 0) {
+					enemy.poison += poisonAdd;
 					console.log(
-						`   [猛毒] ${enemy.name}に毒を付与！ (毒カウント: ${enemy.poison})`,
+						`   [猛毒] ${enemy.name}に毒を付与！ (+${poisonAdd} / 毒カウント: ${enemy.poison})`,
 					);
 				}
 			}
