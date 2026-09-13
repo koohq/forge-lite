@@ -42,6 +42,8 @@ interface SaveData {
 	weapon: Weapon;
 	stockScrolls: number;
 	stockOrbs: OrbType[];
+	maxHp?: number | undefined;
+	deepestFloor?: number | undefined;
 }
 
 interface EnemyTemplate {
@@ -218,11 +220,61 @@ const DEEP_DUNGEON: DungeonDef = {
 	},
 };
 
+const ENDLESS_PREFIXES = [
+	"凶暴な",
+	"深淵の",
+	"古代の",
+	"紅蓮の",
+	"漆黒の",
+	"彷徨える",
+	"狂気の",
+	"奈落の",
+] as const;
+
+const ENDLESS_ENEMY_NAMES = [
+	"スライム",
+	"コボルト",
+	"オーク",
+	"ゴーレム",
+	"ドラゴン",
+	"ワイバーン",
+	"デーモン",
+	"死霊騎士",
+] as const;
+
+function generateEndlessEnemy(floor: number): EnemyTemplate {
+	const prefix =
+		ENDLESS_PREFIXES[Math.floor(Math.random() * ENDLESS_PREFIXES.length)] ??
+		"深淵の";
+	const baseName =
+		ENDLESS_ENEMY_NAMES[
+			Math.floor(Math.random() * ENDLESS_ENEMY_NAMES.length)
+		] ?? "スライム";
+	const isBoss = floor % 5 === 0;
+	const name = isBoss
+		? `${prefix}${baseName} (中ボス)`
+		: `${prefix}${baseName}`;
+
+	const hp = Math.floor(60 + floor ** 1.4 * 12);
+	const atk = Math.floor(8 + floor * 2.5);
+
+	const scrolls = Math.min(10, Math.floor(1 + floor / 2));
+	const orbs: OrbType[] = isBoss ? [getRandomPlusOrb()] : [];
+
+	return {
+		name,
+		hp,
+		atk,
+		getDrops: () => ({ scrolls, orbs }),
+	};
+}
+
 class Game {
 	private readonly rl: readline.Interface;
 	private readonly player: Player;
 	private stockScrolls = 0;
 	private stockOrbs: OrbType[] = [];
+	private deepestFloor = 0;
 	private isRunning = true;
 
 	constructor() {
@@ -249,6 +301,8 @@ class Game {
 				weapon: this.player.weapon,
 				stockScrolls: this.stockScrolls,
 				stockOrbs: this.stockOrbs,
+				maxHp: this.player.maxHp,
+				deepestFloor: this.deepestFloor,
 			};
 			writeFileSync(SAVE_FILE_PATH, JSON.stringify(data, null, 2), "utf-8");
 			console.log(">> セーブデータを保存しました。(save.json)");
@@ -277,6 +331,19 @@ class Game {
 				};
 				this.stockScrolls = data.stockScrolls;
 				this.stockOrbs = [...data.stockOrbs];
+				this.player.maxHp =
+					typeof data.maxHp === "number" &&
+					Number.isFinite(data.maxHp) &&
+					data.maxHp > 0
+						? data.maxHp
+						: 50;
+				this.player.hp = this.player.maxHp;
+				this.deepestFloor =
+					typeof data.deepestFloor === "number" &&
+					Number.isFinite(data.deepestFloor) &&
+					data.deepestFloor >= 0
+						? data.deepestFloor
+						: 0;
 				return true;
 			}
 			return false;
@@ -300,6 +367,11 @@ class Game {
 			if (trimmed === "1") {
 				if (this.loadGame()) {
 					console.log(">> セーブデータを読み込みました！");
+					console.log(
+						`>> 最大体力: HP ${this.player.maxHp} | 最高到達階層: ${
+							this.deepestFloor > 0 ? `B${this.deepestFloor}F` : "未挑戦"
+						}`,
+					);
 				} else {
 					console.log(
 						">> save.json が見つからないか破損しています。新規データで開始します。",
@@ -324,6 +396,11 @@ class Game {
 		console.log("\n----------------------------------------------");
 		console.log("【拠点】");
 		console.log(
+			`最大体力: HP ${this.player.maxHp} | 無限の深淵 最高到達: ${
+				this.deepestFloor > 0 ? `B${this.deepestFloor}F` : "未挑戦"
+			}`,
+		);
+		console.log(
 			`所持装備: ${this.player.weapon.name}+${this.player.weapon.plus} (攻撃力: ${this.getWeaponAtk()})`,
 		);
 		console.log(
@@ -342,6 +419,7 @@ class Game {
 		console.log("3: オーブを武器に装着");
 		console.log("4: オーブを分解 (任意のオーブ2個 -> 強化の書1枚)");
 		console.log("5: オーブを合成 (同種オーブ2個 -> 上位オーブ)");
+		console.log("6: 体力を強化する (強化の書2枚 -> 最大HP+10)");
 		console.log("0: ゲーム終了");
 
 		const choice = await this.rl.question("\n行動を選択してください: ");
@@ -362,6 +440,9 @@ class Game {
 			case "5":
 				await this.synthesizeOrbPhase();
 				break;
+			case "6":
+				await this.upgradeHpPhase();
+				break;
 			case "0":
 				console.log("お疲れ様でした。");
 				this.isRunning = false;
@@ -378,6 +459,7 @@ class Game {
 		console.log(
 			`2: ${DEEP_DUNGEON.name} (全${DEEP_DUNGEON.floors}階 / ${DEEP_DUNGEON.recommended})`,
 		);
+		console.log("3: 無限の深淵 (エンドレス / 階層無制限)");
 		console.log("0: キャンセル (拠点に戻る)");
 
 		const choice = await this.rl.question("\nダンジョンを選択してください: ");
@@ -387,6 +469,9 @@ class Game {
 				break;
 			case "2":
 				await this.dungeonPhase(DEEP_DUNGEON);
+				break;
+			case "3":
+				await this.endlessDungeonPhase();
 				break;
 			case "0":
 				console.log(">> 出撃を取りやめました。");
@@ -430,6 +515,65 @@ class Game {
 					`>> 強化の書をすべて(${count}枚)消費して一括で鍛えました！ ${this.player.weapon.name}+${this.player.weapon.plus} (攻撃力: ${this.getWeaponAtk()})`,
 				);
 				this.saveGame();
+				break;
+			}
+			case "0":
+				console.log(">> 強化をキャンセルしました。");
+				break;
+			default:
+				console.log(">> 無効な選択です。");
+				break;
+		}
+	}
+
+	private async upgradeHpPhase(): Promise<void> {
+		if (this.stockScrolls < 2) {
+			console.log(
+				`>> 強化の書が足りません！ (必要: 2枚 / 所持: ${this.stockScrolls}枚)`,
+			);
+			return;
+		}
+
+		console.log("\n--- 体力の強化 ---");
+		console.log(`現在の最大HP: ${this.player.maxHp}`);
+		console.log(`所持強化の書: ${this.stockScrolls}枚 (2枚消費で最大HP+10)`);
+		console.log("1: 2枚消費して鍛える (+10)");
+		const maxCount = Math.floor(this.stockScrolls / 2);
+		if (maxCount > 1) {
+			console.log(
+				`2: 可能な限り一括で鍛える (${maxCount * 2}枚消費して最大HP+${maxCount * 10})`,
+			);
+		}
+		console.log("0: キャンセル");
+
+		const choice = await this.rl.question("選択してください: ");
+		switch (choice.trim()) {
+			case "1": {
+				this.stockScrolls -= 2;
+				const prevHp = this.player.maxHp;
+				this.player.maxHp += 10;
+				this.player.hp = this.player.maxHp;
+				console.log(
+					`>> 体力を強化しました！ 最大HP: ${prevHp} -> ${this.player.maxHp}`,
+				);
+				this.saveGame();
+				break;
+			}
+			case "2": {
+				if (maxCount > 1) {
+					const usedScrolls = maxCount * 2;
+					const hpGain = maxCount * 10;
+					this.stockScrolls -= usedScrolls;
+					const prevHp = this.player.maxHp;
+					this.player.maxHp += hpGain;
+					this.player.hp = this.player.maxHp;
+					console.log(
+						`>> 強化の書を${usedScrolls}枚消費して一括で鍛えました！ 最大HP: ${prevHp} -> ${this.player.maxHp}`,
+					);
+					this.saveGame();
+				} else {
+					console.log(">> 無効な選択です。");
+				}
 				break;
 			}
 			case "0":
@@ -703,6 +847,83 @@ class Game {
 				this.saveGame();
 				return;
 			}
+		}
+	}
+
+	private async endlessDungeonPhase(): Promise<void> {
+		console.log("\n>>> 【無限の深淵】に突入しました！ <<<");
+		console.log(
+			"※ 階層上限のないエンドレスモードです。どこまで潜れるか挑戦しましょう！",
+		);
+		const runInv: RunInventory = { scrolls: 0, orbs: [] };
+		let floor = 1;
+
+		while (true) {
+			if (floor > this.deepestFloor) {
+				this.deepestFloor = floor;
+				console.log(`★ 最高到達階層を更新！ (B${floor}F)`);
+			}
+
+			const template = generateEndlessEnemy(floor);
+			const enemy: Enemy = {
+				name: template.name,
+				hp: template.hp,
+				maxHp: template.hp,
+				atk: template.atk,
+				poison: 0,
+			};
+
+			console.log("\n==============================================");
+			console.log(`   無限の深淵 B${floor}F : ${enemy.name} が現れた！`);
+			console.log("==============================================");
+
+			const survived = await this.battle(enemy);
+
+			if (!survived) {
+				console.log("\n[!] あなたは力尽きた...");
+				console.log(
+					`[!] 今回獲得したアイテム（書: ${runInv.scrolls}枚, オーブ: ${runInv.orbs.length}個）は失われました。`,
+				);
+				console.log(
+					"[!] 命からがら拠点へ運ばれました。（所持武器や最大HPは無事です）",
+				);
+				this.saveGame();
+				return;
+			}
+
+			// ドロップ獲得
+			const drops = template.getDrops();
+			runInv.scrolls += drops.scrolls;
+			runInv.orbs.push(...drops.orbs);
+
+			console.log(`\n>> ${enemy.name} を討伐！`);
+			if (drops.scrolls > 0) {
+				console.log(`   戦利品獲得: 強化の書 x${drops.scrolls}`);
+			}
+			for (const o of drops.orbs) {
+				console.log(`   戦利品獲得: オーブ [${o}] (${ORB_NAMES[o]})`);
+			}
+
+			console.log(`\n現在HP: ${this.player.hp}/${this.player.maxHp}`);
+			console.log(
+				`現在の未確定戦利品: 書 x${runInv.scrolls}, オーブ x${runInv.orbs.length}`,
+			);
+			console.log("1: 次の階層へ進む");
+			console.log("2: 撤退する (戦利品を持ち帰って拠点に戻る)");
+
+			const nextAction = await this.rl.question("行動を選択: ");
+			if (nextAction.trim() === "2") {
+				console.log("\n>> 慎重に撤退を選択しました。");
+				this.stockScrolls += runInv.scrolls;
+				this.stockOrbs.push(...runInv.orbs);
+				console.log(
+					`>> 戦利品（書: ${runInv.scrolls}枚, オーブ: ${runInv.orbs.length}個）を持ち帰りました！`,
+				);
+				this.saveGame();
+				return;
+			}
+
+			floor++;
 		}
 	}
 
