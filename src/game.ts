@@ -1,6 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { stdin as input, stdout as output } from "node:process";
+import { resolve } from "node:path";
+import { argv, stdin as input, stdout as output } from "node:process";
 import * as readline from "node:readline/promises";
+import { fileURLToPath } from "node:url";
 
 const SAVE_FILE_PATH = "save.json";
 
@@ -60,16 +62,114 @@ interface DungeonDef {
 	getEnemy: (floor: number) => EnemyTemplate;
 }
 
-const ORB_NAMES: Record<OrbType, string> = {
-	MULTI_HIT: "連撃の印 (2回攻撃/威力65%)",
-	CRITICAL: "会心の印 (25%で2倍)",
-	VAMP: "吸血の印 (与ダメの15%回復)",
-	POISON: "猛毒の印 (攻撃時毒+1/ターン末毒x3ダメ)",
-	MULTI_HIT_PLUS: "連撃の印+ (2回攻撃/威力75%)",
-	CRITICAL_PLUS: "会心の印+ (40%で2倍)",
-	VAMP_PLUS: "吸血の印+ (与ダメの25%回復)",
-	POISON_PLUS: "猛毒の印+ (攻撃時毒+2/ターン末毒x3ダメ)",
+interface ThemeConfig {
+	defaultWeaponName: string;
+	orbNames: Record<OrbType, string>;
+	endlessPrefixes: string[];
+	endlessEnemyNames: string[];
+}
+
+const DEFAULT_THEME: ThemeConfig = {
+	defaultWeaponName: "どうのつるぎ",
+	orbNames: {
+		MULTI_HIT: "連撃の印 (2回攻撃/威力65%)",
+		CRITICAL: "会心の印 (25%で2倍)",
+		VAMP: "吸血の印 (与ダメの15%回復)",
+		POISON: "猛毒の印 (攻撃時毒+1/ターン末毒x3ダメ)",
+		MULTI_HIT_PLUS: "連撃の印+ (2回攻撃/威力75%)",
+		CRITICAL_PLUS: "会心の印+ (40%で2倍)",
+		VAMP_PLUS: "吸血の印+ (与ダメの25%回復)",
+		POISON_PLUS: "猛毒の印+ (攻撃時毒+2/ターン末毒x3ダメ)",
+	},
+	endlessPrefixes: [
+		"凶暴な",
+		"深淵の",
+		"古代の",
+		"紅蓮の",
+		"漆黒の",
+		"彷徨える",
+		"狂気の",
+		"奈落の",
+	],
+	endlessEnemyNames: [
+		"スライム",
+		"コボルト",
+		"オーク",
+		"ゴーレム",
+		"ドラゴン",
+		"ワイバーン",
+		"デーモン",
+		"死霊騎士",
+	],
 };
+
+const THEME_FILE_PATH = "theme.json";
+
+function loadOrCreateTheme(filePath = THEME_FILE_PATH): ThemeConfig {
+	try {
+		if (!existsSync(filePath)) {
+			writeFileSync(filePath, JSON.stringify(DEFAULT_THEME, null, 2), "utf-8");
+			console.log(`>> ${filePath} を新規作成しました。`);
+			return {
+				...DEFAULT_THEME,
+				orbNames: { ...DEFAULT_THEME.orbNames },
+				endlessPrefixes: [...DEFAULT_THEME.endlessPrefixes],
+				endlessEnemyNames: [...DEFAULT_THEME.endlessEnemyNames],
+			};
+		}
+		const raw = readFileSync(filePath, "utf-8");
+		const data = JSON.parse(raw) as Partial<ThemeConfig>;
+		const defaultWeaponName =
+			typeof data?.defaultWeaponName === "string" &&
+			data.defaultWeaponName.trim() !== ""
+				? data.defaultWeaponName
+				: DEFAULT_THEME.defaultWeaponName;
+		const orbNames: Record<OrbType, string> = {
+			...DEFAULT_THEME.orbNames,
+			...(typeof data?.orbNames === "object" && data.orbNames !== null
+				? (data.orbNames as Record<OrbType, string>)
+				: {}),
+		};
+		const rawPrefixes = data?.endlessPrefixes;
+		const endlessPrefixes =
+			Array.isArray(rawPrefixes) && rawPrefixes.length > 0
+				? (rawPrefixes.filter(
+						(s): s is string => typeof s === "string" && s.trim() !== "",
+					) as string[])
+				: DEFAULT_THEME.endlessPrefixes;
+		const rawEnemyNames = data?.endlessEnemyNames;
+		const endlessEnemyNames =
+			Array.isArray(rawEnemyNames) && rawEnemyNames.length > 0
+				? (rawEnemyNames.filter(
+						(s): s is string => typeof s === "string" && s.trim() !== "",
+					) as string[])
+				: DEFAULT_THEME.endlessEnemyNames;
+
+		return {
+			defaultWeaponName,
+			orbNames,
+			endlessPrefixes:
+				endlessPrefixes.length > 0
+					? endlessPrefixes
+					: [...DEFAULT_THEME.endlessPrefixes],
+			endlessEnemyNames:
+				endlessEnemyNames.length > 0
+					? endlessEnemyNames
+					: [...DEFAULT_THEME.endlessEnemyNames],
+		};
+	} catch (error) {
+		console.warn(
+			`>> ${filePath} の読み込みに失敗しました。デフォルト設定を使用します:`,
+			error,
+		);
+		return {
+			...DEFAULT_THEME,
+			orbNames: { ...DEFAULT_THEME.orbNames },
+			endlessPrefixes: [...DEFAULT_THEME.endlessPrefixes],
+			endlessEnemyNames: [...DEFAULT_THEME.endlessEnemyNames],
+		};
+	}
+}
 
 const SYNTHESIS_RECIPES: Record<NormalOrbType, PlusOrbType> = {
 	MULTI_HIT: "MULTI_HIT_PLUS",
@@ -220,36 +320,23 @@ const DEEP_DUNGEON: DungeonDef = {
 	},
 };
 
-const ENDLESS_PREFIXES = [
-	"凶暴な",
-	"深淵の",
-	"古代の",
-	"紅蓮の",
-	"漆黒の",
-	"彷徨える",
-	"狂気の",
-	"奈落の",
-] as const;
+function generateEndlessEnemy(
+	floor: number,
+	theme: ThemeConfig,
+): EnemyTemplate {
+	const prefixes =
+		theme.endlessPrefixes.length > 0
+			? theme.endlessPrefixes
+			: DEFAULT_THEME.endlessPrefixes;
+	const enemyNames =
+		theme.endlessEnemyNames.length > 0
+			? theme.endlessEnemyNames
+			: DEFAULT_THEME.endlessEnemyNames;
 
-const ENDLESS_ENEMY_NAMES = [
-	"スライム",
-	"コボルト",
-	"オーク",
-	"ゴーレム",
-	"ドラゴン",
-	"ワイバーン",
-	"デーモン",
-	"死霊騎士",
-] as const;
-
-function generateEndlessEnemy(floor: number): EnemyTemplate {
 	const prefix =
-		ENDLESS_PREFIXES[Math.floor(Math.random() * ENDLESS_PREFIXES.length)] ??
-		"深淵の";
+		prefixes[Math.floor(Math.random() * prefixes.length)] ?? "深淵の";
 	const baseName =
-		ENDLESS_ENEMY_NAMES[
-			Math.floor(Math.random() * ENDLESS_ENEMY_NAMES.length)
-		] ?? "スライム";
+		enemyNames[Math.floor(Math.random() * enemyNames.length)] ?? "スライム";
 	const isBoss = floor % 5 === 0;
 	const name = isBoss
 		? `${prefix}${baseName} (中ボス)`
@@ -271,6 +358,7 @@ function generateEndlessEnemy(floor: number): EnemyTemplate {
 
 class Game {
 	private readonly rl: readline.Interface;
+	private readonly theme: ThemeConfig;
 	private readonly player: Player;
 	private stockScrolls = 0;
 	private stockOrbs: OrbType[] = [];
@@ -279,16 +367,21 @@ class Game {
 
 	constructor() {
 		this.rl = readline.createInterface({ input, output });
+		this.theme = loadOrCreateTheme();
 		this.player = {
 			maxHp: 50,
 			hp: 50,
 			weapon: {
-				name: "どうのつるぎ",
+				name: this.theme.defaultWeaponName,
 				baseAtk: 10,
 				plus: 0,
 				slots: [],
 			},
 		};
+	}
+
+	private getOrbName(orb: OrbType): string {
+		return this.theme.orbNames[orb] ?? orb;
 	}
 
 	private getWeaponAtk(): number {
@@ -490,10 +583,9 @@ class Game {
 
 		console.log("\n--- 武器の強化 ---");
 		console.log(`現在の所持強化の書: ${this.stockScrolls}枚`);
-		console.log("1: 1枚だけ消費して鍛える (+1)");
-		console.log(
-			`2: 所持している強化の書をすべて消費して一括で鍛える (+${this.stockScrolls})`,
-		);
+		console.log("1: 1回鍛える (+1)");
+		console.log("2: 指定した回数分鍛える（消費枚数を直接入力）");
+		console.log(`3: 所持している書ですべて鍛える (+${this.stockScrolls})`);
 		console.log("0: キャンセル");
 
 		const choice = await this.rl.question("選択してください: ");
@@ -508,6 +600,25 @@ class Game {
 				break;
 			}
 			case "2": {
+				const inputStr = await this.rl.question(
+					`消費する強化の書の枚数を入力してください (1〜${this.stockScrolls}): `,
+				);
+				const count = Number.parseInt(inputStr.trim(), 10);
+				if (Number.isNaN(count) || count < 1 || count > this.stockScrolls) {
+					console.log(
+						">> 無効な数値です。1以上の所持枚数以内の数値を入力してください。",
+					);
+					break;
+				}
+				this.stockScrolls -= count;
+				this.player.weapon.plus += count;
+				console.log(
+					`>> 強化の書を ${count}枚 消費して鍛えました！ ${this.player.weapon.name}+${this.player.weapon.plus} (攻撃力: ${this.getWeaponAtk()})`,
+				);
+				this.saveGame();
+				break;
+			}
+			case "3": {
 				const count = this.stockScrolls;
 				this.player.weapon.plus += count;
 				this.stockScrolls = 0;
@@ -534,16 +645,17 @@ class Game {
 			return;
 		}
 
+		const maxCount = Math.floor(this.stockScrolls / 2);
 		console.log("\n--- 体力の強化 ---");
 		console.log(`現在の最大HP: ${this.player.maxHp}`);
 		console.log(`所持強化の書: ${this.stockScrolls}枚 (2枚消費で最大HP+10)`);
-		console.log("1: 2枚消費して鍛える (+10)");
-		const maxCount = Math.floor(this.stockScrolls / 2);
-		if (maxCount > 1) {
-			console.log(
-				`2: 可能な限り一括で鍛える (${maxCount * 2}枚消費して最大HP+${maxCount * 10})`,
-			);
-		}
+		console.log("1: 1回鍛える (2枚消費 -> 最大HP+10)");
+		console.log(
+			`2: 指定した回数分鍛える（消費枚数を直接入力、最大: ${maxCount * 2}枚）`,
+		);
+		console.log(
+			`3: 所持している書ですべて鍛える (${maxCount * 2}枚消費 -> 最大HP+${maxCount * 10})`,
+		);
 		console.log("0: キャンセル");
 
 		const choice = await this.rl.question("選択してください: ");
@@ -560,20 +672,49 @@ class Game {
 				break;
 			}
 			case "2": {
-				if (maxCount > 1) {
-					const usedScrolls = maxCount * 2;
-					const hpGain = maxCount * 10;
-					this.stockScrolls -= usedScrolls;
-					const prevHp = this.player.maxHp;
-					this.player.maxHp += hpGain;
-					this.player.hp = this.player.maxHp;
+				const inputStr = await this.rl.question(
+					`消費する強化の書の枚数を入力してください (2〜${maxCount * 2}): `,
+				);
+				const inputNum = Number.parseInt(inputStr.trim(), 10);
+				if (
+					Number.isNaN(inputNum) ||
+					inputNum < 2 ||
+					inputNum > this.stockScrolls
+				) {
 					console.log(
-						`>> 強化の書を${usedScrolls}枚消費して一括で鍛えました！ 最大HP: ${prevHp} -> ${this.player.maxHp}`,
+						">> 無効な数値です。2枚以上、所持枚数以内の数値を入力してください。",
 					);
-					this.saveGame();
-				} else {
-					console.log(">> 無効な選択です。");
+					break;
 				}
+				const times = Math.floor(inputNum / 2);
+				const usedScrolls = times * 2;
+				const hpGain = times * 10;
+				this.stockScrolls -= usedScrolls;
+				const prevHp = this.player.maxHp;
+				this.player.maxHp += hpGain;
+				this.player.hp = this.player.maxHp;
+				console.log(
+					`>> 強化の書を ${usedScrolls}枚 消費して鍛えました！ 最大HP: ${prevHp} -> ${this.player.maxHp}`,
+				);
+				if (inputNum % 2 !== 0) {
+					console.log(
+						">> ※ 2枚単位での消費のため、端数の1枚は温存されました。",
+					);
+				}
+				this.saveGame();
+				break;
+			}
+			case "3": {
+				const usedScrolls = maxCount * 2;
+				const hpGain = maxCount * 10;
+				this.stockScrolls -= usedScrolls;
+				const prevHp = this.player.maxHp;
+				this.player.maxHp += hpGain;
+				this.player.hp = this.player.maxHp;
+				console.log(
+					`>> 強化の書をすべて(${usedScrolls}枚)消費して一括で鍛えました！ 最大HP: ${prevHp} -> ${this.player.maxHp}`,
+				);
+				this.saveGame();
 				break;
 			}
 			case "0":
@@ -595,7 +736,7 @@ class Game {
 		for (let i = 0; i < this.stockOrbs.length; i++) {
 			const orb = this.stockOrbs[i];
 			if (orb) {
-				console.log(`${i + 1}: [${orb}] ${ORB_NAMES[orb]}`);
+				console.log(`${i + 1}: [${orb}] ${this.getOrbName(orb)}`);
 			}
 		}
 		console.log("0: キャンセル");
@@ -649,10 +790,51 @@ class Game {
 		}
 
 		console.log("\n--- オーブの分解 (任意のオーブ2個 -> 強化の書1枚) ---");
+		console.log(`倉庫の未装着オーブ: ${this.stockOrbs.length}個`);
+		console.log("1: オーブを個別に選んで分解");
+		console.log(
+			`2: 倉庫にある未装着オーブをすべて分解する (一括分解: 強化の書 x${Math.floor(
+				this.stockOrbs.length / 2,
+			)})`,
+		);
+		console.log("0: キャンセル");
+
+		const menuChoice = await this.rl.question("選択してください: ");
+		if (menuChoice.trim() === "0") {
+			console.log(">> 分解をキャンセルしました。");
+			return;
+		}
+		if (menuChoice.trim() === "2") {
+			const totalOrbs = this.stockOrbs.length;
+			const gainedScrolls = Math.floor(totalOrbs / 2);
+			const remainder = totalOrbs % 2;
+			const remainingOrb =
+				remainder === 1 ? this.stockOrbs[totalOrbs - 1] : undefined;
+
+			this.stockScrolls += gainedScrolls;
+			this.stockOrbs = remainingOrb ? [remainingOrb] : [];
+
+			console.log(
+				`>> 倉庫の未装着オーブ ${totalOrbs - remainder}個 をすべて分解し、強化の書 x${gainedScrolls} を獲得しました！ (所持: 強化の書 x${this.stockScrolls})`,
+			);
+			if (remainingOrb) {
+				console.log(
+					`>> ※ 分解できなかった余りのオーブ [${remainingOrb}] 1個は倉庫に残りました。`,
+				);
+			}
+			this.saveGame();
+			return;
+		}
+		if (menuChoice.trim() !== "1") {
+			console.log(">> 無効な選択です。");
+			return;
+		}
+
+		console.log("\n--- オーブの個別分解 ---");
 		for (let i = 0; i < this.stockOrbs.length; i++) {
 			const orb = this.stockOrbs[i];
 			if (orb) {
-				console.log(`${i + 1}: [${orb}] ${ORB_NAMES[orb]}`);
+				console.log(`${i + 1}: [${orb}] ${this.getOrbName(orb)}`);
 			}
 		}
 		console.log("0: キャンセル");
@@ -742,7 +924,7 @@ class Game {
 			const recipe = availableRecipes[i];
 			if (recipe) {
 				console.log(
-					`${i + 1}: [${recipe.from}] (所持: ${recipe.count}個) -> [${recipe.to}] ${ORB_NAMES[recipe.to]} を合成`,
+					`${i + 1}: [${recipe.from}] (所持: ${recipe.count}個) -> [${recipe.to}] ${this.getOrbName(recipe.to)} を合成`,
 				);
 			}
 		}
@@ -814,7 +996,7 @@ class Game {
 			if (drops.scrolls > 0)
 				console.log(`   戦利品獲得: 強化の書 x${drops.scrolls}`);
 			for (const o of drops.orbs) {
-				console.log(`   戦利品獲得: オーブ [${o}] (${ORB_NAMES[o]})`);
+				console.log(`   戦利品獲得: オーブ [${o}] (${this.getOrbName(o)})`);
 			}
 
 			if (floor === dungeon.floors) {
@@ -855,8 +1037,45 @@ class Game {
 		console.log(
 			"※ 階層上限のないエンドレスモードです。どこまで潜れるか挑戦しましょう！",
 		);
+
+		let startFloor = 1;
+		if (this.deepestFloor >= 11) {
+			const maxStartFloor = Math.floor((this.deepestFloor - 1) / 10) * 10 + 1;
+			const availableFloors: number[] = [];
+			for (let f = 1; f <= maxStartFloor; f += 10) {
+				availableFloors.push(f);
+			}
+
+			console.log("\n--- 無限の深淵：スタート階層選択 ---");
+			console.log(`最高到達階層: B${this.deepestFloor}F`);
+			for (let i = 0; i < availableFloors.length; i++) {
+				const f = availableFloors[i];
+				console.log(`${i + 1}: B${f}F からスタート`);
+			}
+			console.log("0: 出撃をキャンセル (拠点に戻る)");
+
+			while (true) {
+				const choice = await this.rl.question("\n選択してください: ");
+				const trimmed = choice.trim();
+				if (trimmed === "0") {
+					console.log(">> 出撃を取りやめました。");
+					return;
+				}
+				const idx = Number.parseInt(trimmed, 10) - 1;
+				if (!Number.isNaN(idx) && idx >= 0 && idx < availableFloors.length) {
+					const chosen = availableFloors[idx];
+					if (chosen !== undefined) {
+						startFloor = chosen;
+						break;
+					}
+				}
+				console.log(">> 無効な選択です。");
+			}
+		}
+
+		console.log(`\n>> B${startFloor}F から深淵の探索を開始します！`);
 		const runInv: RunInventory = { scrolls: 0, orbs: [] };
-		let floor = 1;
+		let floor = startFloor;
 
 		while (true) {
 			if (floor > this.deepestFloor) {
@@ -864,7 +1083,7 @@ class Game {
 				console.log(`★ 最高到達階層を更新！ (B${floor}F)`);
 			}
 
-			const template = generateEndlessEnemy(floor);
+			const template = generateEndlessEnemy(floor, this.theme);
 			const enemy: Enemy = {
 				name: template.name,
 				hp: template.hp,
@@ -901,7 +1120,7 @@ class Game {
 				console.log(`   戦利品獲得: 強化の書 x${drops.scrolls}`);
 			}
 			for (const o of drops.orbs) {
-				console.log(`   戦利品獲得: オーブ [${o}] (${ORB_NAMES[o]})`);
+				console.log(`   戦利品獲得: オーブ [${o}] (${this.getOrbName(o)})`);
 			}
 
 			console.log(`\n現在HP: ${this.player.hp}/${this.player.maxHp}`);
@@ -949,6 +1168,7 @@ class Game {
 			);
 			console.log("1: 攻撃する");
 			console.log("2: 撤退する (戦闘から逃げて拠点へ)");
+			console.log("3: オート戦闘");
 
 			const act = await this.rl.question("コマンド: ");
 			if (act.trim() === "2") {
@@ -956,6 +1176,113 @@ class Game {
 					"\n>> 戦闘から離脱し、命からがら帰還しました。（戦利品は持ち帰れません）",
 				);
 				return false;
+			}
+
+			if (act.trim() === "3") {
+				console.log("\n>> [オート戦闘開始] 高速で戦闘を進行します...");
+				let autoTurns = 0;
+				let totalDmgDealt = 0;
+				let totalDmgTaken = 0;
+				let totalHealed = 0;
+				let stopReason = "";
+				const dangerHp = Math.floor(this.player.maxHp * 0.3);
+
+				while (this.player.hp > 0 && enemy.hp > 0) {
+					autoTurns++;
+
+					// プレイヤー攻撃
+					const baseDmg = this.getWeaponAtk();
+					const hits = hasMulti ? 2 : 1;
+					const rate = hasMultiPlus ? 0.75 : hasMulti ? 0.65 : 1.0;
+					const critChance = hasCritPlus ? 0.4 : hasCrit ? 0.25 : 0;
+					const vampRate = hasVampPlus ? 0.25 : hasVamp ? 0.15 : 0;
+					const poisonAdd = hasPoisonPlus ? 2 : hasPoison ? 1 : 0;
+
+					for (let i = 1; i <= hits; i++) {
+						if (enemy.hp <= 0) break;
+						let dmg = Math.max(1, Math.floor(baseDmg * rate));
+						if (critChance > 0 && Math.random() < critChance) {
+							dmg *= 2;
+						}
+						enemy.hp -= dmg;
+						totalDmgDealt += dmg;
+
+						if (vampRate > 0) {
+							const heal = Math.max(1, Math.floor(dmg * vampRate));
+							const actualHeal = Math.min(
+								this.player.maxHp - this.player.hp,
+								heal,
+							);
+							this.player.hp += actualHeal;
+							totalHealed += actualHeal;
+						}
+
+						if (poisonAdd > 0) {
+							enemy.poison += poisonAdd;
+						}
+					}
+
+					if (enemy.hp <= 0) {
+						stopReason = "敵を撃破！";
+						break;
+					}
+
+					// ターン終了時：毒ダメージ
+					if (enemy.poison > 0) {
+						const poisonDmg = enemy.poison * 3;
+						enemy.hp -= poisonDmg;
+						totalDmgDealt += poisonDmg;
+						if (enemy.hp <= 0) {
+							stopReason = "毒ダメージにより敵を撃破！";
+							break;
+						}
+					}
+
+					// 敵の反撃
+					this.player.hp -= enemy.atk;
+					totalDmgTaken += enemy.atk;
+
+					if (this.player.hp <= 0) {
+						stopReason = "力尽きました...";
+						break;
+					}
+
+					// 危険域チェック (最大HPの30%以下)
+					if (this.player.hp <= dangerHp) {
+						stopReason = `危険域 (HP ${this.player.hp}/${this.player.maxHp} <= 30%) に到達したため自動停止`;
+						break;
+					}
+				}
+
+				console.log("\n==============================================");
+				console.log("             【オート戦闘 終了要約】            ");
+				console.log("==============================================");
+				console.log(`- 終了理由: ${stopReason}`);
+				console.log(`- 経過ターン数: ${autoTurns} ターン`);
+				console.log(`- 与えた総ダメージ: ${totalDmgDealt}`);
+				console.log(`- 受けた総ダメージ: ${totalDmgTaken}`);
+				if (totalHealed > 0) {
+					console.log(`- 吸血総回復量: ${totalHealed}`);
+				}
+				console.log(
+					`- 残りHP: あなた ${Math.max(0, this.player.hp)}/${this.player.maxHp} | ${enemy.name} ${Math.max(0, enemy.hp)}/${enemy.maxHp}`,
+				);
+				console.log("==============================================");
+
+				if (enemy.hp <= 0) {
+					return true;
+				}
+				if (this.player.hp <= 0) {
+					return false;
+				}
+				continue;
+			}
+
+			if (act.trim() !== "1") {
+				console.log(
+					">> 無効なコマンドです。1, 2, 3 のいずれかを入力してください。",
+				);
+				continue;
 			}
 
 			// プレイヤー攻撃
@@ -1028,4 +1355,10 @@ class Game {
 	}
 }
 
-new Game().start().catch(console.error);
+export type { Enemy, OrbType, Player, SaveData, ThemeConfig, Weapon };
+export { DEFAULT_THEME, Game, loadOrCreateTheme };
+
+const isMain = argv[1] && resolve(argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+	new Game().start().catch(console.error);
+}
