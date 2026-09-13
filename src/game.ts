@@ -83,6 +83,15 @@ export interface ThemeLocaleData {
 	enemyPrefixes: string[];
 	enemyBases: string[];
 	retreatMessage: string;
+	hubTitle: string;
+	hpLabel: string;
+	targetPrefix: string;
+	statLabel: string;
+	plusPrefix: string;
+	storageLabel: string;
+	orbLabel: string;
+	enhanceHpVerb: string;
+	installVerb: string;
 }
 
 export interface ThemeDefinition {
@@ -126,19 +135,36 @@ export interface I18nMessages {
 	farewell: string;
 
 	// Hub
-	hubHeader: string;
-	hubStats: (hp: number, deepest: number) => string;
-	hubEquip: (label: string, name: string, plus: number, atk: number) => string;
-	hubSlots: (count: number, slots: string) => string;
+	hubHeader: (title: string) => string;
+	hubStats: (hpLabel: string, hp: number, deepest: number) => string;
+	hubEquip: (
+		label: string,
+		name: string,
+		plusPrefix: string,
+		plus: number,
+		statLabel: string,
+		atk: number,
+	) => string;
+	hubSlots: (installVerb: string, count: number, slots: string) => string;
 	hubEmptySlot: string;
-	hubStorage: (resource: string, scrolls: number, orbs: string) => string;
+	hubStorage: (
+		storageLabel: string,
+		resource: string,
+		scrolls: number,
+		orbLabel: string,
+		orbs: string,
+	) => string;
 	hubNone: string;
 	hubMenu1Dungeon: string;
 	hubMenu2Enhance: (verb: string) => string;
-	hubMenu3AttachOrb: (label: string) => string;
-	hubMenu4Disassemble: (resource: string) => string;
-	hubMenu5Synthesize: string;
-	hubMenu6EnhanceHp: (resource: string) => string;
+	hubMenu3AttachOrb: (
+		orbLabel: string,
+		targetPrefix: string,
+		installVerb: string,
+	) => string;
+	hubMenu4Disassemble: (orbLabel: string, resource: string) => string;
+	hubMenu5Synthesize: (orbLabel: string) => string;
+	hubMenu6EnhanceHp: (enhanceHpVerb: string, resource: string) => string;
 	hubMenu7Settings: string;
 	hubMenu0Exit: string;
 	chooseAction: string;
@@ -391,23 +417,24 @@ export const MESSAGES: Record<Language, I18nMessages> = {
 		farewell: "お疲れ様でした。",
 
 		// Hub
-		hubHeader: "【拠点】",
-		hubStats: (hp, deepest) =>
-			`最大体力: HP ${hp} | 無限の深淵 最高到達: ${deepest > 0 ? `B${deepest}F` : "未挑戦"}`,
-		hubEquip: (label, name, plus, atk) =>
-			`${label}: ${name}+${plus} (攻撃力: ${atk})`,
-		hubSlots: (count, slots) => `装着スロット [${count}/3]: ${slots}`,
+		hubHeader: (title) => title,
+		hubStats: (hpLabel, hp, deepest) =>
+			`${hpLabel}: HP ${hp} | 無限の深淵 最高到達: ${deepest > 0 ? `B${deepest}F` : "未挑戦"}`,
+		hubEquip: (label, name, plusPrefix, plus, statLabel, atk) =>
+			`${label}: ${name}${plusPrefix}${plus} (${statLabel}: ${atk})`,
+		hubSlots: (verb, count, slots) => `${verb}スロット [${count}/3]: ${slots}`,
 		hubEmptySlot: "(空き)",
-		hubStorage: (resource, scrolls, orbs) =>
-			`倉庫: ${resource} x${scrolls} | 未装着オーブ: ${orbs}`,
+		hubStorage: (storage, resource, scrolls, orb, orbs) =>
+			`${storage}: ${resource} x${scrolls} | 未装着${orb}: ${orbs}`,
 		hubNone: "(なし)",
 		hubMenu1Dungeon: "1: ダンジョンへ出撃",
 		hubMenu2Enhance: (verb) => `2: ${verb}`,
-		hubMenu3AttachOrb: (label) => `3: オーブを${label}に装着`,
-		hubMenu4Disassemble: (res) =>
-			`4: オーブを分解 (任意のオーブ2個 -> ${res}1枚)`,
-		hubMenu5Synthesize: "5: オーブを合成 (同種オーブ2個 -> 上位オーブ)",
-		hubMenu6EnhanceHp: (res) => `6: 体力を強化する (${res}2枚 -> 最大HP+10)`,
+		hubMenu3AttachOrb: (orb, target, verb) => `3: ${orb}を${target}に${verb}`,
+		hubMenu4Disassemble: (orb, res) =>
+			`4: ${orb}を分解 (任意の${orb}2個 -> ${res}1枚)`,
+		hubMenu5Synthesize: (orb) =>
+			`5: ${orb}を合成 (同種${orb}2個 -> 上位${orb})`,
+		hubMenu6EnhanceHp: (verb, res) => `6: ${verb} (${res}2枚 -> 最大HP+10)`,
 		hubMenu7Settings: "7: 設定 (Settings)",
 		hubMenu0Exit: "0: ゲーム終了",
 		chooseAction: "\n行動を選択してください: ",
@@ -629,23 +656,24 @@ export const MESSAGES: Record<Language, I18nMessages> = {
 		farewell: "Thank you for playing!",
 
 		// Hub
-		hubHeader: "【Base Camp】",
-		hubStats: (hp, deepest) =>
-			`Max HP: ${hp} | Infinite Abyss Record: ${deepest > 0 ? `B${deepest}F` : "None"}`,
-		hubEquip: (label, name, plus, atk) =>
-			`${label}: ${name}+${plus} (ATK: ${atk})`,
-		hubSlots: (count, slots) => `Equipped Slots [${count}/3]: ${slots}`,
+		hubHeader: (title) => title,
+		hubStats: (hpLabel, hp, deepest) =>
+			`${hpLabel}: ${hp} | Infinite Abyss Record: ${deepest > 0 ? `B${deepest}F` : "None"}`,
+		hubEquip: (label, name, plusPrefix, plus, statLabel, atk) =>
+			`${label}: ${name}${plusPrefix}${plus} (${statLabel}: ${atk})`,
+		hubSlots: (verb, count, slots) => `${verb} Slots [${count}/3]: ${slots}`,
 		hubEmptySlot: "(Empty)",
-		hubStorage: (resource, scrolls, orbs) =>
-			`Storage: ${resource} x${scrolls} | Stock Orbs: ${orbs}`,
+		hubStorage: (storage, resource, scrolls, orb, orbs) =>
+			`${storage}: ${resource} x${scrolls} | Stock ${orb}s: ${orbs}`,
 		hubNone: "(None)",
 		hubMenu1Dungeon: "1: Embark to Dungeon",
 		hubMenu2Enhance: (verb) => `2: ${verb}`,
-		hubMenu3AttachOrb: (label) => `3: Attach Orb to ${label}`,
-		hubMenu4Disassemble: (res) =>
-			`4: Disassemble Orbs (Any 2 Orbs -> 1 ${res})`,
-		hubMenu5Synthesize: "5: Synthesize Orbs (2 Same Orbs -> Plus Orb)",
-		hubMenu6EnhanceHp: (res) => `6: Upgrade Max HP (2 ${res} -> +10 Max HP)`,
+		hubMenu3AttachOrb: (orb, target, verb) => `3: ${verb} ${orb} to ${target}`,
+		hubMenu4Disassemble: (orb, res) =>
+			`4: Disassemble ${orb}s (Any 2 ${orb}s -> 1 ${res})`,
+		hubMenu5Synthesize: (orb) =>
+			`5: Synthesize ${orb}s (2 Same ${orb}s -> Plus ${orb})`,
+		hubMenu6EnhanceHp: (verb, res) => `6: ${verb} (2 ${res} -> +10 Max HP)`,
 		hubMenu7Settings: "7: Settings",
 		hubMenu0Exit: "0: Quit Game",
 		chooseAction: "\nChoose an action: ",
@@ -925,6 +953,15 @@ export const PRESET_CLASSIC_FANTASY: ThemeDefinition = {
 			"死霊騎士",
 		],
 		retreatMessage: "慎重に撤退を選択し、拠点へ帰還した。",
+		hubTitle: "【冒険者の酒場】",
+		hpLabel: "最大体力",
+		targetPrefix: "所持装備",
+		statLabel: "攻撃力",
+		plusPrefix: "+",
+		storageLabel: "倉庫",
+		orbLabel: "オーブ",
+		enhanceHpVerb: "体力を強化する",
+		installVerb: "装着",
 	},
 	en: {
 		name: "Classic Fantasy",
@@ -983,6 +1020,15 @@ export const PRESET_CLASSIC_FANTASY: ThemeDefinition = {
 			"Death Knight",
 		],
 		retreatMessage: "Carefully chose to retreat and returned to base.",
+		hubTitle: "【Adventurer's Guild】",
+		hpLabel: "Max HP",
+		targetPrefix: "Equipment",
+		statLabel: "ATK",
+		plusPrefix: "+",
+		storageLabel: "Storage",
+		orbLabel: "Orb",
+		enhanceHpVerb: "Fortify Vitality",
+		installVerb: "Equip",
 	},
 };
 
@@ -1049,6 +1095,15 @@ export const PRESET_CYBERPUNK: ThemeDefinition = {
 		],
 		retreatMessage:
 			"機体の致命的なシャットダウンを防ぐため、戦闘から離脱した。",
+		hubTitle: "【セーフハウス・端末】",
+		hpLabel: "最大耐久",
+		targetPrefix: "主兵装",
+		statLabel: "出力",
+		plusPrefix: "+",
+		storageLabel: "ストレージ",
+		orbLabel: "モジュール",
+		enhanceHpVerb: "生体フレーム拡張",
+		installVerb: "インストール",
 	},
 	en: {
 		name: "Cyberpunk Protocol",
@@ -1084,7 +1139,7 @@ export const PRESET_CYBERPUNK: ThemeDefinition = {
 			},
 			POISON_PLUS: {
 				name: "Neuro-Toxin+",
-				desc: "Inject +2 corrosive payload on hit",
+				desc: "+2 corrosive payload on hit",
 			},
 		},
 		dungeons: {
@@ -1114,6 +1169,15 @@ export const PRESET_CYBERPUNK: ThemeDefinition = {
 		],
 		retreatMessage:
 			"Disengaged from combat to prevent terminal hardware shutdown.",
+		hubTitle: "【Safehouse Terminal】",
+		hpLabel: "Max Hull",
+		targetPrefix: "Main Armament",
+		statLabel: "Output",
+		plusPrefix: "+",
+		storageLabel: "Storage",
+		orbLabel: "Module",
+		enhanceHpVerb: "Upgrade Chassis",
+		installVerb: "Install",
 	},
 };
 
@@ -1185,6 +1249,15 @@ export const PRESET_PARTNER_SYNC: ThemeDefinition = {
 			"支配者コア",
 		],
 		retreatMessage: "アイリスの負荷を考慮し、一時帰還した。",
+		hubTitle: "【司令室・ドック】",
+		hpLabel: "生存限界",
+		targetPrefix: "相棒",
+		statLabel: "戦闘能力",
+		plusPrefix: " Sync:+",
+		storageLabel: "データバンク",
+		orbLabel: "プロトコル",
+		enhanceHpVerb: "防護プロトコル強化",
+		installVerb: "セット",
 	},
 	en: {
 		name: "Partner Sync",
@@ -1252,6 +1325,15 @@ export const PRESET_PARTNER_SYNC: ThemeDefinition = {
 			"Overlord Core",
 		],
 		retreatMessage: "Retreated to base to reduce load on Iris.",
+		hubTitle: "【Command Dock】",
+		hpLabel: "Vitality",
+		targetPrefix: "Partner",
+		statLabel: "Combat Power",
+		plusPrefix: " Sync:+",
+		storageLabel: "Data Bank",
+		orbLabel: "Protocol",
+		enhanceHpVerb: "Reinforce Shields",
+		installVerb: "Set",
 	},
 };
 
@@ -1330,7 +1412,34 @@ export function validateThemeLocaleData(data: unknown): ThemeLocaleData | null {
 		return null;
 	}
 
-	return obj as ThemeLocaleData;
+	return {
+		name: obj.name,
+		targetNameLabel: obj.targetNameLabel,
+		defaultTargetName: obj.defaultTargetName,
+		enhanceVerb: obj.enhanceVerb,
+		resourceName: obj.resourceName,
+		orbs: obj.orbs as Record<OrbType, { name: string; desc: string }>,
+		dungeons: obj.dungeons as { starter: string; deep: string; abyss: string },
+		enemyPrefixes: obj.enemyPrefixes,
+		enemyBases: obj.enemyBases,
+		retreatMessage: obj.retreatMessage,
+		hubTitle: typeof obj.hubTitle === "string" ? obj.hubTitle : "【拠点】",
+		hpLabel: typeof obj.hpLabel === "string" ? obj.hpLabel : "最大体力",
+		targetPrefix:
+			typeof obj.targetPrefix === "string"
+				? obj.targetPrefix
+				: obj.targetNameLabel,
+		statLabel: typeof obj.statLabel === "string" ? obj.statLabel : "攻撃力",
+		plusPrefix: typeof obj.plusPrefix === "string" ? obj.plusPrefix : "+",
+		storageLabel:
+			typeof obj.storageLabel === "string" ? obj.storageLabel : "倉庫",
+		orbLabel: typeof obj.orbLabel === "string" ? obj.orbLabel : "オーブ",
+		enhanceHpVerb:
+			typeof obj.enhanceHpVerb === "string"
+				? obj.enhanceHpVerb
+				: "体力を強化する",
+		installVerb: typeof obj.installVerb === "string" ? obj.installVerb : "装着",
+	};
 }
 
 interface RawThemeDef {
@@ -1481,6 +1590,15 @@ export function exportCustomThemeTemplate(
 				],
 				retreatMessage:
 					"ワープドライブを緊急起動し、軌道ステーションへ退避した。",
+				hubTitle: "【旗艦ドック・管制室】",
+				hpLabel: "シールド最大値",
+				targetPrefix: "旗艦武装",
+				statLabel: "兵装出力",
+				plusPrefix: "+",
+				storageLabel: "カーゴ",
+				orbLabel: "デバイス",
+				enhanceHpVerb: "シールド容量を拡張",
+				installVerb: "換装",
 			},
 			en: {
 				name: "Sci-Fi Star Explorer",
@@ -1528,14 +1646,14 @@ export function exportCustomThemeTemplate(
 					abyss: "Event Horizon Void",
 				},
 				enemyPrefixes: [
-					"Hostile",
-					"Overcharged",
-					"Mutated",
-					"Alien",
-					"Cybernetic",
-					"Vicious",
-					"Ancient",
 					"Cosmic",
+					"Void",
+					"Cybernetic",
+					"Plasma",
+					"Starlight",
+					"Hyper-Drive",
+					"Gravity-Distorted",
+					"Supernova",
 				],
 				enemyBases: [
 					"Scout Drone",
@@ -1549,6 +1667,15 @@ export function exportCustomThemeTemplate(
 				],
 				retreatMessage:
 					"Warp drive engaged; executed emergency tactical jump back to orbital station.",
+				hubTitle: "【Flagship Command Dock】",
+				hpLabel: "Max Shields",
+				targetPrefix: "Flagship Weapon",
+				statLabel: "Weapon Output",
+				plusPrefix: "+",
+				storageLabel: "Cargo Bay",
+				orbLabel: "Device",
+				enhanceHpVerb: "Upgrade Shields",
+				installVerb: "Fit",
 			},
 		};
 		writeFileSync(filePath, JSON.stringify(template, null, 2), "utf-8");
@@ -1940,18 +2067,27 @@ export class Game {
 	private async hubPhase(): Promise<void> {
 		this.player.hp = this.player.maxHp;
 		console.log("\n----------------------------------------------");
-		console.log(this.msg.hubHeader);
-		console.log(this.msg.hubStats(this.player.maxHp, this.deepestFloor));
+		console.log(this.msg.hubHeader(this.theme.hubTitle));
+		console.log(
+			this.msg.hubStats(
+				this.theme.hpLabel,
+				this.player.maxHp,
+				this.deepestFloor,
+			),
+		);
 		console.log(
 			this.msg.hubEquip(
-				this.theme.targetNameLabel,
+				this.theme.targetPrefix,
 				this.player.weapon.name,
+				this.theme.plusPrefix,
 				this.player.weapon.plus,
+				this.theme.statLabel,
 				this.getWeaponAtk(),
 			),
 		);
 		console.log(
 			this.msg.hubSlots(
+				this.theme.installVerb,
 				this.player.weapon.slots.length,
 				this.player.weapon.slots.map((s) => `[${s}]`).join(" ") ||
 					this.msg.hubEmptySlot,
@@ -1959,18 +2095,36 @@ export class Game {
 		);
 		console.log(
 			this.msg.hubStorage(
+				this.theme.storageLabel,
 				this.theme.resourceName,
 				this.stockScrolls,
+				this.theme.orbLabel,
 				this.stockOrbs.map((o) => `[${o}]`).join(" ") || this.msg.hubNone,
 			),
 		);
 		console.log("----------------------------------------------");
 		console.log(this.msg.hubMenu1Dungeon);
 		console.log(this.msg.hubMenu2Enhance(this.theme.enhanceVerb));
-		console.log(this.msg.hubMenu3AttachOrb(this.theme.targetNameLabel));
-		console.log(this.msg.hubMenu4Disassemble(this.theme.resourceName));
-		console.log(this.msg.hubMenu5Synthesize);
-		console.log(this.msg.hubMenu6EnhanceHp(this.theme.resourceName));
+		console.log(
+			this.msg.hubMenu3AttachOrb(
+				this.theme.orbLabel,
+				this.theme.targetPrefix,
+				this.theme.installVerb,
+			),
+		);
+		console.log(
+			this.msg.hubMenu4Disassemble(
+				this.theme.orbLabel,
+				this.theme.resourceName,
+			),
+		);
+		console.log(this.msg.hubMenu5Synthesize(this.theme.orbLabel));
+		console.log(
+			this.msg.hubMenu6EnhanceHp(
+				this.theme.enhanceHpVerb,
+				this.theme.resourceName,
+			),
+		);
 		console.log(this.msg.hubMenu7Settings);
 		console.log(this.msg.hubMenu0Exit);
 

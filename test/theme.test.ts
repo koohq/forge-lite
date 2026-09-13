@@ -5,6 +5,7 @@ import {
 	exportCustomThemeTemplate,
 	getPresetTheme,
 	loadCustomThemeDefIfExists,
+	MESSAGES,
 	PRESET_CLASSIC_FANTASY,
 	PRESET_CYBERPUNK,
 	PRESET_PARTNER_SYNC,
@@ -52,6 +53,26 @@ test("Classic Fantasy: Japanese and English strings match requirements", () => {
 	assert.equal(en.dungeons.deep, "Scorching Depths");
 	assert.equal(ja.dungeons.abyss, "無限の深淵");
 	assert.equal(en.dungeons.abyss, "Infinite Abyss");
+
+	// Vocabulary
+	assert.equal(ja.hubTitle, "【冒険者の酒場】");
+	assert.equal(en.hubTitle, "【Adventurer's Guild】");
+	assert.equal(ja.hpLabel, "最大体力");
+	assert.equal(en.hpLabel, "Max HP");
+	assert.equal(ja.targetPrefix, "所持装備");
+	assert.equal(en.targetPrefix, "Equipment");
+	assert.equal(ja.statLabel, "攻撃力");
+	assert.equal(en.statLabel, "ATK");
+	assert.equal(ja.plusPrefix, "+");
+	assert.equal(en.plusPrefix, "+");
+	assert.equal(ja.storageLabel, "倉庫");
+	assert.equal(en.storageLabel, "Storage");
+	assert.equal(ja.orbLabel, "オーブ");
+	assert.equal(en.orbLabel, "Orb");
+	assert.equal(ja.enhanceHpVerb, "体力を強化する");
+	assert.equal(en.enhanceHpVerb, "Fortify Vitality");
+	assert.equal(ja.installVerb, "装着");
+	assert.equal(en.installVerb, "Equip");
 });
 
 test("Cyberpunk: Japanese and English strings match requirements", () => {
@@ -87,6 +108,26 @@ test("Cyberpunk: Japanese and English strings match requirements", () => {
 	assert.equal(en.dungeons.deep, "Corporate Core");
 	assert.equal(ja.dungeons.abyss, "無限の電脳網");
 	assert.equal(en.dungeons.abyss, "Infinite Cyberspace");
+
+	// Vocabulary
+	assert.equal(ja.hubTitle, "【セーフハウス・端末】");
+	assert.equal(en.hubTitle, "【Safehouse Terminal】");
+	assert.equal(ja.hpLabel, "最大耐久");
+	assert.equal(en.hpLabel, "Max Hull");
+	assert.equal(ja.targetPrefix, "主兵装");
+	assert.equal(en.targetPrefix, "Main Armament");
+	assert.equal(ja.statLabel, "出力");
+	assert.equal(en.statLabel, "Output");
+	assert.equal(ja.plusPrefix, "+");
+	assert.equal(en.plusPrefix, "+");
+	assert.equal(ja.storageLabel, "ストレージ");
+	assert.equal(en.storageLabel, "Storage");
+	assert.equal(ja.orbLabel, "モジュール");
+	assert.equal(en.orbLabel, "Module");
+	assert.equal(ja.enhanceHpVerb, "生体フレーム拡張");
+	assert.equal(en.enhanceHpVerb, "Upgrade Chassis");
+	assert.equal(ja.installVerb, "インストール");
+	assert.equal(en.installVerb, "Install");
 });
 
 test("Partner Sync: Japanese and English strings match requirements", () => {
@@ -126,6 +167,26 @@ test("Partner Sync: Japanese and English strings match requirements", () => {
 	// Retreat
 	assert.equal(ja.retreatMessage, "アイリスの負荷を考慮し、一時帰還した。");
 	assert.equal(en.retreatMessage, "Retreated to base to reduce load on Iris.");
+
+	// Vocabulary
+	assert.equal(ja.hubTitle, "【司令室・ドック】");
+	assert.equal(en.hubTitle, "【Command Dock】");
+	assert.equal(ja.hpLabel, "生存限界");
+	assert.equal(en.hpLabel, "Vitality");
+	assert.equal(ja.targetPrefix, "相棒");
+	assert.equal(en.targetPrefix, "Partner");
+	assert.equal(ja.statLabel, "戦闘能力");
+	assert.equal(en.statLabel, "Combat Power");
+	assert.equal(ja.plusPrefix, " Sync:+");
+	assert.equal(en.plusPrefix, " Sync:+");
+	assert.equal(ja.storageLabel, "データバンク");
+	assert.equal(en.storageLabel, "Data Bank");
+	assert.equal(ja.orbLabel, "プロトコル");
+	assert.equal(en.orbLabel, "Protocol");
+	assert.equal(ja.enhanceHpVerb, "防護プロトコル強化");
+	assert.equal(en.enhanceHpVerb, "Reinforce Shields");
+	assert.equal(ja.installVerb, "セット");
+	assert.equal(en.installVerb, "Set");
 });
 
 test("Theme Resolution: resolveTheme switches language instantly", () => {
@@ -194,4 +255,183 @@ test("Validation: Backward compatibility with legacy flat format", () => {
 	assert.equal(validated.id, "legacy_theme");
 	assert.equal(validated.ja.defaultTargetName, "Old Stick");
 	assert.equal(validated.en.defaultTargetName, "Old Stick");
+
+	// Fallback check for new vocabulary fields
+	assert.equal(validated.ja.hubTitle, "【拠点】");
+	assert.equal(validated.ja.targetPrefix, "Old Weapon");
+	assert.equal(validated.ja.orbLabel, "オーブ");
+	assert.equal(validated.ja.hpLabel, "最大体力");
+	assert.equal(validated.ja.enhanceHpVerb, "体力を強化する");
+	assert.equal(validated.ja.installVerb, "装着");
+});
+
+test("Hub Display & Menu: Dynamic vocabulary correctly delegates per theme", () => {
+	const fantasyJa = resolveTheme(PRESET_CLASSIC_FANTASY, "ja");
+	assert.equal(MESSAGES.ja.hubHeader(fantasyJa.hubTitle), "【冒険者の酒場】");
+	assert.equal(
+		MESSAGES.ja.hubStats(fantasyJa.hpLabel, 100, 5),
+		"最大体力: HP 100 | 無限の深淵 最高到達: B5F",
+	);
+	assert.equal(
+		MESSAGES.ja.hubEquip(
+			fantasyJa.targetPrefix,
+			"どうのつるぎ",
+			fantasyJa.plusPrefix,
+			10,
+			fantasyJa.statLabel,
+			20,
+		),
+		"所持装備: どうのつるぎ+10 (攻撃力: 20)",
+	);
+	assert.equal(
+		MESSAGES.ja.hubSlots(fantasyJa.installVerb, 1, "[連撃の印]"),
+		"装着スロット [1/3]: [連撃の印]",
+	);
+	assert.equal(
+		MESSAGES.ja.hubStorage(
+			fantasyJa.storageLabel,
+			fantasyJa.resourceName,
+			3,
+			fantasyJa.orbLabel,
+			"[連撃の印]",
+		),
+		"倉庫: 強化の書 x3 | 未装着オーブ: [連撃の印]",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu3AttachOrb(
+			fantasyJa.orbLabel,
+			fantasyJa.targetPrefix,
+			fantasyJa.installVerb,
+		),
+		"3: オーブを所持装備に装着",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu4Disassemble(fantasyJa.orbLabel, fantasyJa.resourceName),
+		"4: オーブを分解 (任意のオーブ2個 -> 強化の書1枚)",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu5Synthesize(fantasyJa.orbLabel),
+		"5: オーブを合成 (同種オーブ2個 -> 上位オーブ)",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu6EnhanceHp(
+			fantasyJa.enhanceHpVerb,
+			fantasyJa.resourceName,
+		),
+		"6: 体力を強化する (強化の書2枚 -> 最大HP+10)",
+	);
+
+	const cyberJa = resolveTheme(PRESET_CYBERPUNK, "ja");
+	assert.equal(
+		MESSAGES.ja.hubHeader(cyberJa.hubTitle),
+		"【セーフハウス・端末】",
+	);
+	assert.equal(
+		MESSAGES.ja.hubStats(cyberJa.hpLabel, 150, 12),
+		"最大耐久: HP 150 | 無限の深淵 最高到達: B12F",
+	);
+	assert.equal(
+		MESSAGES.ja.hubEquip(
+			cyberJa.targetPrefix,
+			"パルスブレード",
+			cyberJa.plusPrefix,
+			5,
+			cyberJa.statLabel,
+			35,
+		),
+		"主兵装: パルスブレード+5 (出力: 35)",
+	);
+	assert.equal(
+		MESSAGES.ja.hubSlots(
+			cyberJa.installVerb,
+			2,
+			"[多段バースト] [クリティカル注入]",
+		),
+		"インストールスロット [2/3]: [多段バースト] [クリティカル注入]",
+	);
+	assert.equal(
+		MESSAGES.ja.hubStorage(
+			cyberJa.storageLabel,
+			cyberJa.resourceName,
+			8,
+			cyberJa.orbLabel,
+			"[多段バースト]",
+		),
+		"ストレージ: ナノチップ x8 | 未装着モジュール: [多段バースト]",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu3AttachOrb(
+			cyberJa.orbLabel,
+			cyberJa.targetPrefix,
+			cyberJa.installVerb,
+		),
+		"3: モジュールを主兵装にインストール",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu4Disassemble(cyberJa.orbLabel, cyberJa.resourceName),
+		"4: モジュールを分解 (任意のモジュール2個 -> ナノチップ1枚)",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu5Synthesize(cyberJa.orbLabel),
+		"5: モジュールを合成 (同種モジュール2個 -> 上位モジュール)",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu6EnhanceHp(cyberJa.enhanceHpVerb, cyberJa.resourceName),
+		"6: 生体フレーム拡張 (ナノチップ2枚 -> 最大HP+10)",
+	);
+
+	const partnerEn = resolveTheme(PRESET_PARTNER_SYNC, "en");
+	assert.equal(MESSAGES.en.hubHeader(partnerEn.hubTitle), "【Command Dock】");
+	assert.equal(
+		MESSAGES.en.hubStats(partnerEn.hpLabel, 200, 20),
+		"Vitality: 200 | Infinite Abyss Record: B20F",
+	);
+	assert.equal(
+		MESSAGES.en.hubEquip(
+			partnerEn.targetPrefix,
+			'Tactical Android "Iris"',
+			partnerEn.plusPrefix,
+			15,
+			partnerEn.statLabel,
+			50,
+		),
+		'Partner: Tactical Android "Iris" Sync:+15 (Combat Power: 50)',
+	);
+	assert.equal(
+		MESSAGES.en.hubSlots(partnerEn.installVerb, 1, "[Tandem Tactics]"),
+		"Set Slots [1/3]: [Tandem Tactics]",
+	);
+	assert.equal(
+		MESSAGES.en.hubStorage(
+			partnerEn.storageLabel,
+			partnerEn.resourceName,
+			12,
+			partnerEn.orbLabel,
+			"[Tandem Tactics]",
+		),
+		"Data Bank: Memory Core x12 | Stock Protocols: [Tandem Tactics]",
+	);
+	assert.equal(
+		MESSAGES.en.hubMenu3AttachOrb(
+			partnerEn.orbLabel,
+			partnerEn.targetPrefix,
+			partnerEn.installVerb,
+		),
+		"3: Set Protocol to Partner",
+	);
+	assert.equal(
+		MESSAGES.en.hubMenu4Disassemble(partnerEn.orbLabel, partnerEn.resourceName),
+		"4: Disassemble Protocols (Any 2 Protocols -> 1 Memory Core)",
+	);
+	assert.equal(
+		MESSAGES.en.hubMenu5Synthesize(partnerEn.orbLabel),
+		"5: Synthesize Protocols (2 Same Protocols -> Plus Protocol)",
+	);
+	assert.equal(
+		MESSAGES.en.hubMenu6EnhanceHp(
+			partnerEn.enhanceHpVerb,
+			partnerEn.resourceName,
+		),
+		"6: Reinforce Shields (2 Memory Core -> +10 Max HP)",
+	);
 });
