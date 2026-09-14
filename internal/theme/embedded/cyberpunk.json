@@ -4,6 +4,13 @@
 		"name": "サイバーパンク (Cyberpunk)",
 		"targetNameLabel": "サイバー兵装",
 		"defaultTargetName": "パルスブレード",
+		"targetRanks": [
+			{ "minPlus": 0, "name": "パルスブレード" },
+			{ "minPlus": 50, "name": "パルスブレード Mk-II" },
+			{ "minPlus": 200, "name": "高周波振動刀" },
+			{ "minPlus": 500, "name": "プラズマセイバー" },
+			{ "minPlus": 1000, "name": "反物質崩壊刃" }
+		],
 		"enhanceVerb": "システムオーバークロック",
 		"resourceName": "ナノチップ",
 		"orbs": {
@@ -62,6 +69,13 @@
 		"name": "Cyberpunk Protocol",
 		"targetNameLabel": "Cyber Weapon",
 		"defaultTargetName": "Pulse Blade",
+		"targetRanks": [
+			{ "minPlus": 0, "name": "Pulse Blade" },
+			{ "minPlus": 50, "name": "Pulse Blade Mk-II" },
+			{ "minPlus": 200, "name": "High-Frequency Katana" },
+			{ "minPlus": 500, "name": "Plasma Saber" },
+			{ "minPlus": 1000, "name": "Antimatter Void Edge" }
+		],
 		"enhanceVerb": "Overclock System",
 		"resourceName": "Nanite Chip",
 		"orbs": {

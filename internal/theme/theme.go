@@ -158,7 +158,8 @@ func LoadCustomThemeDefIfExists(filePath string) (*model.ThemeDefinition, error)
 }
 
 func validateLocaleData(data *model.ThemeLocaleData) bool {
-	if data.Name == "" || data.TargetNameLabel == "" || data.DefaultTargetName == "" ||
+	targetPrefix := data.GetTargetPrefix()
+	if data.Name == "" || targetPrefix == "" || (data.DefaultTargetName == "" && len(data.TargetRanks) == 0) ||
 		data.EnhanceVerb == "" || data.ResourceName == "" || data.RetreatMessage == "" {
 		return false
 	}
@@ -189,6 +190,9 @@ func validateLocaleData(data *model.ThemeLocaleData) bool {
 }
 
 func fillLocaleDefaults(data *model.ThemeLocaleData) {
+	if data.DefaultTargetName == "" && len(data.TargetRanks) > 0 {
+		data.DefaultTargetName = data.TargetRanks[0].Name
+	}
 	if data.HubTitle == "" {
 		data.HubTitle = "【拠点】"
 	}
@@ -197,6 +201,9 @@ func fillLocaleDefaults(data *model.ThemeLocaleData) {
 	}
 	if data.TargetPrefix == "" {
 		data.TargetPrefix = data.TargetNameLabel
+	}
+	if data.TargetNameLabel == "" {
+		data.TargetNameLabel = data.TargetPrefix
 	}
 	if data.StatLabel == "" {
 		data.StatLabel = "攻撃力"
@@ -240,8 +247,15 @@ func ExportCustomThemeTemplate(filePath string) error {
 			Name:              "SF星間探査 (Sci-Fi Star Explorer)",
 			TargetNameLabel:   "旗艦武装",
 			DefaultTargetName: "フォトンランス",
-			EnhanceVerb:       "リアクターを調整する",
-			ResourceName:      "プラズマコア",
+			TargetRanks: []model.TargetRank{
+				{MinPlus: 0, Name: "フォトンランス"},
+				{MinPlus: 50, Name: "フォトンランス Mk-II"},
+				{MinPlus: 200, Name: "ハイパーレーザー砲"},
+				{MinPlus: 500, Name: "超時空波動砲"},
+				{MinPlus: 1000, Name: "次元崩壊特異点兵装"},
+			},
+			EnhanceVerb:  "リアクターを調整する",
+			ResourceName: "プラズマコア",
 			Orbs: map[model.OrbType]model.OrbDesc{
 				model.OrbMultiHit:     {Name: "ツインビーム", Desc: "2連照射/威力65%"},
 				model.OrbCritical:     {Name: "クリティカルパルス", Desc: "25%で2倍"},
@@ -292,8 +306,15 @@ func ExportCustomThemeTemplate(filePath string) error {
 			Name:              "Sci-Fi Star Explorer",
 			TargetNameLabel:   "Flagship Weapon",
 			DefaultTargetName: "Photon Lance",
-			EnhanceVerb:       "Calibrate Reactor",
-			ResourceName:      "Plasma Core",
+			TargetRanks: []model.TargetRank{
+				{MinPlus: 0, Name: "Photon Lance"},
+				{MinPlus: 50, Name: "Photon Lance Mk-II"},
+				{MinPlus: 200, Name: "Hyper Laser Cannon"},
+				{MinPlus: 500, Name: "Spatiotemporal Wave Cannon"},
+				{MinPlus: 1000, Name: "Dimensional Singularity Armament"},
+			},
+			EnhanceVerb:  "Calibrate Reactor",
+			ResourceName: "Plasma Core",
 			Orbs: map[model.OrbType]model.OrbDesc{
 				model.OrbMultiHit:     {Name: "Twin Beam", Desc: "Fire dual beams at 65% energy each"},
 				model.OrbCritical:     {Name: "Critical Pulse", Desc: "25% chance for 2x focused damage"},

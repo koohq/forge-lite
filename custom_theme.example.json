@@ -1,0 +1,199 @@
+{
+  "id": "custom_scifi",
+  "ja": {
+    "name": "SF星間探査 (Sci-Fi Star Explorer)",
+    "targetNameLabel": "旗艦武装",
+    "defaultTargetName": "フォトンランス",
+    "targetRanks": [
+      {
+        "minPlus": 0,
+        "name": "フォトンランス"
+      },
+      {
+        "minPlus": 50,
+        "name": "フォトンランス Mk-II"
+      },
+      {
+        "minPlus": 200,
+        "name": "ハイパーレーザー砲"
+      },
+      {
+        "minPlus": 500,
+        "name": "超時空波動砲"
+      },
+      {
+        "minPlus": 1000,
+        "name": "次元崩壊特異点兵装"
+      }
+    ],
+    "enhanceVerb": "リアクターを調整する",
+    "resourceName": "プラズマコア",
+    "orbs": {
+      "MULTI_HIT": {
+        "name": "ツインビーム",
+        "desc": "2連照射/威力65%"
+      },
+      "CRITICAL": {
+        "name": "クリティカルパルス",
+        "desc": "25%で2倍"
+      },
+      "VAMP": {
+        "name": "シールドドレイン",
+        "desc": "与ダメの15%回復"
+      },
+      "POISON": {
+        "name": "アシッド腐食",
+        "desc": "攻撃時毒+1/ターン末毒x3ダメ"
+      },
+      "MULTI_HIT_PLUS": {
+        "name": "ツインビーム+",
+        "desc": "2連照射/威力75%"
+      },
+      "CRITICAL_PLUS": {
+        "name": "クリティカルパルス+",
+        "desc": "40%で2倍"
+      },
+      "VAMP_PLUS": {
+        "name": "シールドドレイン+",
+        "desc": "与ダメの25%回復"
+      },
+      "POISON_PLUS": {
+        "name": "アシッド腐食+",
+        "desc": "攻撃時毒+2/ターン末毒x3ダメ"
+      }
+    },
+    "dungeons": {
+      "starter": "小惑星前哨基地",
+      "deep": "遺棄された弩級艦",
+      "abyss": "事象の地平線"
+    },
+    "enemyPrefixes": [
+      "敵対的な",
+      "過負荷の",
+      "変異した",
+      "未知生命の",
+      "サイバネの",
+      "凶暴な",
+      "古代の",
+      "コズミック"
+    ],
+    "enemyBases": [
+      "偵察ドローン",
+      "バイオスウォーム",
+      "宇宙海賊",
+      "戦闘メカ",
+      "虚空の怪異",
+      "星喰らい",
+      "ナノ集合体",
+      "タイタン弩級艦"
+    ],
+    "retreatMessage": "ワープドライブを緊急起動し、軌道ステーションへ退避した。",
+    "hubTitle": "【旗艦ドック・管制室】",
+    "hpLabel": "シールド最大値",
+    "targetPrefix": "旗艦武装",
+    "statLabel": "兵装出力",
+    "plusPrefix": "+",
+    "storageLabel": "カーゴ",
+    "orbLabel": "デバイス",
+    "enhanceHpVerb": "シールド容量を拡張",
+    "installVerb": "換装"
+  },
+  "en": {
+    "name": "Sci-Fi Star Explorer",
+    "targetNameLabel": "Flagship Weapon",
+    "defaultTargetName": "Photon Lance",
+    "targetRanks": [
+      {
+        "minPlus": 0,
+        "name": "Photon Lance"
+      },
+      {
+        "minPlus": 50,
+        "name": "Photon Lance Mk-II"
+      },
+      {
+        "minPlus": 200,
+        "name": "Hyper Laser Cannon"
+      },
+      {
+        "minPlus": 500,
+        "name": "Spatiotemporal Wave Cannon"
+      },
+      {
+        "minPlus": 1000,
+        "name": "Dimensional Singularity Armament"
+      }
+    ],
+    "enhanceVerb": "Calibrate Reactor",
+    "resourceName": "Plasma Core",
+    "orbs": {
+      "MULTI_HIT": {
+        "name": "Twin Beam",
+        "desc": "Fire dual beams at 65% energy each"
+      },
+      "CRITICAL": {
+        "name": "Critical Pulse",
+        "desc": "25% chance for 2x focused damage"
+      },
+      "VAMP": {
+        "name": "Shield Siphon",
+        "desc": "Absorb 15% damage dealt as shield energy"
+      },
+      "POISON": {
+        "name": "Corrosive Acid",
+        "desc": "+1 chemical payload on hit, deals 3x dmg per tick"
+      },
+      "MULTI_HIT_PLUS": {
+        "name": "Twin Beam+",
+        "desc": "Fire dual beams at 75% energy each"
+      },
+      "CRITICAL_PLUS": {
+        "name": "Critical Pulse+",
+        "desc": "40% chance for 2x focused damage"
+      },
+      "VAMP_PLUS": {
+        "name": "Shield Siphon+",
+        "desc": "Absorb 25% damage dealt as shield energy"
+      },
+      "POISON_PLUS": {
+        "name": "Corrosive Acid+",
+        "desc": "+2 chemical payload on hit, deals 3x dmg per tick"
+      }
+    },
+    "dungeons": {
+      "starter": "Asteroid Outpost",
+      "deep": "Derelict Dreadnought",
+      "abyss": "Event Horizon Void"
+    },
+    "enemyPrefixes": [
+      "Cosmic",
+      "Void",
+      "Cybernetic",
+      "Plasma",
+      "Starlight",
+      "Hyper-Drive",
+      "Gravity-Distorted",
+      "Supernova"
+    ],
+    "enemyBases": [
+      "Scout Drone",
+      "Bio-Swarm",
+      "Pirate Raider",
+      "War Mech",
+      "Void Beast",
+      "Star Devourer",
+      "Nanite Hive",
+      "Titan Dreadnought"
+    ],
+    "retreatMessage": "Warp drive engaged; executed emergency tactical jump back to orbital station.",
+    "hubTitle": "【Flagship Command Dock】",
+    "hpLabel": "Max Shields",
+    "targetPrefix": "Flagship Weapon",
+    "statLabel": "Weapon Output",
+    "plusPrefix": "+",
+    "storageLabel": "Cargo Bay",
+    "orbLabel": "Device",
+    "enhanceHpVerb": "Upgrade Shields",
+    "installVerb": "Fit"
+  }
+}

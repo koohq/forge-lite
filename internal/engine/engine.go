@@ -16,6 +16,7 @@ import (
 
 type Game struct {
 	reader         *bufio.Reader
+	saveFilePath   string
 	language       model.Language
 	theme          model.Theme
 	customThemeDef *model.ThemeDefinition
@@ -50,7 +51,7 @@ func NewGame(r io.Reader) *Game {
 			MaxHP: 50,
 			HP:    50,
 			Weapon: model.Weapon{
-				Name:    th.DefaultTargetName,
+				Name:    th.GetTargetRankName(0),
 				BaseAtk: 10,
 				Plus:    0,
 				Slots:   []model.OrbType{},
@@ -106,7 +107,7 @@ func (g *Game) saveGame() {
 		ThemeID:      &themeID,
 	}
 
-	err := save.SaveSaveData("", data)
+	err := save.SaveSaveData(g.saveFilePath, data)
 	if err != nil {
 		fmt.Printf("%s %v\n", g.msg().SaveFailed, err)
 	} else {
@@ -115,7 +116,7 @@ func (g *Game) saveGame() {
 }
 
 func (g *Game) loadGame() bool {
-	data, err := save.LoadSaveData("")
+	data, err := save.LoadSaveData(g.saveFilePath)
 	if err != nil {
 		return false
 	}
@@ -136,7 +137,7 @@ func (g *Game) loadGame() bool {
 	copy(slots, data.Weapon.Slots)
 
 	g.player.Weapon = model.Weapon{
-		Name:    data.Weapon.Name,
+		Name:    g.theme.GetTargetRankName(data.Weapon.Plus),
 		BaseAtk: data.Weapon.BaseAtk,
 		Plus:    data.Weapon.Plus,
 		Slots:   slots,
@@ -193,8 +194,8 @@ func (g *Game) hubPhase() {
 	g.player.HP = g.player.MaxHP
 	fmt.Println("\n----------------------------------------------")
 	fmt.Println(g.msg().HubHeader(g.theme.HubTitle))
-	fmt.Println(g.msg().HubStats(g.theme.HPLabel, g.player.MaxHP, g.deepestFloor))
-	fmt.Println(g.msg().HubEquip(g.theme.TargetPrefix, g.player.Weapon.Name, g.theme.PlusPrefix, g.player.Weapon.Plus, g.theme.StatLabel, g.getWeaponAtk()))
+	fmt.Println(g.msg().HubStats(g.theme.HPLabel, g.player.MaxHP, g.theme.Dungeons.Abyss, g.deepestFloor))
+	fmt.Println(g.msg().HubEquip(g.theme.GetTargetPrefix(), g.player.Weapon.Name, g.theme.PlusPrefix, g.player.Weapon.Plus, g.theme.StatLabel, g.getWeaponAtk()))
 
 	slotsStr := g.msg().HubEmptySlot
 	if len(g.player.Weapon.Slots) > 0 {
@@ -224,7 +225,7 @@ func (g *Game) hubPhase() {
 	fmt.Println("----------------------------------------------")
 
 	fmt.Println(g.msg().HubMenu1Dungeon)
-	fmt.Println(g.msg().HubMenu2Enhance(g.theme.EnhanceVerb))
+	fmt.Println(g.msg().HubMenu2Enhance(g.theme.EnhanceVerb, g.theme.StatLabel))
 	fmt.Println(g.msg().HubMenu3AttachOrb(g.theme.InstallVerb))
 	fmt.Println(g.msg().HubMenu4Disassemble(g.theme.OrbLabel))
 	fmt.Println(g.msg().HubMenu5Synthesize(g.theme.OrbLabel))
@@ -274,16 +275,13 @@ func (g *Game) settingsPhase() {
 			if g.language == model.LanguageEN {
 				nextLang = model.LanguageJA
 			}
-			oldDefault := g.theme.DefaultTargetName
 			g.language = nextLang
 			if g.customThemeDef != nil && g.theme.ID == g.customThemeDef.ID {
 				g.theme = theme.ResolveTheme(*g.customThemeDef, g.language)
 			} else {
 				g.theme = theme.GetPresetTheme(g.theme.ID, g.language)
 			}
-			if g.player.Weapon.Name == oldDefault {
-				g.player.Weapon.Name = g.theme.DefaultTargetName
-			}
+			g.player.Weapon.Name = g.theme.GetTargetRankName(g.player.Weapon.Plus)
 			g.saveGame()
 			fmt.Println(g.msg().SettingsLangChanged(g.language))
 		case "2":
@@ -330,11 +328,8 @@ func (g *Game) switchThemeSubmenu() {
 	idx, err := strconv.Atoi(choice)
 	if err == nil && idx >= 1 && idx <= len(themeOptions) {
 		selected := themeOptions[idx-1]
-		oldDefault := g.theme.DefaultTargetName
 		g.theme = selected
-		if g.player.Weapon.Name == oldDefault {
-			g.player.Weapon.Name = selected.DefaultTargetName
-		}
+		g.player.Weapon.Name = selected.GetTargetRankName(g.player.Weapon.Plus)
 		g.saveGame()
 		fmt.Println(g.msg().SettingsThemeChanged(selected.Name))
 	}
@@ -371,7 +366,7 @@ func (g *Game) upgradeWeaponPhase() {
 		return
 	}
 
-	fmt.Println(g.msg().EnhanceTitle(g.theme.TargetNameLabel))
+	fmt.Println(g.msg().EnhanceTitle(g.theme.GetTargetPrefix()))
 	fmt.Println(g.msg().EnhanceCurrentRes(g.theme.ResourceName, g.stockScrolls))
 	fmt.Println(g.msg().EnhanceOpt1)
 	fmt.Println(g.msg().EnhanceOpt2(g.theme.ResourceName))
@@ -381,8 +376,14 @@ func (g *Game) upgradeWeaponPhase() {
 	choice := g.readLine(g.msg().ChooseAction)
 	switch choice {
 	case "1":
+		prevRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
 		EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, 1)
-		fmt.Println(g.msg().EnhanceSuccessSingle(g.theme.EnhanceVerb, g.theme.TargetNameLabel, g.player.Weapon.Name, g.player.Weapon.Plus, g.getWeaponAtk()))
+		newRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
+		g.player.Weapon.Name = newRank
+		if prevRank != newRank {
+			fmt.Println(g.msg().RankUpgraded(newRank))
+		}
+		fmt.Println(g.msg().EnhanceSuccessSingle(g.theme.EnhanceVerb, g.theme.GetTargetPrefix(), g.player.Weapon.Name, g.player.Weapon.Plus, g.getWeaponAtk()))
 		g.saveGame()
 	case "2":
 		inputStr := g.readLine(g.msg().EnhancePromptCount(g.theme.ResourceName, g.stockScrolls))
@@ -391,12 +392,24 @@ func (g *Game) upgradeWeaponPhase() {
 			fmt.Println(g.msg().EnhanceInvalidCount)
 			return
 		}
+		prevRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
 		EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, count)
+		newRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
+		g.player.Weapon.Name = newRank
+		if prevRank != newRank {
+			fmt.Println(g.msg().RankUpgraded(newRank))
+		}
 		fmt.Println(g.msg().EnhanceSuccessMultiple(count, g.theme.ResourceName, g.theme.EnhanceVerb, g.player.Weapon.Name, g.player.Weapon.Plus, g.getWeaponAtk()))
 		g.saveGame()
 	case "3":
 		count := g.stockScrolls
+		prevRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
 		EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, count)
+		newRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
+		g.player.Weapon.Name = newRank
+		if prevRank != newRank {
+			fmt.Println(g.msg().RankUpgraded(newRank))
+		}
 		fmt.Println(g.msg().EnhanceSuccessAll(count, g.theme.ResourceName, g.theme.EnhanceVerb, g.player.Weapon.Name, g.player.Weapon.Plus, g.getWeaponAtk()))
 		g.saveGame()
 	case "0":

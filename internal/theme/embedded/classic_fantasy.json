@@ -4,6 +4,13 @@
 		"name": "王道ファンタジー (Classic Fantasy)",
 		"targetNameLabel": "所持装備",
 		"defaultTargetName": "どうのつるぎ",
+		"targetRanks": [
+			{ "minPlus": 0, "name": "どうのつるぎ" },
+			{ "minPlus": 50, "name": "はがねのつるぎ" },
+			{ "minPlus": 200, "name": "勇者のつるぎ" },
+			{ "minPlus": 500, "name": "竜殺しの神剣" },
+			{ "minPlus": 1000, "name": "終焉を断つ刃" }
+		],
 		"enhanceVerb": "鍛冶屋で鍛える",
 		"resourceName": "強化の書",
 		"orbs": {
@@ -59,6 +66,13 @@
 		"name": "Classic Fantasy",
 		"targetNameLabel": "Equipment",
 		"defaultTargetName": "Bronze Sword",
+		"targetRanks": [
+			{ "minPlus": 0, "name": "Bronze Sword" },
+			{ "minPlus": 50, "name": "Steel Sword" },
+			{ "minPlus": 200, "name": "Hero's Blade" },
+			{ "minPlus": 500, "name": "Dragon Slayer" },
+			{ "minPlus": 1000, "name": "Blade of Armageddon" }
+		],
 		"enhanceVerb": "Forge at Blacksmith",
 		"resourceName": "Upgrade Scroll",
 		"orbs": {

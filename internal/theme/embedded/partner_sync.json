@@ -4,40 +4,47 @@
 		"name": "パートナー・シンクロ (相棒育成)",
 		"targetNameLabel": "相棒",
 		"defaultTargetName": "戦術アンドロイド「アイリス」",
-		"enhanceVerb": "同期率を向上させる",
-		"resourceName": "メモリコア",
+		"targetRanks": [
+			{ "minPlus": 0, "name": "戦術アンドロイド「アイリス」" },
+			{ "minPlus": 50, "name": "同行者アイリス" },
+			{ "minPlus": 200, "name": "息の合うアイリス" },
+			{ "minPlus": 500, "name": "頼れる相棒アイリス" },
+			{ "minPlus": 1000, "name": "歴戦の相棒アイリス" }
+		],
+		"enhanceVerb": "アイリスと訓練する",
+		"resourceName": "訓練記録",
 		"orbs": {
 			"MULTI_HIT": {
-				"name": "連携戦術",
-				"desc": "息の合った2連撃を行う (威力65%×2)"
+				"name": "追撃連携",
+				"desc": "アイリスと息を合わせて放つ2連撃/威力65%×2"
 			},
 			"CRITICAL": {
 				"name": "弱点看破",
-				"desc": "隙を突いて致命打を与える (25%で2倍)"
+				"desc": "敵の隙を共有し致命打を狙う/25%で2倍"
 			},
 			"VAMP": {
-				"name": "自己修復",
-				"desc": "戦闘データから装甲をナノ修復 (与ダメの15%回復)"
+				"name": "立て直し",
+				"desc": "攻撃の合間に態勢を整え回復/与ダメの15%回復"
 			},
 			"POISON": {
-				"name": "浸食ノイズ",
-				"desc": "敵システムに持続ダメージ (毒+1/ターン末毒x3)"
+				"name": "攪乱連携",
+				"desc": "連携攻撃で敵の態勢を崩す/毒+1, ターン末毒x3"
 			},
 			"MULTI_HIT_PLUS": {
-				"name": "連携戦術・極",
-				"desc": "息の合った2連撃を行う (威力75%×2)"
+				"name": "追撃連携+",
+				"desc": "アイリスと息を合わせて放つ2連撃/威力75%×2"
 			},
 			"CRITICAL_PLUS": {
-				"name": "弱点看破・極",
-				"desc": "隙を突いて致命打を与える (40%で2倍)"
+				"name": "弱点看破+",
+				"desc": "敵の隙を共有し致命打を狙う/40%で2倍"
 			},
 			"VAMP_PLUS": {
-				"name": "自己修復・極",
-				"desc": "戦闘データから装甲をナノ修復 (与ダメの25%回復)"
+				"name": "立て直し+",
+				"desc": "攻撃の合間に態勢を整え回復/与ダメの25%回復"
 			},
 			"POISON_PLUS": {
-				"name": "浸食ノイズ・極",
-				"desc": "敵システムに持続ダメージ (毒+2/ターン末毒x3)"
+				"name": "攪乱連携+",
+				"desc": "連携攻撃で敵の態勢を崩す/毒+2, ターン末毒x3"
 			}
 		},
 		"dungeons": {
@@ -65,55 +72,62 @@
 			"殲滅ユニット",
 			"支配者コア"
 		],
-		"retreatMessage": "アイリスの負荷を考慮し、一時帰還した。",
-		"hubTitle": "【司令室・ドック】",
-		"hpLabel": "生存限界",
+		"retreatMessage": "アイリスと態勢を立て直すため、一時帰還した。",
+		"hubTitle": "【共同拠点】",
+		"hpLabel": "継戦力",
 		"targetPrefix": "相棒",
-		"statLabel": "戦闘能力",
+		"statLabel": "連携力",
 		"plusPrefix": " Sync:+",
-		"storageLabel": "データバンク",
-		"orbLabel": "プロトコル",
-		"enhanceHpVerb": "防護プロトコル強化",
-		"installVerb": "セット"
+		"storageLabel": "共有ロッカー",
+		"orbLabel": "連携スキル",
+		"enhanceHpVerb": "継戦力を鍛える",
+		"installVerb": "連携を組む"
 	},
 	"en": {
 		"name": "Partner Sync",
 		"targetNameLabel": "Partner",
 		"defaultTargetName": "Tactical Android \"Iris\"",
-		"enhanceVerb": "Deepen Sync",
-		"resourceName": "Memory Core",
+		"targetRanks": [
+			{ "minPlus": 0, "name": "Tactical Android \"Iris\"" },
+			{ "minPlus": 50, "name": "Iris, Combat Companion" },
+			{ "minPlus": 200, "name": "Iris, In Sync" },
+			{ "minPlus": 500, "name": "Iris, Trusted Partner" },
+			{ "minPlus": 1000, "name": "Iris, Veteran Partner" }
+		],
+		"enhanceVerb": "Train with Iris",
+		"resourceName": "Training Log",
 		"orbs": {
 			"MULTI_HIT": {
-				"name": "Tandem Tactics",
-				"desc": "2 coordinated strikes at 65% power each"
+				"name": "Follow-Up Strike",
+				"desc": "Coordinated 2-hit strike with Iris: 65% x2"
 			},
 			"CRITICAL": {
-				"name": "Exploit Weakness",
-				"desc": "25% chance for 2x fatal damage"
+				"name": "Spot Weakness",
+				"desc": "Expose enemy openings together: 25% chance for 2x"
 			},
 			"VAMP": {
-				"name": "Self-Repair",
-				"desc": "Restore 15% damage dealt as nanite repairs"
+				"name": "Regroup",
+				"desc": "Steady your footing mid-battle: heal 15% dmg"
 			},
 			"POISON": {
-				"name": "Corrosive Noise",
-				"desc": "+1 corrosive noise on hit, 3x dmg per turn"
+				"name": "Disruption",
+				"desc": "Harass and throw off enemy balance: +1 poison, 3x dmg per turn"
 			},
 			"MULTI_HIT_PLUS": {
-				"name": "Tandem Tactics+",
-				"desc": "2 coordinated strikes at 75% power each"
+				"name": "Follow-Up Strike+",
+				"desc": "Coordinated 2-hit strike with Iris: 75% x2"
 			},
 			"CRITICAL_PLUS": {
-				"name": "Exploit Weakness+",
-				"desc": "40% chance for 2x fatal damage"
+				"name": "Spot Weakness+",
+				"desc": "Expose enemy openings together: 40% chance for 2x"
 			},
 			"VAMP_PLUS": {
-				"name": "Self-Repair+",
-				"desc": "Restore 25% damage dealt as nanite repairs"
+				"name": "Regroup+",
+				"desc": "Steady your footing mid-battle: heal 25% dmg"
 			},
 			"POISON_PLUS": {
-				"name": "Corrosive Noise+",
-				"desc": "+2 corrosive noise on hit, 3x dmg per turn"
+				"name": "Disruption+",
+				"desc": "Harass and throw off enemy balance: +2 poison, 3x dmg per turn"
 			}
 		},
 		"dungeons": {
@@ -141,15 +155,15 @@
 			"Annihilator Unit",
 			"Overlord Core"
 		],
-		"retreatMessage": "Retreated to base to reduce load on Iris.",
-		"hubTitle": "【Command Dock】",
-		"hpLabel": "Vitality",
+		"retreatMessage": "Retreated with Iris to regroup.",
+		"hubTitle": "【Shared Base】",
+		"hpLabel": "Endurance",
 		"targetPrefix": "Partner",
-		"statLabel": "Combat Power",
+		"statLabel": "Synergy",
 		"plusPrefix": " Sync:+",
-		"storageLabel": "Data Bank",
-		"orbLabel": "Protocol",
-		"enhanceHpVerb": "Reinforce Shields",
-		"installVerb": "Set"
+		"storageLabel": "Shared Locker",
+		"orbLabel": "Link Skill",
+		"enhanceHpVerb": "Train Endurance",
+		"installVerb": "Form Tactics"
 	}
 }

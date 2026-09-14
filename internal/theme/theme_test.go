@@ -78,8 +78,83 @@ func TestPartnerSync_Fidelity(t *testing.T) {
 	if ja.PlusPrefix != " Sync:+" || en.PlusPrefix != " Sync:+" {
 		t.Errorf("unexpected plusPrefix: ja=%s, en=%s", ja.PlusPrefix, en.PlusPrefix)
 	}
-	if ja.HubTitle != "【司令室・ドック】" || en.HubTitle != "【Command Dock】" {
+	if ja.HubTitle != "【共同拠点】" || en.HubTitle != "【Shared Base】" {
 		t.Errorf("unexpected hubTitle: ja=%s, en=%s", ja.HubTitle, en.HubTitle)
+	}
+	if ja.HPLabel != "継戦力" || en.HPLabel != "Endurance" {
+		t.Errorf("unexpected hpLabel: ja=%s, en=%s", ja.HPLabel, en.HPLabel)
+	}
+	if ja.StatLabel != "連携力" || en.StatLabel != "Synergy" {
+		t.Errorf("unexpected statLabel: ja=%s, en=%s", ja.StatLabel, en.StatLabel)
+	}
+	if ja.ResourceName != "訓練記録" || en.ResourceName != "Training Log" {
+		t.Errorf("unexpected resourceName: ja=%s, en=%s", ja.ResourceName, en.ResourceName)
+	}
+	if ja.EnhanceVerb != "アイリスと訓練する" || en.EnhanceVerb != "Train with Iris" {
+		t.Errorf("unexpected enhanceVerb: ja=%s, en=%s", ja.EnhanceVerb, en.EnhanceVerb)
+	}
+}
+
+func TestTargetRanks_Thresholds(t *testing.T) {
+	cfJA := GetPresetTheme("classic_fantasy", model.LanguageJA)
+	testsCF := []struct {
+		plus     int
+		expected string
+	}{
+		{0, "どうのつるぎ"},
+		{10, "どうのつるぎ"},
+		{49, "どうのつるぎ"},
+		{50, "はがねのつるぎ"},
+		{199, "はがねのつるぎ"},
+		{200, "勇者のつるぎ"},
+		{499, "勇者のつるぎ"},
+		{500, "竜殺しの神剣"},
+		{999, "竜殺しの神剣"},
+		{1000, "終焉を断つ刃"},
+		{2188, "終焉を断つ刃"},
+	}
+	for _, tc := range testsCF {
+		got := cfJA.GetTargetRankName(tc.plus)
+		if got != tc.expected {
+			t.Errorf("classic_fantasy plus=%d: got %s, want %s", tc.plus, got, tc.expected)
+		}
+	}
+
+	psJA := GetPresetTheme("partner_sync", model.LanguageJA)
+	testsPS := []struct {
+		plus     int
+		expected string
+	}{
+		{0, "戦術アンドロイド「アイリス」"},
+		{50, "同行者アイリス"},
+		{200, "息の合うアイリス"},
+		{500, "頼れる相棒アイリス"},
+		{1000, "歴戦の相棒アイリス"},
+		{5000, "歴戦の相棒アイリス"},
+	}
+	for _, tc := range testsPS {
+		got := psJA.GetTargetRankName(tc.plus)
+		if got != tc.expected {
+			t.Errorf("partner_sync plus=%d: got %s, want %s", tc.plus, got, tc.expected)
+		}
+	}
+
+	cpEN := GetPresetTheme("cyberpunk", model.LanguageEN)
+	testsCP := []struct {
+		plus     int
+		expected string
+	}{
+		{0, "Pulse Blade"},
+		{50, "Pulse Blade Mk-II"},
+		{200, "High-Frequency Katana"},
+		{500, "Plasma Saber"},
+		{1000, "Antimatter Void Edge"},
+	}
+	for _, tc := range testsCP {
+		got := cpEN.GetTargetRankName(tc.plus)
+		if got != tc.expected {
+			t.Errorf("cyberpunk plus=%d: got %s, want %s", tc.plus, got, tc.expected)
+		}
 	}
 }
 
@@ -107,5 +182,11 @@ func TestExportCustomThemeTemplate(t *testing.T) {
 	}
 	if def.EN.ResourceName != "Plasma Core" {
 		t.Errorf("unexpected en resource: %s", def.EN.ResourceName)
+	}
+	if len(def.JA.TargetRanks) != 5 {
+		t.Errorf("expected 5 ja target ranks, got %d", len(def.JA.TargetRanks))
+	}
+	if def.JA.GetTargetRankName(1500) != "次元崩壊特異点兵装" {
+		t.Errorf("unexpected custom rank name: %s", def.JA.GetTargetRankName(1500))
 	}
 }

@@ -90,27 +90,57 @@ type Dungeons struct {
 	Abyss   string `json:"abyss"`
 }
 
+// TargetRank represents a weapon/partner rank threshold and display name.
+type TargetRank struct {
+	MinPlus int    `json:"minPlus"`
+	Name    string `json:"name"`
+}
+
 // ThemeLocaleData holds all display vocabulary and configuration for a locale.
 type ThemeLocaleData struct {
-	Name              string             `json:"name"`
-	TargetNameLabel   string             `json:"targetNameLabel"`
-	DefaultTargetName string             `json:"defaultTargetName"`
-	EnhanceVerb       string             `json:"enhanceVerb"`
-	ResourceName      string             `json:"resourceName"`
+	Name              string              `json:"name"`
+	TargetNameLabel   string              `json:"targetNameLabel"`
+	DefaultTargetName string              `json:"defaultTargetName"`
+	TargetRanks       []TargetRank        `json:"targetRanks,omitempty"`
+	EnhanceVerb       string              `json:"enhanceVerb"`
+	ResourceName      string              `json:"resourceName"`
 	Orbs              map[OrbType]OrbDesc `json:"orbs"`
-	Dungeons          Dungeons           `json:"dungeons"`
-	EnemyPrefixes     []string           `json:"enemyPrefixes"`
-	EnemyBases        []string           `json:"enemyBases"`
-	RetreatMessage    string             `json:"retreatMessage"`
-	HubTitle          string             `json:"hubTitle"`
-	HPLabel           string             `json:"hpLabel"`
-	TargetPrefix      string             `json:"targetPrefix"`
-	StatLabel         string             `json:"statLabel"`
-	PlusPrefix        string             `json:"plusPrefix"`
-	StorageLabel      string             `json:"storageLabel"`
-	OrbLabel          string             `json:"orbLabel"`
-	EnhanceHPVerb     string             `json:"enhanceHpVerb"`
-	InstallVerb       string             `json:"installVerb"`
+	Dungeons          Dungeons            `json:"dungeons"`
+	EnemyPrefixes     []string            `json:"enemyPrefixes"`
+	EnemyBases        []string            `json:"enemyBases"`
+	RetreatMessage    string              `json:"retreatMessage"`
+	HubTitle          string              `json:"hubTitle"`
+	HPLabel           string              `json:"hpLabel"`
+	TargetPrefix      string              `json:"targetPrefix"`
+	StatLabel         string              `json:"statLabel"`
+	PlusPrefix        string              `json:"plusPrefix"`
+	StorageLabel      string              `json:"storageLabel"`
+	OrbLabel          string              `json:"orbLabel"`
+	EnhanceHPVerb     string              `json:"enhanceHpVerb"`
+	InstallVerb       string              `json:"installVerb"`
+}
+
+// GetTargetRankName returns the rank name corresponding to the current plus value.
+// If plus >= 1000 or exceeds the highest threshold, the highest rank name is maintained.
+func (d ThemeLocaleData) GetTargetRankName(plus int) string {
+	if len(d.TargetRanks) == 0 {
+		return d.DefaultTargetName
+	}
+	matched := d.DefaultTargetName
+	for _, r := range d.TargetRanks {
+		if plus >= r.MinPlus {
+			matched = r.Name
+		}
+	}
+	return matched
+}
+
+// GetTargetPrefix returns TargetPrefix if non-empty, falling back to TargetNameLabel.
+func (d ThemeLocaleData) GetTargetPrefix() string {
+	if d.TargetPrefix != "" {
+		return d.TargetPrefix
+	}
+	return d.TargetNameLabel
 }
 
 // ThemeDefinition represents a bilingual theme dataset.
@@ -126,3 +156,4 @@ type Theme struct {
 	Language Language
 	ThemeLocaleData
 }
+

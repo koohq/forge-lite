@@ -26,23 +26,23 @@ type Messages struct {
 	Farewell                string
 
 	// Hub
-	HubHeader          func(title string) string
-	HubStats           func(hpLabel string, hp, deepest int) string
-	HubEquip           func(label, name, plusPrefix string, plus int, statLabel string, atk int) string
-	HubSlots           func(verb string, count int, slots string) string
-	HubEmptySlot       string
-	HubStorage         func(storage, resource string, scrolls int, orb, orbs string) string
-	HubNone            string
-	HubMenu1Dungeon    string
-	HubMenu2Enhance    func(verb string) string
-	HubMenu3AttachOrb  func(verb string) string
+	HubHeader           func(title string) string
+	HubStats            func(hpLabel string, hp int, abyssName string, deepest int) string
+	HubEquip            func(label, name, plusPrefix string, plus int, statLabel string, atk int) string
+	HubSlots            func(verb string, count int, slots string) string
+	HubEmptySlot        string
+	HubStorage          func(storage, resource string, scrolls int, orb, orbs string) string
+	HubNone             string
+	HubMenu1Dungeon     string
+	HubMenu2Enhance     func(verb, statLabel string) string
+	HubMenu3AttachOrb   func(verb string) string
 	HubMenu4Disassemble func(orb string) string
-	HubMenu5Synthesize func(orb string) string
-	HubMenu6EnhanceHp  func(verb, hpLabel string) string
-	HubMenu7Settings   string
-	HubMenu0Exit       string
-	ChooseAction       string
-	InvalidChoice      string
+	HubMenu5Synthesize  func(orb string) string
+	HubMenu6EnhanceHp   func(verb, hpLabel string) string
+	HubMenu7Settings    string
+	HubMenu0Exit        string
+	ChooseAction        string
+	InvalidChoice       string
 
 	// Dungeon Select
 	DungeonSelectTitle   string
@@ -68,6 +68,7 @@ type Messages struct {
 	EnhanceSuccessMultiple func(count int, res, verb, name string, plus, atk int) string
 	EnhanceSuccessAll      func(count int, res, verb, name string, plus, atk int) string
 	EnhanceCanceled        string
+	RankUpgraded           func(name string) string
 
 	// HP Upgrade
 	HPUpgradeTitle           string
@@ -213,12 +214,12 @@ var (
 
 		// Hub
 		HubHeader: func(title string) string { return title },
-		HubStats: func(hpLabel string, hp, deepest int) string {
+		HubStats: func(hpLabel string, hp int, abyssName string, deepest int) string {
 			rec := "未挑戦"
 			if deepest > 0 {
 				rec = fmt.Sprintf("B%dF", deepest)
 			}
-			return fmt.Sprintf("%s: HP %d | 無限の深淵 最高到達: %s", hpLabel, hp, rec)
+			return fmt.Sprintf("%s: HP %d | %s 最高到達: %s", hpLabel, hp, abyssName, rec)
 		},
 		HubEquip: func(label, name, plusPrefix string, plus int, statLabel string, atk int) string {
 			return fmt.Sprintf("%s: %s%s%d (%s: %d)", label, name, plusPrefix, plus, statLabel, atk)
@@ -232,7 +233,7 @@ var (
 		},
 		HubNone: "(なし)",
 		HubMenu1Dungeon: "1: ダンジョンへ出撃 (探索開始)",
-		HubMenu2Enhance: func(verb string) string { return fmt.Sprintf("2: %s (攻撃力・出力の強化)", verb) },
+		HubMenu2Enhance: func(verb, statLabel string) string { return fmt.Sprintf("2: %s (%sの強化)", verb, statLabel) },
 		HubMenu3AttachOrb: func(verb string) string {
 			return fmt.Sprintf("3: %s (パッシブ効果の装着)", verb)
 		},
@@ -298,6 +299,9 @@ var (
 			return fmt.Sprintf(">> %sをすべて(%d個)消費して一括で%sを行いました！ %s+%d (攻撃力: %d)", res, count, verb, name, plus, atk)
 		},
 		EnhanceCanceled: ">> 強化をキャンセルしました。",
+		RankUpgraded: func(name string) string {
+			return fmt.Sprintf(">> ランクが上がった！ 【%s】に進化した！", name)
+		},
 
 		// HP Upgrade
 		HPUpgradeTitle: "\n--- 体力の強化 ---",
@@ -574,12 +578,12 @@ var (
 
 		// Hub
 		HubHeader: func(title string) string { return title },
-		HubStats: func(hpLabel string, hp, deepest int) string {
+		HubStats: func(hpLabel string, hp int, abyssName string, deepest int) string {
 			rec := "None"
 			if deepest > 0 {
 				rec = fmt.Sprintf("B%dF", deepest)
 			}
-			return fmt.Sprintf("%s: %d | Infinite Abyss Record: %s", hpLabel, hp, rec)
+			return fmt.Sprintf("%s: %d | %s Record: %s", hpLabel, hp, abyssName, rec)
 		},
 		HubEquip: func(label, name, plusPrefix string, plus int, statLabel string, atk int) string {
 			return fmt.Sprintf("%s: %s%s%d (%s: %d)", label, name, plusPrefix, plus, statLabel, atk)
@@ -592,16 +596,16 @@ var (
 			return fmt.Sprintf("%s: %s x%d | Stock %ss: %s", storage, resource, scrolls, orb, orbs)
 		},
 		HubNone: "(None)",
-		HubMenu1Dungeon: "1: Embark to Dungeon (Start run)",
-		HubMenu2Enhance: func(verb string) string { return fmt.Sprintf("2: %s (Upgrade ATK / Output)", verb) },
+		HubMenu1Dungeon: "1: Embark to Dungeon (Start Run)",
+		HubMenu2Enhance: func(verb, statLabel string) string { return fmt.Sprintf("2: %s (Upgrade %s)", verb, statLabel) },
 		HubMenu3AttachOrb: func(verb string) string {
-			return fmt.Sprintf("3: %s (Equip passive effects)", verb)
+			return fmt.Sprintf("3: %s (Equip Passives)", verb)
 		},
 		HubMenu4Disassemble: func(orb string) string {
-			return fmt.Sprintf("4: Dismantle %s (Convert to materials)", orb)
+			return fmt.Sprintf("4: Dismantle %s (Convert to Materials)", orb)
 		},
 		HubMenu5Synthesize: func(orb string) string {
-			return fmt.Sprintf("5: Synthesize %s (Upgrade to Plus version)", orb)
+			return fmt.Sprintf("5: Synthesize %s (Upgrade to Plus)", orb)
 		},
 		HubMenu6EnhanceHp: func(verb, hpLabel string) string {
 			return fmt.Sprintf("6: %s (%s +10)", verb, hpLabel)
@@ -659,6 +663,9 @@ var (
 			return fmt.Sprintf(">> Consumed all (%d) %s for %s! %s+%d (ATK: %d)", count, res, verb, name, plus, atk)
 		},
 		EnhanceCanceled: ">> Enhancement canceled.",
+		RankUpgraded: func(name string) string {
+			return fmt.Sprintf(">> Rank upgraded! Evolved to 【%s】!", name)
+		},
 
 		// HP Upgrade
 		HPUpgradeTitle: "\n--- Upgrade Max HP ---",
