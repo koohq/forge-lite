@@ -98,28 +98,28 @@ type TargetRank struct {
 
 // ThemeLocaleData holds all display vocabulary and configuration for a locale.
 type ThemeLocaleData struct {
-	Name              string              `json:"name"`
-	TargetNameLabel   string              `json:"targetNameLabel"`
-	DefaultTargetName string              `json:"defaultTargetName"`
-	TargetRanks       []TargetRank        `json:"targetRanks,omitempty"`
-	EnhanceVerb       string              `json:"enhanceVerb"`
-	ResourceName      string              `json:"resourceName"`
-	Orbs              map[OrbType]OrbDesc `json:"orbs"`
-	Dungeons          Dungeons            `json:"dungeons"`
-	EnemyPrefixes     []string            `json:"enemyPrefixes"`
-	EnemyBases        []string            `json:"enemyBases"`
-	RetreatMessage    string              `json:"retreatMessage"`
-	HubTitle          string              `json:"hubTitle"`
-	HPLabel           string              `json:"hpLabel"`
-	TargetPrefix      string              `json:"targetPrefix"`
-	StatLabel         string              `json:"statLabel"`
-	PlusPrefix        string              `json:"plusPrefix"`
-	StorageLabel      string              `json:"storageLabel"`
-	OrbLabel          string              `json:"orbLabel"`
-	EnhanceHPVerb     string              `json:"enhanceHpVerb"`
-	InstallVerb       string              `json:"installVerb"`
-	SlotLabel         string              `json:"slotLabel,omitempty"`
-	UninstalledOrbLabel string            `json:"uninstalledOrbLabel,omitempty"`
+	Name                string              `json:"name"`
+	TargetNameLabel     string              `json:"targetNameLabel"`
+	DefaultTargetName   string              `json:"defaultTargetName"`
+	TargetRanks         []TargetRank        `json:"targetRanks,omitempty"`
+	EnhanceVerb         string              `json:"enhanceVerb"`
+	ResourceName        string              `json:"resourceName"`
+	Orbs                map[OrbType]OrbDesc `json:"orbs"`
+	Dungeons            Dungeons            `json:"dungeons"`
+	EnemyPrefixes       []string            `json:"enemyPrefixes"`
+	EnemyBases          []string            `json:"enemyBases"`
+	RetreatMessage      string              `json:"retreatMessage"`
+	HubTitle            string              `json:"hubTitle"`
+	HPLabel             string              `json:"hpLabel"`
+	TargetPrefix        string              `json:"targetPrefix"`
+	StatLabel           string              `json:"statLabel"`
+	PlusPrefix          string              `json:"plusPrefix"`
+	StorageLabel        string              `json:"storageLabel"`
+	OrbLabel            string              `json:"orbLabel"`
+	EnhanceHPVerb       string              `json:"enhanceHpVerb"`
+	InstallVerb         string              `json:"installVerb"`
+	SlotLabel           string              `json:"slotLabel,omitempty"`
+	UninstalledOrbLabel string              `json:"uninstalledOrbLabel,omitempty"`
 }
 
 // GetSlotLabel returns SlotLabel if non-empty, falling back to InstallVerb + "スロット" / " Slots".

@@ -217,7 +217,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 					Name: strings.TrimSpace(getPrefix(5) + separator + getBase(6)),
 					HP:   350,
 					Atk:  32,
-					GetDrops: func() model.RunInventory{
+					GetDrops: func() model.RunInventory {
 						return model.RunInventory{Scrolls: getDeepFloorScrolls(), Orbs: []model.OrbType{}}
 					},
 				}
