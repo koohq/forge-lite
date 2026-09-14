@@ -35,10 +35,10 @@ type Messages struct {
 	HubNone            string
 	HubMenu1Dungeon    string
 	HubMenu2Enhance    func(verb string) string
-	HubMenu3AttachOrb  func(orb, target, verb string) string
-	HubMenu4Disassemble func(orb, res string) string
+	HubMenu3AttachOrb  func(verb string) string
+	HubMenu4Disassemble func(orb string) string
 	HubMenu5Synthesize func(orb string) string
-	HubMenu6EnhanceHp  func(verb, res string) string
+	HubMenu6EnhanceHp  func(verb, hpLabel string) string
 	HubMenu7Settings   string
 	HubMenu0Exit       string
 	ChooseAction       string
@@ -231,21 +231,21 @@ var (
 			return fmt.Sprintf("%s: %s x%d | 未装着%s: %s", storage, resource, scrolls, orb, orbs)
 		},
 		HubNone: "(なし)",
-		HubMenu1Dungeon: "1: ダンジョンへ出撃",
-		HubMenu2Enhance: func(verb string) string { return fmt.Sprintf("2: %s", verb) },
-		HubMenu3AttachOrb: func(orb, target, verb string) string {
-			return fmt.Sprintf("3: %sを%sに%s", orb, target, verb)
+		HubMenu1Dungeon: "1: ダンジョンへ出撃 (探索開始)",
+		HubMenu2Enhance: func(verb string) string { return fmt.Sprintf("2: %s (攻撃力・出力の強化)", verb) },
+		HubMenu3AttachOrb: func(verb string) string {
+			return fmt.Sprintf("3: %s (パッシブ効果の装着)", verb)
 		},
-		HubMenu4Disassemble: func(orb, res string) string {
-			return fmt.Sprintf("4: %sを分解 (任意の%s2個 -> %s1枚)", orb, orb, res)
+		HubMenu4Disassemble: func(orb string) string {
+			return fmt.Sprintf("4: %sを分解 (素材への還元)", orb)
 		},
 		HubMenu5Synthesize: func(orb string) string {
-			return fmt.Sprintf("5: %sを合成 (同種%s2個 -> 上位%s)", orb, orb, orb)
+			return fmt.Sprintf("5: %sを合成 (上位性能への強化)", orb)
 		},
-		HubMenu6EnhanceHp: func(verb, res string) string {
-			return fmt.Sprintf("6: %s (%s2枚 -> 最大HP+10)", verb, res)
+		HubMenu6EnhanceHp: func(verb, hpLabel string) string {
+			return fmt.Sprintf("6: %s (%s +10)", verb, hpLabel)
 		},
-		HubMenu7Settings: "7: 設定 (Settings)",
+		HubMenu7Settings: "7: 設定 / Settings",
 		HubMenu0Exit: "0: ゲーム終了",
 		ChooseAction: "\n行動を選択してください: ",
 		InvalidChoice: "無効な選択です。",
@@ -592,19 +592,19 @@ var (
 			return fmt.Sprintf("%s: %s x%d | Stock %ss: %s", storage, resource, scrolls, orb, orbs)
 		},
 		HubNone: "(None)",
-		HubMenu1Dungeon: "1: Embark to Dungeon",
-		HubMenu2Enhance: func(verb string) string { return fmt.Sprintf("2: %s", verb) },
-		HubMenu3AttachOrb: func(orb, target, verb string) string {
-			return fmt.Sprintf("3: %s %s to %s", verb, orb, target)
+		HubMenu1Dungeon: "1: Embark to Dungeon (Start run)",
+		HubMenu2Enhance: func(verb string) string { return fmt.Sprintf("2: %s (Upgrade ATK / Output)", verb) },
+		HubMenu3AttachOrb: func(verb string) string {
+			return fmt.Sprintf("3: %s (Equip passive effects)", verb)
 		},
-		HubMenu4Disassemble: func(orb, res string) string {
-			return fmt.Sprintf("4: Disassemble %ss (Any 2 %ss -> 1 %s)", orb, orb, res)
+		HubMenu4Disassemble: func(orb string) string {
+			return fmt.Sprintf("4: Dismantle %s (Convert to materials)", orb)
 		},
 		HubMenu5Synthesize: func(orb string) string {
-			return fmt.Sprintf("5: Synthesize %ss (2 Same %ss -> Plus %s)", orb, orb, orb)
+			return fmt.Sprintf("5: Synthesize %s (Upgrade to Plus version)", orb)
 		},
-		HubMenu6EnhanceHp: func(verb, res string) string {
-			return fmt.Sprintf("6: %s (2 %s -> +10 Max HP)", verb, res)
+		HubMenu6EnhanceHp: func(verb, hpLabel string) string {
+			return fmt.Sprintf("6: %s (%s +10)", verb, hpLabel)
 		},
 		HubMenu7Settings: "7: Settings",
 		HubMenu0Exit: "0: Quit Game",

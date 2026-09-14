@@ -225,10 +225,10 @@ func (g *Game) hubPhase() {
 
 	fmt.Println(g.msg().HubMenu1Dungeon)
 	fmt.Println(g.msg().HubMenu2Enhance(g.theme.EnhanceVerb))
-	fmt.Println(g.msg().HubMenu3AttachOrb(g.theme.OrbLabel, g.theme.TargetPrefix, g.theme.InstallVerb))
-	fmt.Println(g.msg().HubMenu4Disassemble(g.theme.OrbLabel, g.theme.ResourceName))
+	fmt.Println(g.msg().HubMenu3AttachOrb(g.theme.InstallVerb))
+	fmt.Println(g.msg().HubMenu4Disassemble(g.theme.OrbLabel))
 	fmt.Println(g.msg().HubMenu5Synthesize(g.theme.OrbLabel))
-	fmt.Println(g.msg().HubMenu6EnhanceHp(g.theme.EnhanceHPVerb, g.theme.ResourceName))
+	fmt.Println(g.msg().HubMenu6EnhanceHp(g.theme.EnhanceHPVerb, g.theme.HPLabel))
 	fmt.Println(g.msg().HubMenu7Settings)
 	fmt.Println(g.msg().HubMenu0Exit)
 

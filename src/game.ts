@@ -157,14 +157,10 @@ export interface I18nMessages {
 	hubNone: string;
 	hubMenu1Dungeon: string;
 	hubMenu2Enhance: (verb: string) => string;
-	hubMenu3AttachOrb: (
-		orbLabel: string,
-		targetPrefix: string,
-		installVerb: string,
-	) => string;
-	hubMenu4Disassemble: (orbLabel: string, resource: string) => string;
+	hubMenu3AttachOrb: (installVerb: string) => string;
+	hubMenu4Disassemble: (orbLabel: string) => string;
 	hubMenu5Synthesize: (orbLabel: string) => string;
-	hubMenu6EnhanceHp: (enhanceHpVerb: string, resource: string) => string;
+	hubMenu6EnhanceHp: (enhanceHpVerb: string, hpLabel: string) => string;
 	hubMenu7Settings: string;
 	hubMenu0Exit: string;
 	chooseAction: string;
@@ -427,15 +423,13 @@ export const MESSAGES: Record<Language, I18nMessages> = {
 		hubStorage: (storage, resource, scrolls, orb, orbs) =>
 			`${storage}: ${resource} x${scrolls} | 未装着${orb}: ${orbs}`,
 		hubNone: "(なし)",
-		hubMenu1Dungeon: "1: ダンジョンへ出撃",
-		hubMenu2Enhance: (verb) => `2: ${verb}`,
-		hubMenu3AttachOrb: (orb, target, verb) => `3: ${orb}を${target}に${verb}`,
-		hubMenu4Disassemble: (orb, res) =>
-			`4: ${orb}を分解 (任意の${orb}2個 -> ${res}1枚)`,
-		hubMenu5Synthesize: (orb) =>
-			`5: ${orb}を合成 (同種${orb}2個 -> 上位${orb})`,
-		hubMenu6EnhanceHp: (verb, res) => `6: ${verb} (${res}2枚 -> 最大HP+10)`,
-		hubMenu7Settings: "7: 設定 (Settings)",
+		hubMenu1Dungeon: "1: ダンジョンへ出撃 (探索開始)",
+		hubMenu2Enhance: (verb) => `2: ${verb} (攻撃力・出力の強化)`,
+		hubMenu3AttachOrb: (verb) => `3: ${verb} (パッシブ効果の装着)`,
+		hubMenu4Disassemble: (orb) => `4: ${orb}を分解 (素材への還元)`,
+		hubMenu5Synthesize: (orb) => `5: ${orb}を合成 (上位性能への強化)`,
+		hubMenu6EnhanceHp: (verb, hpLabel) => `6: ${verb} (${hpLabel} +10)`,
+		hubMenu7Settings: "7: 設定 / Settings",
 		hubMenu0Exit: "0: ゲーム終了",
 		chooseAction: "\n行動を選択してください: ",
 		invalidChoice: "無効な選択です。",
@@ -666,14 +660,13 @@ export const MESSAGES: Record<Language, I18nMessages> = {
 		hubStorage: (storage, resource, scrolls, orb, orbs) =>
 			`${storage}: ${resource} x${scrolls} | Stock ${orb}s: ${orbs}`,
 		hubNone: "(None)",
-		hubMenu1Dungeon: "1: Embark to Dungeon",
-		hubMenu2Enhance: (verb) => `2: ${verb}`,
-		hubMenu3AttachOrb: (orb, target, verb) => `3: ${verb} ${orb} to ${target}`,
-		hubMenu4Disassemble: (orb, res) =>
-			`4: Disassemble ${orb}s (Any 2 ${orb}s -> 1 ${res})`,
+		hubMenu1Dungeon: "1: Embark to Dungeon (Start run)",
+		hubMenu2Enhance: (verb) => `2: ${verb} (Upgrade ATK / Output)`,
+		hubMenu3AttachOrb: (verb) => `3: ${verb} (Equip passive effects)`,
+		hubMenu4Disassemble: (orb) => `4: Dismantle ${orb} (Convert to materials)`,
 		hubMenu5Synthesize: (orb) =>
-			`5: Synthesize ${orb}s (2 Same ${orb}s -> Plus ${orb})`,
-		hubMenu6EnhanceHp: (verb, res) => `6: ${verb} (2 ${res} -> +10 Max HP)`,
+			`5: Synthesize ${orb} (Upgrade to Plus version)`,
+		hubMenu6EnhanceHp: (verb, hpLabel) => `6: ${verb} (${hpLabel} +10)`,
 		hubMenu7Settings: "7: Settings",
 		hubMenu0Exit: "0: Quit Game",
 		chooseAction: "\nChoose an action: ",
@@ -2105,25 +2098,11 @@ export class Game {
 		console.log("----------------------------------------------");
 		console.log(this.msg.hubMenu1Dungeon);
 		console.log(this.msg.hubMenu2Enhance(this.theme.enhanceVerb));
-		console.log(
-			this.msg.hubMenu3AttachOrb(
-				this.theme.orbLabel,
-				this.theme.targetPrefix,
-				this.theme.installVerb,
-			),
-		);
-		console.log(
-			this.msg.hubMenu4Disassemble(
-				this.theme.orbLabel,
-				this.theme.resourceName,
-			),
-		);
+		console.log(this.msg.hubMenu3AttachOrb(this.theme.installVerb));
+		console.log(this.msg.hubMenu4Disassemble(this.theme.orbLabel));
 		console.log(this.msg.hubMenu5Synthesize(this.theme.orbLabel));
 		console.log(
-			this.msg.hubMenu6EnhanceHp(
-				this.theme.enhanceHpVerb,
-				this.theme.resourceName,
-			),
+			this.msg.hubMenu6EnhanceHp(this.theme.enhanceHpVerb, this.theme.hpLabel),
 		);
 		console.log(this.msg.hubMenu7Settings);
 		console.log(this.msg.hubMenu0Exit);

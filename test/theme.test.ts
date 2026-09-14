@@ -297,29 +297,29 @@ test("Hub Display & Menu: Dynamic vocabulary correctly delegates per theme", () 
 		),
 		"倉庫: 強化の書 x3 | 未装着オーブ: [連撃の印]",
 	);
+	assert.equal(MESSAGES.ja.hubMenu1Dungeon, "1: ダンジョンへ出撃 (探索開始)");
 	assert.equal(
-		MESSAGES.ja.hubMenu3AttachOrb(
-			fantasyJa.orbLabel,
-			fantasyJa.targetPrefix,
-			fantasyJa.installVerb,
-		),
-		"3: オーブを所持装備に装着",
+		MESSAGES.ja.hubMenu2Enhance(fantasyJa.enhanceVerb),
+		"2: 鍛冶屋で鍛える (攻撃力・出力の強化)",
 	);
 	assert.equal(
-		MESSAGES.ja.hubMenu4Disassemble(fantasyJa.orbLabel, fantasyJa.resourceName),
-		"4: オーブを分解 (任意のオーブ2個 -> 強化の書1枚)",
+		MESSAGES.ja.hubMenu3AttachOrb(fantasyJa.installVerb),
+		"3: 装着 (パッシブ効果の装着)",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu4Disassemble(fantasyJa.orbLabel),
+		"4: オーブを分解 (素材への還元)",
 	);
 	assert.equal(
 		MESSAGES.ja.hubMenu5Synthesize(fantasyJa.orbLabel),
-		"5: オーブを合成 (同種オーブ2個 -> 上位オーブ)",
+		"5: オーブを合成 (上位性能への強化)",
 	);
 	assert.equal(
-		MESSAGES.ja.hubMenu6EnhanceHp(
-			fantasyJa.enhanceHpVerb,
-			fantasyJa.resourceName,
-		),
-		"6: 体力を強化する (強化の書2枚 -> 最大HP+10)",
+		MESSAGES.ja.hubMenu6EnhanceHp(fantasyJa.enhanceHpVerb, fantasyJa.hpLabel),
+		"6: 体力を強化する (最大体力 +10)",
 	);
+	assert.equal(MESSAGES.ja.hubMenu7Settings, "7: 設定 / Settings");
+	assert.equal(MESSAGES.ja.hubMenu0Exit, "0: ゲーム終了");
 
 	const cyberJa = resolveTheme(PRESET_CYBERPUNK, "ja");
 	assert.equal(
@@ -360,24 +360,24 @@ test("Hub Display & Menu: Dynamic vocabulary correctly delegates per theme", () 
 		"ストレージ: ナノチップ x8 | 未装着モジュール: [多段バースト]",
 	);
 	assert.equal(
-		MESSAGES.ja.hubMenu3AttachOrb(
-			cyberJa.orbLabel,
-			cyberJa.targetPrefix,
-			cyberJa.installVerb,
-		),
-		"3: モジュールを主兵装にインストール",
+		MESSAGES.ja.hubMenu2Enhance(cyberJa.enhanceVerb),
+		"2: システムオーバークロック (攻撃力・出力の強化)",
 	);
 	assert.equal(
-		MESSAGES.ja.hubMenu4Disassemble(cyberJa.orbLabel, cyberJa.resourceName),
-		"4: モジュールを分解 (任意のモジュール2個 -> ナノチップ1枚)",
+		MESSAGES.ja.hubMenu3AttachOrb(cyberJa.installVerb),
+		"3: インストール (パッシブ効果の装着)",
+	);
+	assert.equal(
+		MESSAGES.ja.hubMenu4Disassemble(cyberJa.orbLabel),
+		"4: モジュールを分解 (素材への還元)",
 	);
 	assert.equal(
 		MESSAGES.ja.hubMenu5Synthesize(cyberJa.orbLabel),
-		"5: モジュールを合成 (同種モジュール2個 -> 上位モジュール)",
+		"5: モジュールを合成 (上位性能への強化)",
 	);
 	assert.equal(
-		MESSAGES.ja.hubMenu6EnhanceHp(cyberJa.enhanceHpVerb, cyberJa.resourceName),
-		"6: 生体フレーム拡張 (ナノチップ2枚 -> 最大HP+10)",
+		MESSAGES.ja.hubMenu6EnhanceHp(cyberJa.enhanceHpVerb, cyberJa.hpLabel),
+		"6: 生体フレーム拡張 (最大耐久 +10)",
 	);
 
 	const partnerEn = resolveTheme(PRESET_PARTNER_SYNC, "en");
@@ -411,27 +411,27 @@ test("Hub Display & Menu: Dynamic vocabulary correctly delegates per theme", () 
 		),
 		"Data Bank: Memory Core x12 | Stock Protocols: [Tandem Tactics]",
 	);
+	assert.equal(MESSAGES.en.hubMenu1Dungeon, "1: Embark to Dungeon (Start run)");
 	assert.equal(
-		MESSAGES.en.hubMenu3AttachOrb(
-			partnerEn.orbLabel,
-			partnerEn.targetPrefix,
-			partnerEn.installVerb,
-		),
-		"3: Set Protocol to Partner",
+		MESSAGES.en.hubMenu2Enhance(partnerEn.enhanceVerb),
+		"2: Deepen Sync (Upgrade ATK / Output)",
 	);
 	assert.equal(
-		MESSAGES.en.hubMenu4Disassemble(partnerEn.orbLabel, partnerEn.resourceName),
-		"4: Disassemble Protocols (Any 2 Protocols -> 1 Memory Core)",
+		MESSAGES.en.hubMenu3AttachOrb(partnerEn.installVerb),
+		"3: Set (Equip passive effects)",
+	);
+	assert.equal(
+		MESSAGES.en.hubMenu4Disassemble(partnerEn.orbLabel),
+		"4: Dismantle Protocol (Convert to materials)",
 	);
 	assert.equal(
 		MESSAGES.en.hubMenu5Synthesize(partnerEn.orbLabel),
-		"5: Synthesize Protocols (2 Same Protocols -> Plus Protocol)",
+		"5: Synthesize Protocol (Upgrade to Plus version)",
 	);
 	assert.equal(
-		MESSAGES.en.hubMenu6EnhanceHp(
-			partnerEn.enhanceHpVerb,
-			partnerEn.resourceName,
-		),
-		"6: Reinforce Shields (2 Memory Core -> +10 Max HP)",
+		MESSAGES.en.hubMenu6EnhanceHp(partnerEn.enhanceHpVerb, partnerEn.hpLabel),
+		"6: Reinforce Shields (Vitality +10)",
 	);
+	assert.equal(MESSAGES.en.hubMenu7Settings, "7: Settings");
+	assert.equal(MESSAGES.en.hubMenu0Exit, "0: Quit Game");
 });
