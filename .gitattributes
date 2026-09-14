@@ -1,0 +1,20 @@
+# Normalize all text files to LF in the repository and in working trees.
+# This overrides any per-user core.autocrlf setting.
+* text=auto eol=lf
+
+# Explicit declarations for the file types tracked in this repository.
+*.go        text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.mod       text eol=lf
+*.toml      text eol=lf
+*.yml       text eol=lf
+*.gitignore text eol=lf
+LICENSE     text eol=lf
+
+# Safety net: never apply text conversion to binary assets.
+*.png  binary
+*.jpg  binary
+*.gif  binary
+*.ico  binary
+*.exe  binary

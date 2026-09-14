@@ -148,32 +148,32 @@ type Messages struct {
 	EndlessRecordUpdated   func(floor int) string
 
 	// Battle
-	BattleVs                      func(php, pmax int, ename string, ehp, emax, poison int) string
-	BattleCmdAttack               string
-	BattleCmdRetreat              string
-	BattleCmdAuto                 string
-	BattleCmdPrompt               string
-	BattleRetreatCombat           string
-	BattleAutoStart               string
-	BattleAutoSummaryTitle        string
-	BattleAutoReason              func(reason string) string
-	BattleAutoTurns               func(turns int) string
-	BattleAutoDamageDealt         func(dmg int) string
-	BattleAutoDamageTaken         func(dmg int) string
-	BattleAutoHealed              func(heal int) string
-	BattleAutoRemainingHp         func(php, pmax int, ename string, ehp, emax int) string
-	BattleAutoReasonEnemyDefeated string
+	BattleVs                       func(php, pmax int, ename string, ehp, emax, poison int) string
+	BattleCmdAttack                string
+	BattleCmdRetreat               string
+	BattleCmdAuto                  string
+	BattleCmdPrompt                string
+	BattleRetreatCombat            string
+	BattleAutoStart                string
+	BattleAutoSummaryTitle         string
+	BattleAutoReason               func(reason string) string
+	BattleAutoTurns                func(turns int) string
+	BattleAutoDamageDealt          func(dmg int) string
+	BattleAutoDamageTaken          func(dmg int) string
+	BattleAutoHealed               func(heal int) string
+	BattleAutoRemainingHp          func(php, pmax int, ename string, ehp, emax int) string
+	BattleAutoReasonEnemyDefeated  string
 	BattleAutoReasonPoisonDefeated string
-	BattleAutoReasonFainted       string
-	BattleAutoReasonDangerHp      func(hp, maxHp int) string
-	BattleInvalidCmd              string
-	BattlePlayerAttack            func(hitIndex string, isCrit bool, ename string, dmg int) string
-	BattleCritLabel               string
-	BattleHitNumber               func(hit int) string
-	BattleVampHeal                func(heal, hp int) string
-	BattlePoisonInflict           func(ename string, added, total int) string
-	BattlePoisonTick              func(ename string, dmg int) string
-	BattleEnemyCounter            func(ename string, dmg int) string
+	BattleAutoReasonFainted        string
+	BattleAutoReasonDangerHp       func(hp, maxHp int) string
+	BattleInvalidCmd               string
+	BattlePlayerAttack             func(hitIndex string, isCrit bool, ename string, dmg int) string
+	BattleCritLabel                string
+	BattleHitNumber                func(hit int) string
+	BattleVampHeal                 func(heal, hp int) string
+	BattlePoisonInflict            func(ename string, added, total int) string
+	BattlePoisonTick               func(ename string, dmg int) string
+	BattleEnemyCounter             func(ename string, dmg int) string
 
 	// Settings
 	SettingsTitle                string
@@ -191,12 +191,12 @@ type Messages struct {
 
 var (
 	MessagesJA = Messages{
-		Title: "==============================================\n   Minimal Rogue-lite Prototype (CUI Ver)   \n==============================================",
-		StartPrompt: "\n選択してください: ",
-		StartContinue: "1: つづきから (save.json を読み込んで開始)",
-		StartNew: "2: はじめから (初期状態で開始)",
+		Title:             "==============================================\n   Minimal Rogue-lite Prototype (CUI Ver)   \n==============================================",
+		StartPrompt:       "\n選択してください: ",
+		StartContinue:     "1: つづきから (save.json を読み込んで開始)",
+		StartNew:          "2: はじめから (初期状態で開始)",
 		InvalidChoice1or2: ">> 無効な選択です。1 または 2 を入力してください。",
-		SaveLoaded: ">> セーブデータを読み込みました！",
+		SaveLoaded:        ">> セーブデータを読み込みました！",
 		SaveStats: func(hp, deepest int) string {
 			rec := "未挑戦"
 			if deepest > 0 {
@@ -204,13 +204,13 @@ var (
 			}
 			return fmt.Sprintf(">> 最大体力: HP %d | 最高到達階層: %s", hp, rec)
 		},
-		Untested: "未挑戦",
+		Untested:                "未挑戦",
 		SaveNotFoundOrCorrupted: ">> save.json が見つからないか破損しています。新規データで開始します。",
-		NewGameStarted: ">> はじめからゲームを開始します。",
-		SavedSuccess: ">> セーブデータを保存しました。(save.json)",
-		SaveFailed: ">> セーブデータの保存に失敗しました:",
-		LoadFailed: ">> セーブデータの読み込みに失敗しました:",
-		Farewell: "お疲れ様でした。",
+		NewGameStarted:          ">> はじめからゲームを開始します。",
+		SavedSuccess:            ">> セーブデータを保存しました。(save.json)",
+		SaveFailed:              ">> セーブデータの保存に失敗しました:",
+		LoadFailed:              ">> セーブデータの読み込みに失敗しました:",
+		Farewell:                "お疲れ様でした。",
 
 		// Hub
 		HubHeader: func(title string) string { return title },
@@ -231,7 +231,7 @@ var (
 		HubStorage: func(storage, resource string, scrolls int, orb, orbs string) string {
 			return fmt.Sprintf("%s: %s x%d | 未装着%s: %s", storage, resource, scrolls, orb, orbs)
 		},
-		HubNone: "(なし)",
+		HubNone:         "(なし)",
 		HubMenu1Dungeon: "1: ダンジョンへ出撃 (探索開始)",
 		HubMenu2Enhance: func(verb, statLabel string) string { return fmt.Sprintf("2: %s (%sの強化)", verb, statLabel) },
 		HubMenu3AttachOrb: func(verb string) string {
@@ -247,9 +247,9 @@ var (
 			return fmt.Sprintf("6: %s (%s +10)", verb, hpLabel)
 		},
 		HubMenu7Settings: "7: 設定 / Settings",
-		HubMenu0Exit: "0: ゲーム終了",
-		ChooseAction: "\n行動を選択してください: ",
-		InvalidChoice: "無効な選択です。",
+		HubMenu0Exit:     "0: ゲーム終了",
+		ChooseAction:     "\n行動を選択してください: ",
+		InvalidChoice:    "無効な選択です。",
 
 		// Dungeon Select
 		DungeonSelectTitle: "\n--- 出撃ダンジョン選択 ---",
@@ -262,8 +262,8 @@ var (
 		DungeonOptionAbyss: func(name string) string {
 			return fmt.Sprintf("3: %s (エンドレス / 階層無制限)", name)
 		},
-		DungeonCancel: "0: キャンセル (拠点に戻る)",
-		DungeonPrompt: "\nダンジョンを選択してください: ",
+		DungeonCancel:   "0: キャンセル (拠点に戻る)",
+		DungeonPrompt:   "\nダンジョンを選択してください: ",
 		DungeonCanceled: ">> 出撃を取りやめました。",
 		RecommendedDeep: "推奨+25以上の上級ダンジョン",
 
@@ -342,12 +342,12 @@ var (
 
 		// Orb Attach
 		OrbAttachNoOrbs: ">> 装着できるオーブが倉庫にありません！",
-		OrbAttachTitle: "\n--- 倉庫のオーブ一覧 ---",
+		OrbAttachTitle:  "\n--- 倉庫のオーブ一覧 ---",
 		OrbAttachPrompt: "装着するオーブの番号を選択: ",
 		OrbAttachSuccess: func(orb string) string {
 			return fmt.Sprintf(">> スロットに [%s] を装着しました！", orb)
 		},
-		OrbAttachFullTitle: "\nスロットが満杯です。上書きする枠を選んでください:",
+		OrbAttachFullTitle:     "\nスロットが満杯です。上書きする枠を選んでください:",
 		OrbAttachReplacePrompt: "番号を選択: ",
 		OrbAttachReplaced: func(removed, added string) string {
 			return fmt.Sprintf(">> [%s] を破棄し、[%s] を装着しました！", removed, added)
@@ -373,11 +373,11 @@ var (
 			return fmt.Sprintf(">> ※ 分解できなかった余りのオーブ [%s] 1個は倉庫に残りました。", orb)
 		},
 		OrbDisassembleIndivTitle: "\n--- オーブの個別分解 ---",
-		OrbDisassemblePick1: "1つ目に分解するオーブの番号を選択: ",
+		OrbDisassemblePick1:      "1つ目に分解するオーブの番号を選択: ",
 		OrbDisassembleSelected1: func(orb string) string {
 			return fmt.Sprintf(">> 1つ目: [%s] を選択しました。", orb)
 		},
-		OrbDisassemblePick2: "2つ目に分解するオーブの番号を選択: ",
+		OrbDisassemblePick2:     "2つ目に分解するオーブの番号を選択: ",
 		OrbDisassembleSameError: ">> 1つ目と同じオーブは選択できません！",
 		OrbDisassembleSuccess: func(orb1, orb2, res string, total int) string {
 			return fmt.Sprintf(">> [%s] と [%s] を分解し、%s x1 を獲得しました！ (所持: %s x%d)", orb1, orb2, res, res, total)
@@ -386,7 +386,7 @@ var (
 
 		// Orb Synthesize
 		OrbSynthNoRecipes: ">> 合成可能なオーブ（同種の通常オーブ2個以上）が倉庫にありません！",
-		OrbSynthTitle: "\n--- オーブの合成 (同種の通常オーブ2個 -> 上位オーブ1個) ---",
+		OrbSynthTitle:     "\n--- オーブの合成 (同種の通常オーブ2個 -> 上位オーブ1個) ---",
 		OrbSynthRecipeItem: func(idx int, from string, count int, to, toDesc string) string {
 			return fmt.Sprintf("%d: [%s] (所持: %d個) -> [%s] %s を合成", idx, from, count, to, toDesc)
 		},
@@ -422,8 +422,8 @@ var (
 		DungeonCurrentStatus: func(hp, maxHp int, res string, scrolls, orbs int) string {
 			return fmt.Sprintf("\n現在HP: %d/%d\n現在の未確定戦利品: %s x%d, オーブ x%d", hp, maxHp, res, scrolls, orbs)
 		},
-		DungeonNextFloor: "1: 次の階層へ進む",
-		DungeonRetreat: "2: 撤退する (戦利品を持ち帰って拠点に戻る)",
+		DungeonNextFloor:    "1: 次の階層へ進む",
+		DungeonRetreat:      "2: 撤退する (戦利品を持ち帰って拠点に戻る)",
 		DungeonPromptAction: "行動を選択: ",
 		DungeonRetreatSuccess: func(res string, scrolls, orbs int) string {
 			return fmt.Sprintf(">> 戦利品（%s: %d個, オーブ: %d個）を持ち帰りました！", res, scrolls, orbs)
@@ -433,7 +433,7 @@ var (
 		EndlessEnter: func(name string) string {
 			return fmt.Sprintf("\n>>> 【%s】に突入しました！ <<<", name)
 		},
-		EndlessIntro: "※ 階層上限のないエンドレスモードです。どこまで潜れるか挑戦しましょう！",
+		EndlessIntro:           "※ 階層上限のないエンドレスモードです。どこまで潜れるか挑戦しましょう！",
 		EndlessStartFloorTitle: "\n--- スタート階層選択 ---",
 		EndlessHighestRecord: func(floor int) string {
 			return fmt.Sprintf("最高到達階層: B%dF", floor)
@@ -460,12 +460,12 @@ var (
 			}
 			return fmt.Sprintf("\n[YOU] HP: %d/%d  vs  [%s] HP: %d/%d%s", php, pmax, ename, ehp, emax, poisonStr)
 		},
-		BattleCmdAttack: "1: 攻撃する",
-		BattleCmdRetreat: "2: 撤退する (戦闘から逃げて拠点へ)",
-		BattleCmdAuto: "3: オート戦闘",
-		BattleCmdPrompt: "コマンド: ",
-		BattleRetreatCombat: "\n>> 戦闘から離脱し、命からがら帰還しました。（戦利品は持ち帰れません）",
-		BattleAutoStart: "\n>> [オート戦闘開始] 高速で戦闘を進行します...",
+		BattleCmdAttack:        "1: 攻撃する",
+		BattleCmdRetreat:       "2: 撤退する (戦闘から逃げて拠点へ)",
+		BattleCmdAuto:          "3: オート戦闘",
+		BattleCmdPrompt:        "コマンド: ",
+		BattleRetreatCombat:    "\n>> 戦闘から離脱し、命からがら帰還しました。（戦利品は持ち帰れません）",
+		BattleAutoStart:        "\n>> [オート戦闘開始] 高速で戦闘を進行します...",
 		BattleAutoSummaryTitle: "\n==============================================\n             【オート戦闘 終了要約】            \n==============================================",
 		BattleAutoReason: func(reason string) string {
 			return fmt.Sprintf("- 終了理由: %s", reason)
@@ -493,9 +493,9 @@ var (
 			}
 			return fmt.Sprintf("- 残りHP: あなた %d/%d | %s %d/%d", remPlayer, pmax, ename, remEnemy, emax)
 		},
-		BattleAutoReasonEnemyDefeated: "敵を撃破！",
+		BattleAutoReasonEnemyDefeated:  "敵を撃破！",
 		BattleAutoReasonPoisonDefeated: "毒ダメージにより敵を撃破！",
-		BattleAutoReasonFainted: "力尽きました...",
+		BattleAutoReasonFainted:        "力尽きました...",
 		BattleAutoReasonDangerHp: func(hp, maxHp int) string {
 			return fmt.Sprintf("危険域 (HP %d/%d <= 30%%) に到達したため自動停止", hp, maxHp)
 		},
@@ -533,10 +533,10 @@ var (
 			}
 			return fmt.Sprintf("現在の設定: 言語: [%s] | テーマ: [%s]", langLabel, theme)
 		},
-		SettingsMenu1Lang: "1: 言語切り替え (Toggle Language: en / ja)",
-		SettingsMenu2Theme: "2: テーマ切り替え (Switch Theme)",
+		SettingsMenu1Lang:           "1: 言語切り替え (Toggle Language: en / ja)",
+		SettingsMenu2Theme:          "2: テーマ切り替え (Switch Theme)",
 		SettingsMenu3ExportTemplate: "3: カスタムテーマ雛形を出力 (Export custom_theme.example.json)",
-		SettingsMenu0Back: "0: 戻る (Back)",
+		SettingsMenu0Back:           "0: 戻る (Back)",
 		SettingsLangChanged: func(lang string) string {
 			langLabel := "English (en)"
 			if lang == "ja" {
@@ -555,12 +555,12 @@ var (
 	}
 
 	MessagesEN = Messages{
-		Title: "==============================================\n   Minimal Rogue-lite Prototype (CUI Ver)   \n==============================================",
-		StartPrompt: "\nPlease choose an option: ",
-		StartContinue: "1: Continue (Load save.json)",
-		StartNew: "2: New Game (Start with initial stats)",
+		Title:             "==============================================\n   Minimal Rogue-lite Prototype (CUI Ver)   \n==============================================",
+		StartPrompt:       "\nPlease choose an option: ",
+		StartContinue:     "1: Continue (Load save.json)",
+		StartNew:          "2: New Game (Start with initial stats)",
 		InvalidChoice1or2: ">> Invalid choice. Please enter 1 or 2.",
-		SaveLoaded: ">> Save data loaded successfully!",
+		SaveLoaded:        ">> Save data loaded successfully!",
 		SaveStats: func(hp, deepest int) string {
 			rec := "None"
 			if deepest > 0 {
@@ -568,13 +568,13 @@ var (
 			}
 			return fmt.Sprintf(">> Max HP: %d | Deepest Floor: %s", hp, rec)
 		},
-		Untested: "None",
+		Untested:                "None",
 		SaveNotFoundOrCorrupted: ">> save.json was not found or corrupted. Starting a new game.",
-		NewGameStarted: ">> Starting a new game.",
-		SavedSuccess: ">> Game saved successfully (save.json).",
-		SaveFailed: ">> Failed to save game:",
-		LoadFailed: ">> Failed to load save data:",
-		Farewell: "Thank you for playing!",
+		NewGameStarted:          ">> Starting a new game.",
+		SavedSuccess:            ">> Game saved successfully (save.json).",
+		SaveFailed:              ">> Failed to save game:",
+		LoadFailed:              ">> Failed to load save data:",
+		Farewell:                "Thank you for playing!",
 
 		// Hub
 		HubHeader: func(title string) string { return title },
@@ -595,7 +595,7 @@ var (
 		HubStorage: func(storage, resource string, scrolls int, orb, orbs string) string {
 			return fmt.Sprintf("%s: %s x%d | Stock %ss: %s", storage, resource, scrolls, orb, orbs)
 		},
-		HubNone: "(None)",
+		HubNone:         "(None)",
 		HubMenu1Dungeon: "1: Embark to Dungeon (Start Run)",
 		HubMenu2Enhance: func(verb, statLabel string) string { return fmt.Sprintf("2: %s (Upgrade %s)", verb, statLabel) },
 		HubMenu3AttachOrb: func(verb string) string {
@@ -611,9 +611,9 @@ var (
 			return fmt.Sprintf("6: %s (%s +10)", verb, hpLabel)
 		},
 		HubMenu7Settings: "7: Settings",
-		HubMenu0Exit: "0: Quit Game",
-		ChooseAction: "\nChoose an action: ",
-		InvalidChoice: "Invalid choice.",
+		HubMenu0Exit:     "0: Quit Game",
+		ChooseAction:     "\nChoose an action: ",
+		InvalidChoice:    "Invalid choice.",
 
 		// Dungeon Select
 		DungeonSelectTitle: "\n--- Select Dungeon ---",
@@ -626,8 +626,8 @@ var (
 		DungeonOptionAbyss: func(name string) string {
 			return fmt.Sprintf("3: %s (Endless / Unlimited Floors)", name)
 		},
-		DungeonCancel: "0: Cancel (Return to Base)",
-		DungeonPrompt: "\nSelect a dungeon: ",
+		DungeonCancel:   "0: Cancel (Return to Base)",
+		DungeonPrompt:   "\nSelect a dungeon: ",
 		DungeonCanceled: ">> Canceled departure.",
 		RecommendedDeep: "Recommended +25 or higher",
 
@@ -706,12 +706,12 @@ var (
 
 		// Orb Attach
 		OrbAttachNoOrbs: ">> No orbs available in storage!",
-		OrbAttachTitle: "\n--- Stored Orbs ---",
+		OrbAttachTitle:  "\n--- Stored Orbs ---",
 		OrbAttachPrompt: "Select an orb to attach: ",
 		OrbAttachSuccess: func(orb string) string {
 			return fmt.Sprintf(">> Attached [%s] to weapon slot!", orb)
 		},
-		OrbAttachFullTitle: "\nSlots are full. Choose a slot to overwrite:",
+		OrbAttachFullTitle:     "\nSlots are full. Choose a slot to overwrite:",
 		OrbAttachReplacePrompt: "Select slot number: ",
 		OrbAttachReplaced: func(removed, added string) string {
 			return fmt.Sprintf(">> Discarded [%s] and equipped [%s]!", removed, added)
@@ -737,11 +737,11 @@ var (
 			return fmt.Sprintf(">> * 1 remaining orb [%s] could not be paired and remains in storage.", orb)
 		},
 		OrbDisassembleIndivTitle: "\n--- Individual Orb Disassembly ---",
-		OrbDisassemblePick1: "Select first orb to disassemble: ",
+		OrbDisassemblePick1:      "Select first orb to disassemble: ",
 		OrbDisassembleSelected1: func(orb string) string {
 			return fmt.Sprintf(">> First orb selected: [%s]", orb)
 		},
-		OrbDisassemblePick2: "Select second orb to disassemble: ",
+		OrbDisassemblePick2:     "Select second orb to disassemble: ",
 		OrbDisassembleSameError: ">> Cannot choose the same orb twice!",
 		OrbDisassembleSuccess: func(orb1, orb2, res string, total int) string {
 			return fmt.Sprintf(">> Disassembled [%s] and [%s], obtained %s x1! (Total: %s x%d)", orb1, orb2, res, res, total)
@@ -750,7 +750,7 @@ var (
 
 		// Orb Synthesize
 		OrbSynthNoRecipes: ">> No synthesizable orbs (need at least 2 of the same normal orb) in storage!",
-		OrbSynthTitle: "\n--- Synthesize Orbs (2 Same Normal Orbs -> 1 Plus Orb) ---",
+		OrbSynthTitle:     "\n--- Synthesize Orbs (2 Same Normal Orbs -> 1 Plus Orb) ---",
 		OrbSynthRecipeItem: func(idx int, from string, count int, to, toDesc string) string {
 			return fmt.Sprintf("%d: [%s] (Owned: %d) -> Synthesize [%s] %s", idx, from, count, to, toDesc)
 		},
@@ -786,8 +786,8 @@ var (
 		DungeonCurrentStatus: func(hp, maxHp int, res string, scrolls, orbs int) string {
 			return fmt.Sprintf("\nCurrent HP: %d/%d\nPending Loot: %s x%d, Orbs x%d", hp, maxHp, res, scrolls, orbs)
 		},
-		DungeonNextFloor: "1: Proceed to next floor",
-		DungeonRetreat: "2: Retreat (Return to base with collected loot)",
+		DungeonNextFloor:    "1: Proceed to next floor",
+		DungeonRetreat:      "2: Retreat (Return to base with collected loot)",
 		DungeonPromptAction: "Choose action: ",
 		DungeonRetreatSuccess: func(res string, scrolls, orbs int) string {
 			return fmt.Sprintf(">> Brought back loot (%s: %d, Orbs: %d) safely!", res, scrolls, orbs)
@@ -797,7 +797,7 @@ var (
 		EndlessEnter: func(name string) string {
 			return fmt.Sprintf("\n>>> Entered 【%s】! <<<", name)
 		},
-		EndlessIntro: "* Endless dungeon with no floor limit. Test how deep you can survive!",
+		EndlessIntro:           "* Endless dungeon with no floor limit. Test how deep you can survive!",
 		EndlessStartFloorTitle: "\n--- Select Start Floor ---",
 		EndlessHighestRecord: func(floor int) string {
 			return fmt.Sprintf("Highest Record: B%dF", floor)
@@ -824,12 +824,12 @@ var (
 			}
 			return fmt.Sprintf("\n[YOU] HP: %d/%d  vs  [%s] HP: %d/%d%s", php, pmax, ename, ehp, emax, poisonStr)
 		},
-		BattleCmdAttack: "1: Attack",
-		BattleCmdRetreat: "2: Retreat (Flee to base)",
-		BattleCmdAuto: "3: Auto Combat",
-		BattleCmdPrompt: "Command: ",
-		BattleRetreatCombat: "\n>> Fled from battle and escaped back to base. (Loot lost)",
-		BattleAutoStart: "\n>> [Auto Combat Started] Resolving combat at high speed...",
+		BattleCmdAttack:        "1: Attack",
+		BattleCmdRetreat:       "2: Retreat (Flee to base)",
+		BattleCmdAuto:          "3: Auto Combat",
+		BattleCmdPrompt:        "Command: ",
+		BattleRetreatCombat:    "\n>> Fled from battle and escaped back to base. (Loot lost)",
+		BattleAutoStart:        "\n>> [Auto Combat Started] Resolving combat at high speed...",
 		BattleAutoSummaryTitle: "\n==============================================\n          【Auto Combat Summary Report】         \n==============================================",
 		BattleAutoReason: func(reason string) string {
 			return fmt.Sprintf("- End Reason: %s", reason)
@@ -857,9 +857,9 @@ var (
 			}
 			return fmt.Sprintf("- Remaining HP: You %d/%d | %s %d/%d", remPlayer, pmax, ename, remEnemy, emax)
 		},
-		BattleAutoReasonEnemyDefeated: "Enemy Defeated!",
+		BattleAutoReasonEnemyDefeated:  "Enemy Defeated!",
 		BattleAutoReasonPoisonDefeated: "Enemy slain by poison damage!",
-		BattleAutoReasonFainted: "You were knocked out...",
+		BattleAutoReasonFainted:        "You were knocked out...",
 		BattleAutoReasonDangerHp: func(hp, maxHp int) string {
 			return fmt.Sprintf("Auto stopped upon reaching danger zone (HP %d/%d <= 30%%)", hp, maxHp)
 		},
@@ -897,10 +897,10 @@ var (
 			}
 			return fmt.Sprintf("Current Settings: Language: [%s] | Theme: [%s]", langLabel, theme)
 		},
-		SettingsMenu1Lang: "1: Toggle Language (en / ja)",
-		SettingsMenu2Theme: "2: Switch Theme",
+		SettingsMenu1Lang:           "1: Toggle Language (en / ja)",
+		SettingsMenu2Theme:          "2: Switch Theme",
 		SettingsMenu3ExportTemplate: "3: Export Custom Theme Template (custom_theme.example.json)",
-		SettingsMenu0Back: "0: Back",
+		SettingsMenu0Back:           "0: Back",
 		SettingsLangChanged: func(lang string) string {
 			langLabel := "English (en)"
 			if lang == "ja" {

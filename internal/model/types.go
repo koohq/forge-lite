@@ -156,4 +156,3 @@ type Theme struct {
 	Language Language
 	ThemeLocaleData
 }
-

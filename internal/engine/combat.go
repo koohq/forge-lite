@@ -167,16 +167,16 @@ func ResolvePlayerAttack(
 
 // AutoCombatResult summarizes the automated combat execution.
 type AutoCombatResult struct {
-	EnemyDefeated      bool
-	PlayerFainted      bool
-	DangerZoneStopped  bool
-	Turns              int
-	TotalDmgDealt      int
-	TotalDmgTaken      int
-	TotalHealed        int
-	StopReason         string
-	FinalPlayerHP      int
-	FinalEnemyHP       int
+	EnemyDefeated     bool
+	PlayerFainted     bool
+	DangerZoneStopped bool
+	Turns             int
+	TotalDmgDealt     int
+	TotalDmgTaken     int
+	TotalHealed       int
+	StopReason        string
+	FinalPlayerHP     int
+	FinalEnemyHP      int
 }
 
 // RunAutoCombat simulates combat until enemy defeat, player fainting, or danger zone HP <= 30%.

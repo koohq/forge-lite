@@ -47,7 +47,7 @@ func EnhanceHP(player *model.Player, stockScrolls *int, requestedScrolls int) (u
 	times := requestedScrolls / 2
 	usedScrolls = times * 2
 	hpGain = times * 10
-	hasRemainder = (requestedScrolls % 2 != 0)
+	hasRemainder = (requestedScrolls%2 != 0)
 
 	*stockScrolls -= usedScrolls
 	player.MaxHP += hpGain

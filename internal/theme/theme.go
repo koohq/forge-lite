@@ -14,9 +14,9 @@ import (
 var embeddedFS embed.FS
 
 const (
-	DefaultThemeID           = "classic_fantasy"
-	CustomThemeFilePath      = "custom_theme.json"
-	CustomThemeExamplePath   = "custom_theme.example.json"
+	DefaultThemeID         = "classic_fantasy"
+	CustomThemeFilePath    = "custom_theme.json"
+	CustomThemeExamplePath = "custom_theme.example.json"
 )
 
 var (
