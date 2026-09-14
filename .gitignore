@@ -6,3 +6,16 @@ custom_theme.json
 .env*
 *.local
 .temp/
+
+# Build artifacts
+*.exe
+game
+
+# Runtime save data
+save.json
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

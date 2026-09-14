@@ -29,37 +29,37 @@
     "enhanceVerb": "リアクターを調整する",
     "resourceName": "プラズマコア",
     "orbs": {
-      "MULTI_HIT": {
-        "name": "ツインビーム",
-        "desc": "2連照射/威力65%"
-      },
       "CRITICAL": {
         "name": "クリティカルパルス",
         "desc": "25%で2倍"
-      },
-      "VAMP": {
-        "name": "シールドドレイン",
-        "desc": "与ダメの15%回復"
-      },
-      "POISON": {
-        "name": "アシッド腐食",
-        "desc": "攻撃時毒+1/ターン末毒x3ダメ"
-      },
-      "MULTI_HIT_PLUS": {
-        "name": "ツインビーム+",
-        "desc": "2連照射/威力75%"
       },
       "CRITICAL_PLUS": {
         "name": "クリティカルパルス+",
         "desc": "40%で2倍"
       },
-      "VAMP_PLUS": {
-        "name": "シールドドレイン+",
-        "desc": "与ダメの25%回復"
+      "MULTI_HIT": {
+        "name": "ツインビーム",
+        "desc": "2連照射/威力65%"
+      },
+      "MULTI_HIT_PLUS": {
+        "name": "ツインビーム+",
+        "desc": "2連照射/威力75%"
+      },
+      "POISON": {
+        "name": "アシッド腐食",
+        "desc": "攻撃時毒+1/ターン末毒x3ダメ"
       },
       "POISON_PLUS": {
         "name": "アシッド腐食+",
         "desc": "攻撃時毒+2/ターン末毒x3ダメ"
+      },
+      "VAMP": {
+        "name": "シールドドレイン",
+        "desc": "与ダメの15%回復"
+      },
+      "VAMP_PLUS": {
+        "name": "シールドドレイン+",
+        "desc": "与ダメの25%回復"
       }
     },
     "dungeons": {
@@ -127,37 +127,37 @@
     "enhanceVerb": "Calibrate Reactor",
     "resourceName": "Plasma Core",
     "orbs": {
-      "MULTI_HIT": {
-        "name": "Twin Beam",
-        "desc": "Fire dual beams at 65% energy each"
-      },
       "CRITICAL": {
         "name": "Critical Pulse",
         "desc": "25% chance for 2x focused damage"
-      },
-      "VAMP": {
-        "name": "Shield Siphon",
-        "desc": "Absorb 15% damage dealt as shield energy"
-      },
-      "POISON": {
-        "name": "Corrosive Acid",
-        "desc": "+1 chemical payload on hit, deals 3x dmg per tick"
-      },
-      "MULTI_HIT_PLUS": {
-        "name": "Twin Beam+",
-        "desc": "Fire dual beams at 75% energy each"
       },
       "CRITICAL_PLUS": {
         "name": "Critical Pulse+",
         "desc": "40% chance for 2x focused damage"
       },
-      "VAMP_PLUS": {
-        "name": "Shield Siphon+",
-        "desc": "Absorb 25% damage dealt as shield energy"
+      "MULTI_HIT": {
+        "name": "Twin Beam",
+        "desc": "Fire dual beams at 65% energy each"
+      },
+      "MULTI_HIT_PLUS": {
+        "name": "Twin Beam+",
+        "desc": "Fire dual beams at 75% energy each"
+      },
+      "POISON": {
+        "name": "Corrosive Acid",
+        "desc": "+1 chemical payload on hit, deals 3x dmg per tick"
       },
       "POISON_PLUS": {
         "name": "Corrosive Acid+",
         "desc": "+2 chemical payload on hit, deals 3x dmg per tick"
+      },
+      "VAMP": {
+        "name": "Shield Siphon",
+        "desc": "Absorb 15% damage dealt as shield energy"
+      },
+      "VAMP_PLUS": {
+        "name": "Shield Siphon+",
+        "desc": "Absorb 25% damage dealt as shield energy"
       }
     },
     "dungeons": {
