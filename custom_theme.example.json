@@ -39,19 +39,19 @@
       },
       "MULTI_HIT": {
         "name": "ツインビーム",
-        "desc": "2連照射/威力65%"
+        "desc": "2連照射/威力65%×2"
       },
       "MULTI_HIT_PLUS": {
         "name": "ツインビーム+",
-        "desc": "2連照射/威力75%"
+        "desc": "2連照射/威力75%×2"
       },
       "POISON": {
         "name": "アシッド腐食",
-        "desc": "攻撃時毒+1/ターン末毒x3ダメ"
+        "desc": "攻撃時毒+1/ターン終了時に毒×3ダメ"
       },
       "POISON_PLUS": {
         "name": "アシッド腐食+",
-        "desc": "攻撃時毒+2/ターン末毒x3ダメ"
+        "desc": "攻撃時毒+2/ターン終了時に毒×3ダメ"
       },
       "VAMP": {
         "name": "シールドドレイン",
@@ -68,14 +68,14 @@
       "abyss": "事象の地平線"
     },
     "enemyPrefixes": [
-      "敵対的な",
-      "過負荷の",
-      "変異した",
-      "未知生命の",
-      "サイバネの",
-      "凶暴な",
+      "深宇宙の",
+      "星間型",
+      "コズミック",
+      "ヴォイド",
       "古代の",
-      "コズミック"
+      "暴走した",
+      "強化型",
+      "漂流する"
     ],
     "enemyBases": [
       "偵察ドローン",
@@ -88,7 +88,7 @@
       "タイタン弩級艦"
     ],
     "retreatMessage": "ワープドライブを緊急起動し、軌道ステーションへ退避した。",
-    "hubTitle": "【旗艦ドック・管制室】",
+    "hubTitle": "【旗艦管制室】",
     "hpLabel": "シールド最大値",
     "targetPrefix": "旗艦武装",
     "statLabel": "兵装出力",
@@ -168,14 +168,14 @@
       "abyss": "Event Horizon Void"
     },
     "enemyPrefixes": [
-      "Cosmic",
-      "Void",
-      "Cybernetic",
-      "Plasma",
-      "Starlight",
-      "Hyper-Drive",
-      "Gravity-Distorted",
-      "Supernova"
+      "Deep-Space ",
+      "Interstellar ",
+      "Cosmic ",
+      "Void ",
+      "Ancient ",
+      "Rampaging ",
+      "Augmented ",
+      "Drifting "
     ],
     "enemyBases": [
       "Scout Drone",
@@ -188,7 +188,7 @@
       "Titan Dreadnought"
     ],
     "retreatMessage": "Warp drive engaged; executed emergency tactical jump back to orbital station.",
-    "hubTitle": "【Flagship Command Dock】",
+    "hubTitle": "【Flagship Bridge】",
     "hpLabel": "Max Shields",
     "targetPrefix": "Flagship Weapon",
     "statLabel": "Weapon Output",

@@ -205,3 +205,50 @@ func TestExportCustomThemeTemplate(t *testing.T) {
 		t.Errorf("unexpected custom rank name: %s", def.JA.GetTargetRankName(1500))
 	}
 }
+
+func TestCustomThemeExample_FileLoadingAndHomeDisplay(t *testing.T) {
+	// Load the actual custom_theme.example.json from repository root
+	def, err := LoadCustomThemeDefIfExists("../../custom_theme.example.json")
+	if err != nil {
+		t.Fatalf("failed to load custom_theme.example.json: %v", err)
+	}
+	if def == nil {
+		t.Fatal("custom_theme.example.json returned nil")
+	}
+
+	th := ResolveTheme(*def, model.LanguageJA)
+
+	// Check updated fields
+	if th.HubTitle != "【旗艦管制室】" {
+		t.Errorf("unexpected HubTitle: %s", th.HubTitle)
+	}
+	if th.Orbs[model.OrbMultiHit].Desc != "2連照射/威力65%×2" {
+		t.Errorf("unexpected MULTI_HIT desc: %s", th.Orbs[model.OrbMultiHit].Desc)
+	}
+	if th.Orbs[model.OrbPoison].Desc != "攻撃時毒+1/ターン終了時に毒×3ダメ" {
+		t.Errorf("unexpected POISON desc: %s", th.Orbs[model.OrbPoison].Desc)
+	}
+	if th.GetSlotLabel() != "換装スロット" {
+		t.Errorf("unexpected SlotLabel: %s", th.GetSlotLabel())
+	}
+	if th.GetUninstalledOrbLabel() != "未装着デバイス" {
+		t.Errorf("unexpected UninstalledOrbLabel: %s", th.GetUninstalledOrbLabel())
+	}
+
+	// Verify home display formatting
+	t.Log("\n----------------------------------------------")
+	t.Log(th.HubTitle)
+	t.Logf("%s: 4000 | %s 最高到達: B10F", th.HPLabel, th.Dungeons.Abyss)
+	t.Logf("%s: %s+2188 (%s: 4386)", th.GetTargetPrefix(), th.GetTargetRankName(2188), th.StatLabel)
+	t.Logf("%s [3/3]: [%s] [%s] [%s]", th.GetSlotLabel(), th.Orbs[model.OrbVampPlus].Name, th.Orbs[model.OrbCriticalPlus].Name, th.Orbs[model.OrbMultiHitPlus].Name)
+	t.Logf("%s: %s x15 | %s: [%s]", th.StorageLabel, th.ResourceName, th.GetUninstalledOrbLabel(), th.Orbs[model.OrbPoisonPlus].Name)
+	t.Log("----------------------------------------------")
+	t.Log("1: ダンジョンへ出撃 (探索開始)")
+	t.Logf("2: %s (%sの強化)", th.EnhanceVerb, th.StatLabel)
+	t.Logf("3: %s (パッシブ効果の装着)", th.InstallVerb)
+	t.Logf("4: %sを分解 (素材を回収)", th.OrbLabel)
+	t.Logf("5: %sを合成 (上位版へ強化)", th.OrbLabel)
+	t.Logf("6: %s (%s +10)", th.EnhanceHPVerb, th.HPLabel)
+	t.Log("7: 設定 / Settings")
+	t.Log("0: ゲーム終了")
+}
