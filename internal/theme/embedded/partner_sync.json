@@ -57,9 +57,9 @@
 			"重装型",
 			"高機動型",
 			"近接特化型",
-			"索敵型",
 			"深層配備の",
-			"旧文明由来の",
+			"封鎖区画の",
+			"廃墟に残る",
 			"異常活性化した"
 		],
 		"enemyBases": [
@@ -142,9 +142,9 @@
 			"Heavy Armored ",
 			"High-Mobility ",
 			"Close-Combat ",
-			"Recon ",
 			"Deep-Deployed ",
-			"Old-World ",
+			"Quarantine-Zone ",
+			"Ruins-Lurking ",
 			"Hyper-Activated "
 		],
 		"enemyBases": [

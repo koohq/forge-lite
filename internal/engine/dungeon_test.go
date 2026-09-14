@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"math/rand/v2"
 	"testing"
 
 	"github.com/koohq/forge-lite/internal/model"
@@ -46,5 +47,37 @@ func TestGenerateEndlessEnemy_BossAndStats(t *testing.T) {
 	normalDrops := normalEnemy.GetDrops()
 	if len(normalDrops.Orbs) != 0 {
 		t.Errorf("expected 0 orbs on floor 1, got %+v", normalDrops.Orbs)
+	}
+}
+
+func TestPartnerSyncEnemyNames(t *testing.T) {
+	th := theme.GetPresetTheme("partner_sync", model.LanguageJA)
+
+	expectedPrefixes := []string{
+		"強襲型",
+		"重装型",
+		"高機動型",
+		"近接特化型",
+		"深層配備の",
+		"封鎖区画の",
+		"廃墟に残る",
+		"異常活性化した",
+	}
+
+	if len(th.EnemyPrefixes) != len(expectedPrefixes) {
+		t.Fatalf("expected %d prefixes, got %d", len(expectedPrefixes), len(th.EnemyPrefixes))
+	}
+	for i, p := range expectedPrefixes {
+		if th.EnemyPrefixes[i] != p {
+			t.Errorf("prefix %d: expected %s, got %s", i, p, th.EnemyPrefixes[i])
+		}
+	}
+
+	// Verify 10 random sample generations
+	r := rand.New(rand.NewPCG(1234, 5678))
+	for i := 1; i <= 10; i++ {
+		floor := i*3 + 1
+		enemy := GenerateEndlessEnemy(floor, th, func(n int) int { return r.IntN(n) })
+		t.Logf("Sample %2d (B%2dF): %s", i, floor, enemy.Name)
 	}
 }
