@@ -223,6 +223,12 @@ func fillLocaleDefaults(data *model.ThemeLocaleData) {
 	if data.InstallVerb == "" {
 		data.InstallVerb = "装着"
 	}
+	if data.SlotLabel == "" {
+		data.SlotLabel = data.GetSlotLabel()
+	}
+	if data.UninstalledOrbLabel == "" {
+		data.UninstalledOrbLabel = data.GetUninstalledOrbLabel()
+	}
 }
 
 // LoadCustomThemeIfExists loads and resolves custom theme if exists.

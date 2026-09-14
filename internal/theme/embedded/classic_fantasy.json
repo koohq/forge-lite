@@ -51,7 +51,7 @@
 			"デーモン",
 			"死霊騎士"
 		],
-		"retreatMessage": "慎重に撤退を選択し、拠点へ帰還した。",
+		"retreatMessage": "戦闘を切り上げ、拠点へ撤退した。",
 		"hubTitle": "【冒険者の酒場】",
 		"hpLabel": "最大体力",
 		"targetPrefix": "所持装備",
@@ -60,7 +60,9 @@
 		"storageLabel": "倉庫",
 		"orbLabel": "オーブ",
 		"enhanceHpVerb": "体力を強化する",
-		"installVerb": "装着"
+		"installVerb": "装着",
+		"slotLabel": "装着スロット",
+		"uninstalledOrbLabel": "未装着オーブ"
 	},
 	"en": {
 		"name": "Classic Fantasy",
@@ -134,7 +136,7 @@
 			"Demon",
 			"Death Knight"
 		],
-		"retreatMessage": "Carefully chose to retreat and returned to base.",
+		"retreatMessage": "Ended combat and retreated to base.",
 		"hubTitle": "【Adventurer's Guild】",
 		"hpLabel": "Max HP",
 		"targetPrefix": "Equipment",
@@ -143,6 +145,8 @@
 		"storageLabel": "Storage",
 		"orbLabel": "Orb",
 		"enhanceHpVerb": "Fortify Vitality",
-		"installVerb": "Equip"
+		"installVerb": "Equip",
+		"slotLabel": "Equip Slots",
+		"uninstalledOrbLabel": "Stock Orbs"
 	}
 }

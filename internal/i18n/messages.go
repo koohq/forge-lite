@@ -29,9 +29,9 @@ type Messages struct {
 	HubHeader           func(title string) string
 	HubStats            func(hpLabel string, hp int, abyssName string, deepest int) string
 	HubEquip            func(label, name, plusPrefix string, plus int, statLabel string, atk int) string
-	HubSlots            func(verb string, count int, slots string) string
+	HubSlots            func(slotLabel string, count int, slots string) string
 	HubEmptySlot        string
-	HubStorage          func(storage, resource string, scrolls int, orb, orbs string) string
+	HubStorage          func(storage, resource string, scrolls int, uninstalledLabel, orbs string) string
 	HubNone             string
 	HubMenu1Dungeon     string
 	HubMenu2Enhance     func(verb, statLabel string) string
@@ -202,7 +202,7 @@ var (
 			if deepest > 0 {
 				rec = fmt.Sprintf("B%dF", deepest)
 			}
-			return fmt.Sprintf(">> 最大体力: HP %d | 最高到達階層: %s", hp, rec)
+			return fmt.Sprintf(">> 最大体力: %d | 最高到達階層: %s", hp, rec)
 		},
 		Untested:                "未挑戦",
 		SaveNotFoundOrCorrupted: ">> save.json が見つからないか破損しています。新規データで開始します。",
@@ -210,7 +210,7 @@ var (
 		SavedSuccess:            ">> セーブデータを保存しました。(save.json)",
 		SaveFailed:              ">> セーブデータの保存に失敗しました:",
 		LoadFailed:              ">> セーブデータの読み込みに失敗しました:",
-		Farewell:                "お疲れ様でした。",
+		Farewell:                "ゲームを終了します。",
 
 		// Hub
 		HubHeader: func(title string) string { return title },
@@ -219,17 +219,17 @@ var (
 			if deepest > 0 {
 				rec = fmt.Sprintf("B%dF", deepest)
 			}
-			return fmt.Sprintf("%s: HP %d | %s 最高到達: %s", hpLabel, hp, abyssName, rec)
+			return fmt.Sprintf("%s: %d | %s 最高到達: %s", hpLabel, hp, abyssName, rec)
 		},
 		HubEquip: func(label, name, plusPrefix string, plus int, statLabel string, atk int) string {
 			return fmt.Sprintf("%s: %s%s%d (%s: %d)", label, name, plusPrefix, plus, statLabel, atk)
 		},
-		HubSlots: func(verb string, count int, slots string) string {
-			return fmt.Sprintf("%sスロット [%d/3]: %s", verb, count, slots)
+		HubSlots: func(slotLabel string, count int, slots string) string {
+			return fmt.Sprintf("%s [%d/3]: %s", slotLabel, count, slots)
 		},
 		HubEmptySlot: "(空き)",
-		HubStorage: func(storage, resource string, scrolls int, orb, orbs string) string {
-			return fmt.Sprintf("%s: %s x%d | 未装着%s: %s", storage, resource, scrolls, orb, orbs)
+		HubStorage: func(storage, resource string, scrolls int, uninstalledLabel, orbs string) string {
+			return fmt.Sprintf("%s: %s x%d | %s: %s", storage, resource, scrolls, uninstalledLabel, orbs)
 		},
 		HubNone:         "(なし)",
 		HubMenu1Dungeon: "1: ダンジョンへ出撃 (探索開始)",
@@ -238,10 +238,10 @@ var (
 			return fmt.Sprintf("3: %s (パッシブ効果の装着)", verb)
 		},
 		HubMenu4Disassemble: func(orb string) string {
-			return fmt.Sprintf("4: %sを分解 (素材への還元)", orb)
+			return fmt.Sprintf("4: %sを分解 (素材を回収)", orb)
 		},
 		HubMenu5Synthesize: func(orb string) string {
-			return fmt.Sprintf("5: %sを合成 (上位性能への強化)", orb)
+			return fmt.Sprintf("5: %sを合成 (上位版へ強化)", orb)
 		},
 		HubMenu6EnhanceHp: func(verb, hpLabel string) string {
 			return fmt.Sprintf("6: %s (%s +10)", verb, hpLabel)
@@ -574,7 +574,7 @@ var (
 		SavedSuccess:            ">> Game saved successfully (save.json).",
 		SaveFailed:              ">> Failed to save game:",
 		LoadFailed:              ">> Failed to load save data:",
-		Farewell:                "Thank you for playing!",
+		Farewell:                "Exiting the game.",
 
 		// Hub
 		HubHeader: func(title string) string { return title },
@@ -588,12 +588,12 @@ var (
 		HubEquip: func(label, name, plusPrefix string, plus int, statLabel string, atk int) string {
 			return fmt.Sprintf("%s: %s%s%d (%s: %d)", label, name, plusPrefix, plus, statLabel, atk)
 		},
-		HubSlots: func(verb string, count int, slots string) string {
-			return fmt.Sprintf("%s Slots [%d/3]: %s", verb, count, slots)
+		HubSlots: func(slotLabel string, count int, slots string) string {
+			return fmt.Sprintf("%s [%d/3]: %s", slotLabel, count, slots)
 		},
 		HubEmptySlot: "(Empty)",
-		HubStorage: func(storage, resource string, scrolls int, orb, orbs string) string {
-			return fmt.Sprintf("%s: %s x%d | Stock %ss: %s", storage, resource, scrolls, orb, orbs)
+		HubStorage: func(storage, resource string, scrolls int, uninstalledLabel, orbs string) string {
+			return fmt.Sprintf("%s: %s x%d | %s: %s", storage, resource, scrolls, uninstalledLabel, orbs)
 		},
 		HubNone:         "(None)",
 		HubMenu1Dungeon: "1: Embark to Dungeon (Start Run)",
@@ -602,7 +602,7 @@ var (
 			return fmt.Sprintf("3: %s (Equip Passives)", verb)
 		},
 		HubMenu4Disassemble: func(orb string) string {
-			return fmt.Sprintf("4: Dismantle %s (Convert to Materials)", orb)
+			return fmt.Sprintf("4: Dismantle %s (Recover Materials)", orb)
 		},
 		HubMenu5Synthesize: func(orb string) string {
 			return fmt.Sprintf("5: Synthesize %s (Upgrade to Plus)", orb)

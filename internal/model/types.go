@@ -118,6 +118,30 @@ type ThemeLocaleData struct {
 	OrbLabel          string              `json:"orbLabel"`
 	EnhanceHPVerb     string              `json:"enhanceHpVerb"`
 	InstallVerb       string              `json:"installVerb"`
+	SlotLabel         string              `json:"slotLabel,omitempty"`
+	UninstalledOrbLabel string            `json:"uninstalledOrbLabel,omitempty"`
+}
+
+// GetSlotLabel returns SlotLabel if non-empty, falling back to InstallVerb + "スロット" / " Slots".
+func (d ThemeLocaleData) GetSlotLabel() string {
+	if d.SlotLabel != "" {
+		return d.SlotLabel
+	}
+	if d.InstallVerb != "" {
+		return d.InstallVerb + "スロット"
+	}
+	return "スロット"
+}
+
+// GetUninstalledOrbLabel returns UninstalledOrbLabel if non-empty, falling back to 未装着 + OrbLabel.
+func (d ThemeLocaleData) GetUninstalledOrbLabel() string {
+	if d.UninstalledOrbLabel != "" {
+		return d.UninstalledOrbLabel
+	}
+	if d.OrbLabel != "" {
+		return "未装着" + d.OrbLabel
+	}
+	return "未装着"
 }
 
 // GetTargetRankName returns the rank name corresponding to the current plus value.

@@ -79,6 +79,14 @@ func (g *Game) readLine(prompt string) string {
 	return strings.TrimSpace(line)
 }
 
+func (g *Game) getOrbName(orb model.OrbType) string {
+	desc, ok := g.theme.Orbs[orb]
+	if !ok || desc.Name == "" {
+		return string(orb)
+	}
+	return desc.Name
+}
+
 func (g *Game) getOrbDesc(orb model.OrbType) string {
 	desc, ok := g.theme.Orbs[orb]
 	if !ok {
@@ -204,11 +212,11 @@ func (g *Game) hubPhase() {
 			if i > 0 {
 				b.WriteString(" ")
 			}
-			fmt.Fprintf(&b, "[%s]", s)
+			fmt.Fprintf(&b, "[%s]", g.getOrbName(s))
 		}
 		slotsStr = b.String()
 	}
-	fmt.Println(g.msg().HubSlots(g.theme.InstallVerb, len(g.player.Weapon.Slots), slotsStr))
+	fmt.Println(g.msg().HubSlots(g.theme.GetSlotLabel(), len(g.player.Weapon.Slots), slotsStr))
 
 	orbsStr := g.msg().HubNone
 	if len(g.stockOrbs) > 0 {
@@ -217,11 +225,11 @@ func (g *Game) hubPhase() {
 			if i > 0 {
 				b.WriteString(" ")
 			}
-			fmt.Fprintf(&b, "[%s]", o)
+			fmt.Fprintf(&b, "[%s]", g.getOrbName(o))
 		}
 		orbsStr = b.String()
 	}
-	fmt.Println(g.msg().HubStorage(g.theme.StorageLabel, g.theme.ResourceName, g.stockScrolls, g.theme.OrbLabel, orbsStr))
+	fmt.Println(g.msg().HubStorage(g.theme.StorageLabel, g.theme.ResourceName, g.stockScrolls, g.theme.GetUninstalledOrbLabel(), orbsStr))
 	fmt.Println("----------------------------------------------")
 
 	fmt.Println(g.msg().HubMenu1Dungeon)

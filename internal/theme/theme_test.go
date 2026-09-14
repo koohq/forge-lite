@@ -54,10 +54,10 @@ func TestCyberpunk_Fidelity(t *testing.T) {
 	if en.DefaultTargetName != "Pulse Blade" {
 		t.Errorf("unexpected en.DefaultTargetName: %s", en.DefaultTargetName)
 	}
-	if ja.HubTitle != "【セーフハウス・端末】" {
+	if ja.HubTitle != "【セーフハウス】" {
 		t.Errorf("unexpected ja.HubTitle: %s", ja.HubTitle)
 	}
-	if en.HubTitle != "【Safehouse Terminal】" {
+	if en.HubTitle != "【Safehouse】" {
 		t.Errorf("unexpected en.HubTitle: %s", en.HubTitle)
 	}
 	if ja.InstallVerb != "インストール" || en.InstallVerb != "Install" {
@@ -75,16 +75,28 @@ func TestPartnerSync_Fidelity(t *testing.T) {
 	if en.DefaultTargetName != "Tactical Android \"Iris\"" {
 		t.Errorf("unexpected en.DefaultTargetName: %s", en.DefaultTargetName)
 	}
-	if ja.PlusPrefix != " Sync:+" || en.PlusPrefix != " Sync:+" {
+	if ja.PlusPrefix != " Sync: +" || en.PlusPrefix != " Sync: +" {
 		t.Errorf("unexpected plusPrefix: ja=%s, en=%s", ja.PlusPrefix, en.PlusPrefix)
 	}
-	if ja.HubTitle != "【共同拠点】" || en.HubTitle != "【Shared Base】" {
+	if ja.HubTitle != "【作戦拠点】" || en.HubTitle != "【Operation Base】" {
 		t.Errorf("unexpected hubTitle: ja=%s, en=%s", ja.HubTitle, en.HubTitle)
+	}
+	if ja.StorageLabel != "ロッカー" || en.StorageLabel != "Locker" {
+		t.Errorf("unexpected storageLabel: ja=%s, en=%s", ja.StorageLabel, en.StorageLabel)
+	}
+	if ja.GetSlotLabel() != "連携スロット" || en.GetSlotLabel() != "Sync Slots" {
+		t.Errorf("unexpected slotLabel: ja=%s, en=%s", ja.GetSlotLabel(), en.GetSlotLabel())
+	}
+	if ja.GetUninstalledOrbLabel() != "未設定の連携スキル" || en.GetUninstalledOrbLabel() != "Standby Sync Skills" {
+		t.Errorf("unexpected uninstalledOrbLabel: ja=%s, en=%s", ja.GetUninstalledOrbLabel(), en.GetUninstalledOrbLabel())
+	}
+	if ja.Dungeons.Deep != "汚染隔離区" || en.Dungeons.Deep != "Contaminated Quarantine Zone" {
+		t.Errorf("unexpected deep dungeon: ja=%s, en=%s", ja.Dungeons.Deep, en.Dungeons.Deep)
 	}
 	if ja.HPLabel != "継戦力" || en.HPLabel != "Endurance" {
 		t.Errorf("unexpected hpLabel: ja=%s, en=%s", ja.HPLabel, en.HPLabel)
 	}
-	if ja.StatLabel != "連携力" || en.StatLabel != "Synergy" {
+	if ja.StatLabel != "連携力" || en.StatLabel != "Sync Power" {
 		t.Errorf("unexpected statLabel: ja=%s, en=%s", ja.StatLabel, en.StatLabel)
 	}
 	if ja.ResourceName != "訓練記録" || en.ResourceName != "Training Log" {

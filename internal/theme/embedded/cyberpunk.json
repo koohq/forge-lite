@@ -35,27 +35,27 @@
 			"abyss": "無限の電脳網"
 		},
 		"enemyPrefixes": [
-			"グリッチの",
-			"暴走した",
-			"オーバークロックの",
-			"侵食された",
-			"強化型の",
-			"ステルス",
-			"試作型",
-			"自律型の"
+			"グリッチ・",
+			"ローグ・",
+			"オーバークロック・",
+			"コラプト・",
+			"ステルス・",
+			"プロトタイプ・",
+			"ゴースト・",
+			"ブラック・"
 		],
 		"enemyBases": [
 			"セキュリティドローン",
-			"偵察ボット",
-			"戦闘アンドロイド",
-			"重装歩行メカ",
-			"中枢メインフレーム",
+			"スキャンボット",
+			"戦闘アバター",
+			"防壁ノード",
+			"メインフレーム",
 			"電脳ドラゴン",
 			"ウイルスロード",
-			"暴走AI"
+			"AIコア"
 		],
-		"retreatMessage": "機体の致命的なシャットダウンを防ぐため、戦闘から離脱した。",
-		"hubTitle": "【セーフハウス・端末】",
+		"retreatMessage": "致命的な損傷を避け、戦闘から離脱した。",
+		"hubTitle": "【セーフハウス】",
 		"hpLabel": "最大耐久",
 		"targetPrefix": "主兵装",
 		"statLabel": "出力",
@@ -63,7 +63,9 @@
 		"storageLabel": "ストレージ",
 		"orbLabel": "モジュール",
 		"enhanceHpVerb": "生体フレーム拡張",
-		"installVerb": "インストール"
+		"installVerb": "インストール",
+		"slotLabel": "インストールスロット",
+		"uninstalledOrbLabel": "未装着モジュール"
 	},
 	"en": {
 		"name": "Cyberpunk Protocol",
@@ -118,27 +120,27 @@
 			"abyss": "Infinite Cyberspace"
 		},
 		"enemyPrefixes": [
-			"Glitch",
-			"Rogue",
-			"Overclocked",
-			"Corrupted",
-			"Augmented",
-			"Stealth",
-			"Prototype",
-			"Autonomous"
+			"Glitch-",
+			"Rogue ",
+			"Overclocked ",
+			"Corrupted ",
+			"Stealth ",
+			"Prototype ",
+			"Ghost ",
+			"Black "
 		],
 		"enemyBases": [
 			"Security Drone",
-			"Recon Bot",
-			"Combat Android",
-			"Heavy Mech",
-			"Mainframe Core",
+			"Scan Bot",
+			"Combat Avatar",
+			"Firewall Node",
+			"Mainframe",
 			"Cyber Dragon",
 			"Virus Lord",
-			"Rogue AI"
+			"AI Core"
 		],
-		"retreatMessage": "Disengaged from combat to prevent terminal hardware shutdown.",
-		"hubTitle": "【Safehouse Terminal】",
+		"retreatMessage": "Disengaged from combat to avoid fatal damage.",
+		"hubTitle": "【Safehouse】",
 		"hpLabel": "Max Hull",
 		"targetPrefix": "Main Armament",
 		"statLabel": "Output",
@@ -146,6 +148,8 @@
 		"storageLabel": "Storage",
 		"orbLabel": "Module",
 		"enhanceHpVerb": "Upgrade Chassis",
-		"installVerb": "Install"
+		"installVerb": "Install",
+		"slotLabel": "Install Slots",
+		"uninstalledOrbLabel": "Stock Modules"
 	}
 }

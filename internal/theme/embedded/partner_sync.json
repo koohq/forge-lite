@@ -49,39 +49,41 @@
 		},
 		"dungeons": {
 			"starter": "廃墟区域",
-			"deep": "汚染中枢",
+			"deep": "汚染隔離区",
 			"abyss": "未知の最深部"
 		},
 		"enemyPrefixes": [
-			"暴走した",
-			"変異型",
-			"侵略型",
-			"警戒態勢の",
-			"重装甲",
-			"高機動",
-			"汚染された",
-			"古代遺産の"
+			"強襲型",
+			"重装型",
+			"高機動型",
+			"近接特化型",
+			"索敵型",
+			"深層配備の",
+			"旧文明由来の",
+			"異常活性化した"
 		],
 		"enemyBases": [
-			"暴走ドローン",
-			"変異体",
-			"侵略尖兵",
-			"防衛要塞",
+			"ドローン",
+			"変異生物",
+			"侵略兵",
+			"防衛機構",
 			"掃討機兵",
 			"自律兵器",
 			"殲滅ユニット",
-			"支配者コア"
+			"指揮コア"
 		],
-		"retreatMessage": "アイリスと態勢を立て直すため、一時帰還した。",
-		"hubTitle": "【共同拠点】",
+		"retreatMessage": "アイリスと態勢を立て直すため、拠点へ戻った。",
+		"hubTitle": "【作戦拠点】",
 		"hpLabel": "継戦力",
 		"targetPrefix": "相棒",
 		"statLabel": "連携力",
-		"plusPrefix": " Sync:+",
-		"storageLabel": "共有ロッカー",
+		"plusPrefix": " Sync: +",
+		"storageLabel": "ロッカー",
 		"orbLabel": "連携スキル",
 		"enhanceHpVerb": "継戦力を高める",
-		"installVerb": "連携を設定する"
+		"installVerb": "連携を設定する",
+		"slotLabel": "連携スロット",
+		"uninstalledOrbLabel": "未設定の連携スキル"
 	},
 	"en": {
 		"name": "Partner Sync",
@@ -132,38 +134,40 @@
 		},
 		"dungeons": {
 			"starter": "Ruined Sector",
-			"deep": "Contaminated Core",
+			"deep": "Contaminated Quarantine Zone",
 			"abyss": "Unknown Depths"
 		},
 		"enemyPrefixes": [
-			"Rampaging",
-			"Mutant",
-			"Invading",
-			"Alert",
-			"Armored",
-			"High-Mobility",
-			"Contaminated",
-			"Relic"
+			"Assault ",
+			"Heavy Armored ",
+			"High-Mobility ",
+			"Close-Combat ",
+			"Recon ",
+			"Deep-Deployed ",
+			"Old-World ",
+			"Hyper-Activated "
 		],
 		"enemyBases": [
-			"Rogue Drone",
+			"Drone",
 			"Mutant Beast",
-			"Vanguard Scout",
-			"Defense Bastion",
+			"Invader Soldier",
+			"Defense Mechanism",
 			"Sweeper Mech",
 			"Autonomous Weapon",
 			"Annihilator Unit",
-			"Overlord Core"
+			"Command Core"
 		],
-		"retreatMessage": "Retreated with Iris to regroup.",
-		"hubTitle": "【Shared Base】",
+		"retreatMessage": "Returned to base with Iris to recover and regroup.",
+		"hubTitle": "【Operation Base】",
 		"hpLabel": "Endurance",
 		"targetPrefix": "Partner",
-		"statLabel": "Synergy",
-		"plusPrefix": " Sync:+",
-		"storageLabel": "Shared Locker",
-		"orbLabel": "Link Skill",
+		"statLabel": "Sync Power",
+		"plusPrefix": " Sync: +",
+		"storageLabel": "Locker",
+		"orbLabel": "Sync Skill",
 		"enhanceHpVerb": "Train Endurance",
-		"installVerb": "Form Tactics"
+		"installVerb": "Set Sync",
+		"slotLabel": "Sync Slots",
+		"uninstalledOrbLabel": "Standby Sync Skills"
 	}
 }

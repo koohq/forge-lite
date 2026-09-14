@@ -96,7 +96,9 @@
     "storageLabel": "カーゴ",
     "orbLabel": "デバイス",
     "enhanceHpVerb": "シールド容量を拡張",
-    "installVerb": "換装"
+    "installVerb": "換装",
+    "slotLabel": "換装スロット",
+    "uninstalledOrbLabel": "未装着デバイス"
   },
   "en": {
     "name": "Sci-Fi Star Explorer",
@@ -194,6 +196,8 @@
     "storageLabel": "Cargo Bay",
     "orbLabel": "Device",
     "enhanceHpVerb": "Upgrade Shields",
-    "installVerb": "Fit"
+    "installVerb": "Fit",
+    "slotLabel": "Fit Slots",
+    "uninstalledOrbLabel": "Stock Devices"
   }
 }

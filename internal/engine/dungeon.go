@@ -144,6 +144,11 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 		return bases[idx%len(bases)]
 	}
 
+	separator := " "
+	if theme.Language == model.LanguageJA {
+		separator = ""
+	}
+
 	return model.DungeonDef{
 		Name:        theme.Dungeons.Deep,
 		Floors:      10,
@@ -155,7 +160,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 
 			if floor >= 1 && floor <= 3 {
 				c1 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(0) + " " + getBase(2)),
+					Name: strings.TrimSpace(getPrefix(0) + separator + getBase(2)),
 					HP:   80,
 					Atk:  12,
 					GetDrops: func() model.RunInventory {
@@ -163,7 +168,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 					},
 				}
 				c2 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(1) + " " + getBase(4)),
+					Name: strings.TrimSpace(getPrefix(1) + separator + getBase(4)),
 					HP:   120,
 					Atk:  16,
 					GetDrops: func() model.RunInventory {
@@ -178,7 +183,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 
 			if floor >= 4 && floor <= 6 {
 				c1 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(2) + " " + getBase(3)),
+					Name: strings.TrimSpace(getPrefix(2) + separator + getBase(3)),
 					HP:   180,
 					Atk:  20,
 					GetDrops: func() model.RunInventory {
@@ -186,7 +191,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 					},
 				}
 				c2 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(3) + " " + getBase(7)),
+					Name: strings.TrimSpace(getPrefix(3) + separator + getBase(7)),
 					HP:   220,
 					Atk:  24,
 					GetDrops: func() model.RunInventory {
@@ -201,7 +206,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 
 			if floor >= 7 && floor <= 9 {
 				c1 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(4) + " " + getBase(5)),
+					Name: strings.TrimSpace(getPrefix(4) + separator + getBase(5)),
 					HP:   280,
 					Atk:  28,
 					GetDrops: func() model.RunInventory {
@@ -209,10 +214,10 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 					},
 				}
 				c2 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(5) + " " + getBase(6)),
+					Name: strings.TrimSpace(getPrefix(5) + separator + getBase(6)),
 					HP:   350,
 					Atk:  32,
-					GetDrops: func() model.RunInventory {
+					GetDrops: func() model.RunInventory{
 						return model.RunInventory{Scrolls: getDeepFloorScrolls(), Orbs: []model.OrbType{}}
 					},
 				}
@@ -224,7 +229,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 
 			if floor == 10 {
 				return model.EnemyTemplate{
-					Name: strings.TrimSpace(fmt.Sprintf("%s %s (BOSS)", getPrefix(6), getBase(7))),
+					Name: strings.TrimSpace(fmt.Sprintf("%s%s%s (BOSS)", getPrefix(6), separator, getBase(7))),
 					HP:   500,
 					Atk:  36,
 					GetDrops: func() model.RunInventory {
