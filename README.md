@@ -120,16 +120,13 @@ go install github.com/koohq/forge-lite/cmd/game@latest
 
 As your weapon's `+` enhancement value reaches specific milestones, it dynamically gains new titles and visual fanfare in town and during combat:
 
-| Enhancement Milestone | Classic Fantasy Example | Cyberpunk Example | Partner Sync Example |
+| Enhancement Milestone | Classic Fantasy | Cyberpunk | Partner Sync |
 | :--- | :--- | :--- | :--- |
-| **+0** | Copper Sword (どうのつるぎ) | Pulse Blade (パルスブレード) | Prototype Iris (初期プロトタイプ) |
-| **+10** | Iron Sword (てつのつるぎ) | Plasma Edge (プラズマエッジ) | Gen-2 Refit (第2世代改修機) |
-| **+30** | Steel Sword (はがねのつるぎ) | Nano Blade (ナノブレード) | High-Mobility Combat (高機動戦闘仕様) |
-| **+60** | Silver Sword (ぎんのつるぎ) | Monomolecular (モノモレキュラー) | Heavy Assault Spec (重装決戦仕様) |
-| **+100** | Flame Sword (ほのおのつるぎ) | Photon Saber (フォトンセイバー) | Next-Gen Prototype (試作次世代機) |
-| **+150** | Hero's Sword (ゆうしゃのつるぎ) | Quantum Slicer (クアンタムスライサー) | EX-Valkyrie (EX-ヴァルキリー) |
-| **+200** | Mythic Sword (しんわのつるぎ) | Void Reaper (ヴォイドリーパー) | Harbinger of the End (終焉を告げる者) |
-| **+300+** | Divine Exsia (神剣エクスシア) | Singularity (シンギュラリティ) | Veteran Partner Iris (歴戦の相棒アイリス) |
+| **+0** | Bronze Sword | Pulse Blade | Tactical Android "Iris" |
+| **+50** | Steel Sword | Pulse Blade Mk-II | Iris, Combat Companion |
+| **+200** | Hero's Blade | High-Frequency Katana | Iris, In Sync |
+| **+500** | Dragon Slayer | Plasma Saber | Iris, Trusted Partner |
+| **+1000+** | Blade of Armageddon | Antimatter Void Edge | Iris, Veteran Partner |
 
 ---
 
