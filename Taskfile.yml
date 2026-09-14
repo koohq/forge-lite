@@ -9,19 +9,13 @@ tasks:
   build:
     desc: "Build the game binary for current platform"
     cmds:
-      - cmd: powershell -Command "if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }"
-        platforms: [windows]
-      - cmd: mkdir -p bin
-        platforms: [linux, darwin]
+      - mkdir -p bin
       - go build -o bin/game{{exeExt}} ./cmd/game
 
   build:all:
     desc: "Cross-compile game binaries for Windows, Linux, and macOS"
     cmds:
-      - cmd: powershell -Command "if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }"
-        platforms: [windows]
-      - cmd: mkdir -p bin
-        platforms: [linux, darwin]
+      - mkdir -p bin
       - cmd: go build -o bin/game-windows-amd64.exe ./cmd/game
         env:
           GOOS: windows
@@ -38,10 +32,7 @@ tasks:
   clean:
     desc: "Remove build outputs"
     cmds:
-      - cmd: powershell -Command "if (Test-Path bin) { Remove-Item -Recurse -Force bin }"
-        platforms: [windows]
-      - cmd: rm -rf bin
-        platforms: [linux, darwin]
+      - rm -rf bin
 
   test:
     desc: "Run all unit tests"
