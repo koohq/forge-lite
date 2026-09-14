@@ -96,7 +96,9 @@ func TestEngine_UpgradeWeapon_RankUpgradedFanfare(t *testing.T) {
 	}
 
 	// Enhance by 1 (49 -> 50)
-	EnhanceWeapon(&game.player.Weapon, &game.stockScrolls, 1)
+	if _, err := EnhanceWeapon(&game.player.Weapon, &game.stockScrolls, 1); err != nil {
+		t.Fatalf("failed to enhance weapon: %v", err)
+	}
 	newRank := game.theme.GetTargetRankName(game.player.Weapon.Plus)
 	game.player.Weapon.Name = newRank
 

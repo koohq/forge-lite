@@ -204,7 +204,7 @@ func (g *Game) hubPhase() {
 			if i > 0 {
 				b.WriteString(" ")
 			}
-			b.WriteString(fmt.Sprintf("[%s]", s))
+			fmt.Fprintf(&b, "[%s]", s)
 		}
 		slotsStr = b.String()
 	}
@@ -217,7 +217,7 @@ func (g *Game) hubPhase() {
 			if i > 0 {
 				b.WriteString(" ")
 			}
-			b.WriteString(fmt.Sprintf("[%s]", o))
+			fmt.Fprintf(&b, "[%s]", o)
 		}
 		orbsStr = b.String()
 	}
@@ -377,7 +377,9 @@ func (g *Game) upgradeWeaponPhase() {
 	switch choice {
 	case "1":
 		prevRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
-		EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, 1)
+		if _, err := EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, 1); err != nil {
+			return
+		}
 		newRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
 		g.player.Weapon.Name = newRank
 		if prevRank != newRank {
@@ -393,7 +395,9 @@ func (g *Game) upgradeWeaponPhase() {
 			return
 		}
 		prevRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
-		EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, count)
+		if _, err := EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, count); err != nil {
+			return
+		}
 		newRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
 		g.player.Weapon.Name = newRank
 		if prevRank != newRank {
@@ -404,7 +408,9 @@ func (g *Game) upgradeWeaponPhase() {
 	case "3":
 		count := g.stockScrolls
 		prevRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
-		EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, count)
+		if _, err := EnhanceWeapon(&g.player.Weapon, &g.stockScrolls, count); err != nil {
+			return
+		}
 		newRank := g.theme.GetTargetRankName(g.player.Weapon.Plus)
 		g.player.Weapon.Name = newRank
 		if prevRank != newRank {
@@ -438,7 +444,9 @@ func (g *Game) upgradeHpPhase() {
 	switch choice {
 	case "1":
 		prev := g.player.MaxHP
-		EnhanceHP(&g.player, &g.stockScrolls, 2)
+		if _, _, _, err := EnhanceHP(&g.player, &g.stockScrolls, 2); err != nil {
+			return
+		}
 		fmt.Println(g.msg().HPUpgradeSuccessSingle(prev, g.player.MaxHP))
 		g.saveGame()
 	case "2":

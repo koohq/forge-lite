@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a Question / General Discussion
+    url: https://github.com/koohq/forge-lite/discussions
+    about: Please ask questions, share ideas, and discuss topics that do not require an issue here.

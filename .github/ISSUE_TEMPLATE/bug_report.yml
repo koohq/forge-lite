@@ -1,0 +1,57 @@
+name: Bug Report
+description: Report a bug or unintended behavior in forge-lite
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please provide as much detail as possible.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe what happened and what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the issue.
+      placeholder: |
+        1. Start the game (`go run ./cmd/game` or run binary)
+        2. Select '1' to enter dungeon (Abyss)
+        3. Reach floor 5 and defeat boss
+        4. Return to town and select '2' to enhance weapon
+        5. See error / unexpected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Terminal Output / Error Logs
+      description: Please copy and paste any relevant terminal output, error messages, or stack traces.
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Info
+      description: Details about your environment.
+      value: |
+        - OS: [e.g. Windows 11, macOS Sonoma 14.5, Ubuntu 24.04]
+        - Go version (if running from source): [e.g. go1.27.1]
+        - Terminal / Shell: [e.g. Windows Terminal (PowerShell), iTerm2 (zsh), GNOME Terminal (bash)]
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here (e.g. save data state, custom theme used).
