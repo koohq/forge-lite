@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"forge-lite/internal/model"
-	"forge-lite/internal/save"
-	"forge-lite/internal/theme"
+	"github.com/koohq/forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/save"
+	"github.com/koohq/forge-lite/internal/theme"
 )
 
 func TestEngine_LoadGame_DynamicRankResolution(t *testing.T) {

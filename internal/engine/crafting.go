@@ -3,7 +3,7 @@ package engine
 import (
 	"errors"
 
-	"forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/model"
 )
 
 var (

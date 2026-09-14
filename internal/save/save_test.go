@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/model"
 )
 
 func TestSaveAndLoad_RoundTrip(t *testing.T) {

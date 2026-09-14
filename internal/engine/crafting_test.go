@@ -3,7 +3,7 @@ package engine
 import (
 	"testing"
 
-	"forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/model"
 )
 
 func TestEnhanceWeapon(t *testing.T) {

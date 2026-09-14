@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"strings"
 
-	"forge-lite/internal/i18n"
-	"forge-lite/internal/model"
-	"forge-lite/internal/save"
-	"forge-lite/internal/theme"
+	"github.com/koohq/forge-lite/internal/i18n"
+	"github.com/koohq/forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/save"
+	"github.com/koohq/forge-lite/internal/theme"
 )
 
 type Game struct {

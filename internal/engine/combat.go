@@ -3,8 +3,8 @@ package engine
 import (
 	"math/rand/v2"
 
-	"forge-lite/internal/i18n"
-	"forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/i18n"
+	"github.com/koohq/forge-lite/internal/model"
 )
 
 // CalcWeaponAtk calculates weapon attack power: baseAtk + (plus * 2).

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/model"
 )
 
 //go:embed embedded/*.json

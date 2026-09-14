@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/model"
 )
 
 // Messages defines all UI text and string templates.

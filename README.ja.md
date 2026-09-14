@@ -88,7 +88,7 @@ task build:all
 `$GOPATH/bin` へ最新バージョンを直接インストールします:
 
 ```bash
-go install github.com/<username>/<repo>/cmd/game@latest
+go install github.com/koohq/forge-lite/cmd/game@latest
 ```
 
 ---

@@ -3,8 +3,8 @@ package engine
 import (
 	"testing"
 
-	"forge-lite/internal/model"
-	"forge-lite/internal/theme"
+	"github.com/koohq/forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/theme"
 )
 
 func TestCreateStarterDungeon(t *testing.T) {

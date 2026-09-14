@@ -88,7 +88,7 @@ Outputs:
 Install the latest release directly into your `$GOPATH/bin`:
 
 ```bash
-go install github.com/<username>/<repo>/cmd/game@latest
+go install github.com/koohq/forge-lite/cmd/game@latest
 ```
 
 ---

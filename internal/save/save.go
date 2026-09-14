@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"forge-lite/internal/i18n"
-	"forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/i18n"
+	"github.com/koohq/forge-lite/internal/model"
 )
 
 const DefaultSaveFilePath = "save.json"

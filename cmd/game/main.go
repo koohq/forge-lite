@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"forge-lite/internal/engine"
+	"github.com/koohq/forge-lite/internal/engine"
 )
 
 func main() {

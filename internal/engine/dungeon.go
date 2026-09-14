@@ -6,7 +6,7 @@ import (
 	"math/rand/v2"
 	"strings"
 
-	"forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/model"
 )
 
 var DropOrbs = []model.OrbType{

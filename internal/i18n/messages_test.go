@@ -3,8 +3,8 @@ package i18n
 import (
 	"testing"
 
-	"forge-lite/internal/model"
-	"forge-lite/internal/theme"
+	"github.com/koohq/forge-lite/internal/model"
+	"github.com/koohq/forge-lite/internal/theme"
 )
 
 func TestHubMenu_ClassicFantasy_JA(t *testing.T) {
