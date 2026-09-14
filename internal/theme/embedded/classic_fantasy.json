@@ -17,13 +17,13 @@
 			"MULTI_HIT": { "name": "連撃の印", "desc": "2回攻撃/威力65%" },
 			"CRITICAL": { "name": "会心の印", "desc": "25%で2倍" },
 			"VAMP": { "name": "吸血の印", "desc": "与ダメの15%回復" },
-			"POISON": { "name": "猛毒の印", "desc": "攻撃時毒+1/ターン末毒x3ダメ" },
+			"POISON": { "name": "猛毒の印", "desc": "攻撃時毒+1/ターン終了時に毒×3ダメ" },
 			"MULTI_HIT_PLUS": { "name": "連撃の印+", "desc": "2回攻撃/威力75%" },
 			"CRITICAL_PLUS": { "name": "会心の印+", "desc": "40%で2倍" },
 			"VAMP_PLUS": { "name": "吸血の印+", "desc": "与ダメの25%回復" },
 			"POISON_PLUS": {
 				"name": "猛毒の印+",
-				"desc": "攻撃時毒+2/ターン末毒x3ダメ"
+				"desc": "攻撃時毒+2/ターン終了時に毒×3ダメ"
 			}
 		},
 		"dungeons": {

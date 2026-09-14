@@ -15,18 +15,18 @@
 		"resourceName": "ナノチップ",
 		"orbs": {
 			"MULTI_HIT": { "name": "多段バースト", "desc": "2連撃/出力65%×2" },
-			"CRITICAL": { "name": "クリティカル注入", "desc": "25%で2倍電圧" },
-			"VAMP": { "name": "ナノ修復ドレイン", "desc": "与ダメの15%で機体修復" },
-			"POISON": { "name": "神経汚染", "desc": "攻撃時毒+1/ターン末毒x3ダメ" },
+			"CRITICAL": { "name": "臨界出力", "desc": "25%で出力2倍" },
+			"VAMP": { "name": "ナノ修復ドレイン", "desc": "与ダメの15%分を機体修復" },
+			"POISON": { "name": "神経汚染", "desc": "攻撃時毒+1/ターン終了時に毒×3ダメ" },
 			"MULTI_HIT_PLUS": { "name": "多段バースト+", "desc": "2連撃/出力75%×2" },
-			"CRITICAL_PLUS": { "name": "クリティカル注入+", "desc": "40%で2倍電圧" },
+			"CRITICAL_PLUS": { "name": "臨界出力+", "desc": "40%で出力2倍" },
 			"VAMP_PLUS": {
 				"name": "ナノ修復ドレイン+",
-				"desc": "与ダメの25%で機体修復"
+				"desc": "与ダメの25%分を機体修復"
 			},
 			"POISON_PLUS": {
 				"name": "神経汚染+",
-				"desc": "攻撃時毒+2/ターン末毒x3ダメ"
+				"desc": "攻撃時毒+2/ターン終了時に毒×3ダメ"
 			}
 		},
 		"dungeons": {

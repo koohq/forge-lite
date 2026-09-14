@@ -55,8 +55,8 @@ func TestEngine_LoadGame_DynamicRankResolution(t *testing.T) {
 	// Verify theme switch updates weapon name and abyss name
 	game.theme = theme.GetPresetTheme("partner_sync", game.language)
 	game.player.Weapon.Name = game.theme.GetTargetRankName(game.player.Weapon.Plus)
-	if game.player.Weapon.Name != "歴戦の相棒アイリス" {
-		t.Errorf("expected partner name '歴戦の相棒アイリス', got '%s'", game.player.Weapon.Name)
+	if game.player.Weapon.Name != "歴戦のアイリス" {
+		t.Errorf("expected partner name '歴戦のアイリス', got '%s'", game.player.Weapon.Name)
 	}
 	if game.theme.Dungeons.Abyss != "未知の最深部" {
 		t.Errorf("expected abyss name '未知の最深部', got '%s'", game.theme.Dungeons.Abyss)

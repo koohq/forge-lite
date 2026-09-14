@@ -126,11 +126,11 @@ func TestTargetRanks_Thresholds(t *testing.T) {
 		expected string
 	}{
 		{0, "戦術アンドロイド「アイリス」"},
-		{50, "同行者アイリス"},
+		{50, "共闘に慣れてきたアイリス"},
 		{200, "息の合うアイリス"},
-		{500, "頼れる相棒アイリス"},
-		{1000, "歴戦の相棒アイリス"},
-		{5000, "歴戦の相棒アイリス"},
+		{500, "頼れるアイリス"},
+		{1000, "歴戦のアイリス"},
+		{5000, "歴戦のアイリス"},
 	}
 	for _, tc := range testsPS {
 		got := psJA.GetTargetRankName(tc.plus)

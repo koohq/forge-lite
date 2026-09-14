@@ -1,15 +1,15 @@
 {
 	"id": "partner_sync",
 	"ja": {
-		"name": "パートナー・シンクロ (相棒育成)",
+		"name": "パートナー・シンクロ",
 		"targetNameLabel": "相棒",
 		"defaultTargetName": "戦術アンドロイド「アイリス」",
 		"targetRanks": [
 			{ "minPlus": 0, "name": "戦術アンドロイド「アイリス」" },
-			{ "minPlus": 50, "name": "同行者アイリス" },
+			{ "minPlus": 50, "name": "共闘に慣れてきたアイリス" },
 			{ "minPlus": 200, "name": "息の合うアイリス" },
-			{ "minPlus": 500, "name": "頼れる相棒アイリス" },
-			{ "minPlus": 1000, "name": "歴戦の相棒アイリス" }
+			{ "minPlus": 500, "name": "頼れるアイリス" },
+			{ "minPlus": 1000, "name": "歴戦のアイリス" }
 		],
 		"enhanceVerb": "アイリスと訓練する",
 		"resourceName": "訓練記録",
@@ -20,15 +20,15 @@
 			},
 			"CRITICAL": {
 				"name": "弱点看破",
-				"desc": "敵の隙を共有し致命打を狙う/25%で2倍"
+				"desc": "敵の隙を見極め、息を合わせて致命打を狙う/25%で2倍"
 			},
 			"VAMP": {
 				"name": "立て直し",
-				"desc": "攻撃の合間に態勢を整え回復/与ダメの15%回復"
+				"desc": "攻撃の合間に態勢を整え、継戦力を回復/与ダメの15%回復"
 			},
 			"POISON": {
 				"name": "攪乱連携",
-				"desc": "連携攻撃で敵の態勢を崩す/毒+1, ターン末毒x3"
+				"desc": "連携攻撃で敵を崩し、継続ダメージを与える/毒+1・ターン終了時に毒×3ダメ"
 			},
 			"MULTI_HIT_PLUS": {
 				"name": "追撃連携+",
@@ -36,15 +36,15 @@
 			},
 			"CRITICAL_PLUS": {
 				"name": "弱点看破+",
-				"desc": "敵の隙を共有し致命打を狙う/40%で2倍"
+				"desc": "敵の隙を見極め、息を合わせて致命打を狙う/40%で2倍"
 			},
 			"VAMP_PLUS": {
 				"name": "立て直し+",
-				"desc": "攻撃の合間に態勢を整え回復/与ダメの25%回復"
+				"desc": "攻撃の合間に態勢を整え、継戦力を回復/与ダメの25%回復"
 			},
 			"POISON_PLUS": {
 				"name": "攪乱連携+",
-				"desc": "連携攻撃で敵の態勢を崩す/毒+2, ターン末毒x3"
+				"desc": "連携攻撃で敵を崩し、継続ダメージを与える/毒+2・ターン終了時に毒×3ダメ"
 			}
 		},
 		"dungeons": {
@@ -80,8 +80,8 @@
 		"plusPrefix": " Sync:+",
 		"storageLabel": "共有ロッカー",
 		"orbLabel": "連携スキル",
-		"enhanceHpVerb": "継戦力を鍛える",
-		"installVerb": "連携を組む"
+		"enhanceHpVerb": "継戦力を高める",
+		"installVerb": "連携を設定する"
 	},
 	"en": {
 		"name": "Partner Sync",
