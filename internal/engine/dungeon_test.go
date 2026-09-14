@@ -78,6 +78,6 @@ func TestPartnerSyncEnemyNames(t *testing.T) {
 	for i := 1; i <= 10; i++ {
 		floor := i*3 + 1
 		enemy := GenerateEndlessEnemy(floor, th, func(n int) int { return r.IntN(n) })
-		t.Logf("Sample %2d (B%2dF): %s", i, floor, enemy.Name)
+		t.Logf("Sample %2d (B%dF): %s", i, floor, enemy.Name)
 	}
 }
