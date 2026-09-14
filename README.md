@@ -1,5 +1,7 @@
 # Forge Lite
 
+[![CI](https://github.com/koohq/forge-lite/actions/workflows/ci.yml/badge.svg)](https://github.com/koohq/forge-lite/actions/workflows/ci.yml)
+
 [English](README.md) | [日本語](README.ja.md)
 
 A lightweight terminal CLI roguelite with zero external dependencies, powered entirely by the Go standard library. Features rapid stat inflation, strategic orb attachments, auto-combat, and customizable themes.

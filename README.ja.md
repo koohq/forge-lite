@@ -1,5 +1,7 @@
 # Forge Lite
 
+[![CI](https://github.com/koohq/forge-lite/actions/workflows/ci.yml/badge.svg)](https://github.com/koohq/forge-lite/actions/workflows/ci.yml)
+
 [English](README.md) | [日本語](README.ja.md)
 
 外部依存ゼロ（Go 標準ライブラリのみ）で動作する軽量 CLI ローグライト。急速なステータス・装備インフレ、オーブによるシナジー構築、オート戦闘、組み込み＆カスタムテーマ切り替えに対応しています。
