@@ -2,9 +2,21 @@
 	"weapon": {
 		"name": "どうのつるぎ",
 		"baseAtk": 10,
-		"plus": 38,
-		"slots": ["VAMP_PLUS", "POISON_PLUS", "MULTI_HIT_PLUS"]
+		"plus": 2188,
+		"slots": [
+			"VAMP_PLUS",
+			"CRITICAL_PLUS",
+			"MULTI_HIT_PLUS"
+		]
 	},
-	"stockScrolls": 1,
-	"stockOrbs": ["CRITICAL", "CRITICAL", "CRITICAL"]
+	"stockScrolls": 0,
+	"stockOrbs": [
+		"POISON_PLUS",
+		"VAMP_PLUS",
+		"VAMP_PLUS"
+	],
+	"maxHp": 4000,
+	"deepestFloor": 200,
+	"language": "ja",
+	"themeId": "classic_fantasy"
 }
