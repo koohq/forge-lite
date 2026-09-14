@@ -81,7 +81,7 @@
 		"storageLabel": "ロッカー",
 		"orbLabel": "連携スキル",
 		"enhanceHpVerb": "継戦力を高める",
-		"installVerb": "連携を設定する",
+		"installVerb": "連携スキルを設定",
 		"slotLabel": "連携スロット",
 		"uninstalledOrbLabel": "未設定の連携スキル"
 	},

@@ -74,7 +74,7 @@ func TestHubMenu_PartnerSync_JA(t *testing.T) {
 	}{
 		{"1: Dungeon", msg.HubMenu1Dungeon, "1: ダンジョンへ出撃 (探索開始)"},
 		{"2: Enhance", msg.HubMenu2Enhance(th.EnhanceVerb, th.StatLabel), "2: アイリスと訓練する (連携力の強化)"},
-		{"3: AttachOrb", msg.HubMenu3AttachOrb(th.InstallVerb), "3: 連携を設定する (パッシブ効果の装着)"},
+		{"3: AttachOrb", msg.HubMenu3AttachOrb(th.InstallVerb), "3: 連携スキルを設定 (パッシブ効果の装着)"},
 		{"4: Disassemble", msg.HubMenu4Disassemble(th.OrbLabel), "4: 連携スキルを分解 (素材を回収)"},
 		{"5: Synthesize", msg.HubMenu5Synthesize(th.OrbLabel), "5: 連携スキルを合成 (上位版へ強化)"},
 		{"6: EnhanceHp", msg.HubMenu6EnhanceHp(th.EnhanceHPVerb, th.HPLabel), "6: 継戦力を高める (継戦力 +10)"},

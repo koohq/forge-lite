@@ -105,6 +105,9 @@ func TestPartnerSync_Fidelity(t *testing.T) {
 	if ja.EnhanceVerb != "アイリスと訓練する" || en.EnhanceVerb != "Train with Iris" {
 		t.Errorf("unexpected enhanceVerb: ja=%s, en=%s", ja.EnhanceVerb, en.EnhanceVerb)
 	}
+	if ja.InstallVerb != "連携スキルを設定" || en.InstallVerb != "Set Sync" {
+		t.Errorf("unexpected installVerb: ja=%s, en=%s", ja.InstallVerb, en.InstallVerb)
+	}
 }
 
 func TestTargetRanks_Thresholds(t *testing.T) {
