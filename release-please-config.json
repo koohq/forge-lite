@@ -6,6 +6,7 @@
   "packages": {
     ".": {
       "package-name": "forge-lite",
+      "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md"
     }
   }
