@@ -3,28 +3,28 @@ version: '3'
 tasks:
   run:
     desc: "Run the CLI roguelite game"
-    cmd: go run ./cmd/game
+    cmd: go run .
     interactive: true
 
   build:
     desc: "Build the game binary for current platform"
     cmds:
       - mkdir -p bin
-      - go build -o bin/game{{exeExt}} ./cmd/game
+      - go build -o bin/forge-lite{{exeExt}} .
 
   build:all:
     desc: "Cross-compile game binaries for Windows, Linux, and macOS"
     cmds:
       - mkdir -p bin
-      - cmd: go build -o bin/game-windows-amd64.exe ./cmd/game
+      - cmd: go build -o bin/forge-lite-windows-amd64.exe .
         env:
           GOOS: windows
           GOARCH: amd64
-      - cmd: go build -o bin/game-linux-amd64 ./cmd/game
+      - cmd: go build -o bin/forge-lite-linux-amd64 .
         env:
           GOOS: linux
           GOARCH: amd64
-      - cmd: go build -o bin/game-darwin-arm64 ./cmd/game
+      - cmd: go build -o bin/forge-lite-darwin-arm64 .
         env:
           GOOS: darwin
           GOARCH: arm64

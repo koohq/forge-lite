@@ -9,7 +9,7 @@ custom_theme.json
 
 # Build artifacts
 *.exe
-game
+/forge-lite
 
 # Runtime save data
 save.json

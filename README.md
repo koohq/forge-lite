@@ -56,12 +56,12 @@ Launch the game directly from source:
 task run
 
 # Or using Go directly
-go run ./cmd/game
+go run .
 ```
 
 ### Build
 
-Compile the binary for your current operating system into `bin/game` (or `bin/game.exe` on Windows):
+Compile the binary for your current operating system into `bin/forge-lite` (or `bin/forge-lite.exe` on Windows):
 
 ```bash
 # Using Task
@@ -69,7 +69,7 @@ task build
 
 # Or using Go directly
 mkdir -p bin
-go build -o bin/game ./cmd/game
+go build -o bin/forge-lite .
 ```
 
 ### Cross-Compilation
@@ -81,16 +81,16 @@ task build:all
 ```
 
 Outputs:
-- `bin/game-windows-amd64.exe` (Windows amd64)
-- `bin/game-linux-amd64` (Linux amd64)
-- `bin/game-darwin-arm64` (macOS arm64)
+- `bin/forge-lite-windows-amd64.exe` (Windows amd64)
+- `bin/forge-lite-linux-amd64` (Linux amd64)
+- `bin/forge-lite-darwin-arm64` (macOS arm64)
 
 ### Install via Go
 
 Install the latest release directly into your `$GOPATH/bin`:
 
 ```bash
-go install github.com/koohq/forge-lite/cmd/game@latest
+go install github.com/koohq/forge-lite@latest
 ```
 
 ---

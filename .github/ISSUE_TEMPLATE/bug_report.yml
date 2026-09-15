@@ -23,7 +23,7 @@ body:
       label: Steps to Reproduce
       description: Step-by-step instructions to reproduce the issue.
       placeholder: |
-        1. Start the game (`go run ./cmd/game` or run binary)
+        1. Start the game (`go run .` or run binary)
         2. Select '1' to enter dungeon (Abyss)
         3. Reach floor 5 and defeat boss
         4. Return to town and select '2' to enhance weapon

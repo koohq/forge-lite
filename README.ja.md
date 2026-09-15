@@ -56,12 +56,12 @@
 task run
 
 # Go コマンドを直接使用する場合
-go run ./cmd/game
+go run .
 ```
 
 ### ビルド
 
-現在の OS 向けのバイナリを `bin/game`（Windows では `bin/game.exe`）に出力します:
+現在の OS 向けのバイナリを `bin/forge-lite`（Windows では `bin/forge-lite.exe`）に出力します:
 
 ```bash
 # Task を使用する場合
@@ -69,7 +69,7 @@ task build
 
 # Go コマンドを直接使用する場合
 mkdir -p bin
-go build -o bin/game ./cmd/game
+go build -o bin/forge-lite .
 ```
 
 ### クロスコンパイル
@@ -81,16 +81,16 @@ task build:all
 ```
 
 出力先:
-- `bin/game-windows-amd64.exe` (Windows amd64)
-- `bin/game-linux-amd64` (Linux amd64)
-- `bin/game-darwin-arm64` (macOS arm64)
+- `bin/forge-lite-windows-amd64.exe` (Windows amd64)
+- `bin/forge-lite-linux-amd64` (Linux amd64)
+- `bin/forge-lite-darwin-arm64` (macOS arm64)
 
 ### Go によるインストール
 
 `$GOPATH/bin` へ最新バージョンを直接インストールします:
 
 ```bash
-go install github.com/koohq/forge-lite/cmd/game@latest
+go install github.com/koohq/forge-lite@latest
 ```
 
 ---
