@@ -13,10 +13,11 @@
 - [概要](#概要)
 - [必要要件](#必要要件)
 - [クイックスタート](#クイックスタート)
-  - [実行](#実行)
-  - [ビルド](#ビルド)
-  - [クロスコンパイル](#クロスコンパイル)
+  - [GitHub Releases からダウンロード](#github-releases-からダウンロード)
   - [Go によるインストール](#go-によるインストール)
+  - [ソースコードから実行](#ソースコードから実行)
+  - [ビルド](#ビルド)
+  - [スナップショットビルド](#スナップショットビルド)
 - [ゲームシステム](#ゲームシステム)
   - [ダンジョン一覧](#ダンジョン一覧)
   - [拠点および快適機能 (QoL)](#拠点および快適機能-qol)
@@ -47,7 +48,19 @@
 
 ## クイックスタート
 
-### 実行
+### GitHub Releases からダウンロード
+
+Windows, Linux, macOS（amd64 および arm64）向けのコンパイル済みバイナリは [Releases](https://github.com/koohq/forge-lite/releases) ページからダウンロードできます。お使いの OS・アーキテクチャに合わせたアーカイブを展開し、`forge-lite` を実行してください。
+
+### Go によるインストール
+
+`$GOPATH/bin` へ最新バージョンを直接インストールします:
+
+```bash
+go install github.com/koohq/forge-lite@latest
+```
+
+### ソースコードから実行
 
 ソースコードから直接起動します:
 
@@ -69,28 +82,19 @@ task build
 
 # Go コマンドを直接使用する場合
 mkdir -p bin
-go build -o bin/forge-lite .
+go build -trimpath -o bin/forge-lite .
 ```
 
-### クロスコンパイル
+### スナップショットビルド
 
-Windows, Linux, macOS 向けのバイナリを一括でクロスコンパイルします:
-
-```bash
-task build:all
-```
-
-出力先:
-- `bin/forge-lite-windows-amd64.exe` (Windows amd64)
-- `bin/forge-lite-linux-amd64` (Linux amd64)
-- `bin/forge-lite-darwin-arm64` (macOS arm64)
-
-### Go によるインストール
-
-`$GOPATH/bin` へ最新バージョンを直接インストールします:
+GoReleaser を使用して全サポート対象プラットフォーム向けのバイナリおよびアーカイブを `dist/` に生成します:
 
 ```bash
-go install github.com/koohq/forge-lite@latest
+# Task を使用する場合
+task release
+
+# GoReleaser を直接使用する場合
+goreleaser build --snapshot --clean
 ```
 
 ---

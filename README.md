@@ -13,10 +13,11 @@ A lightweight terminal CLI roguelite with zero external dependencies, powered en
 - [Overview](#overview)
 - [Requirements](#requirements)
 - [Quick Start](#quick-start)
-  - [Run](#run)
-  - [Build](#build)
-  - [Cross-Compilation](#cross-compilation)
+  - [Download from Releases](#download-from-releases)
   - [Install via Go](#install-via-go)
+  - [Run from Source](#run-from-source)
+  - [Build](#build)
+  - [Snapshot Build](#snapshot-build)
 - [Game Systems](#game-systems)
   - [Dungeons](#dungeons)
   - [Town Hub & QoL Features](#town-hub--qol-features)
@@ -47,7 +48,19 @@ A lightweight terminal CLI roguelite with zero external dependencies, powered en
 
 ## Quick Start
 
-### Run
+### Download from Releases
+
+Pre-built binaries for Windows, Linux, and macOS (amd64 and arm64) are available on the [Releases](https://github.com/koohq/forge-lite/releases) page. Download the appropriate archive for your operating system and architecture, extract it, and run `forge-lite`.
+
+### Install via Go
+
+Install the latest release directly into your `$GOPATH/bin`:
+
+```bash
+go install github.com/koohq/forge-lite@latest
+```
+
+### Run from Source
 
 Launch the game directly from source:
 
@@ -69,28 +82,19 @@ task build
 
 # Or using Go directly
 mkdir -p bin
-go build -o bin/forge-lite .
+go build -trimpath -o bin/forge-lite .
 ```
 
-### Cross-Compilation
+### Snapshot Build
 
-Build binaries for Windows, Linux, and macOS in one command:
-
-```bash
-task build:all
-```
-
-Outputs:
-- `bin/forge-lite-windows-amd64.exe` (Windows amd64)
-- `bin/forge-lite-linux-amd64` (Linux amd64)
-- `bin/forge-lite-darwin-arm64` (macOS arm64)
-
-### Install via Go
-
-Install the latest release directly into your `$GOPATH/bin`:
+Build release binaries and packages for all supported platforms into `dist/` using GoReleaser:
 
 ```bash
-go install github.com/koohq/forge-lite@latest
+# Using Task
+task release
+
+# Or using GoReleaser directly
+goreleaser build --snapshot --clean
 ```
 
 ---
