@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime/debug"
+	"strings"
 
 	"github.com/koohq/forge-lite/internal/engine"
 )
@@ -13,12 +14,12 @@ var version = ""
 
 func resolveVersion(v string, buildInfoFn func() (*debug.BuildInfo, bool)) string {
 	if v != "" {
-		return v
+		return strings.TrimPrefix(v, "v")
 	}
 	if buildInfoFn != nil {
 		if info, ok := buildInfoFn(); ok {
 			if info.Main.Version != "" && info.Main.Version != "(devel)" {
-				return info.Main.Version
+				return strings.TrimPrefix(info.Main.Version, "v")
 			}
 			for _, setting := range info.Settings {
 				if setting.Key == "vcs.revision" && setting.Value != "" {

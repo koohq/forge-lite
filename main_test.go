@@ -24,7 +24,17 @@ func TestResolveVersion(t *testing.T) {
 					Main: debug.Module{Version: "v0.1.0"},
 				}, true
 			},
-			expectedValue: "v1.2.3",
+			expectedValue: "1.2.3",
+		},
+		{
+			name:    "ldflags version without v prefix is unchanged",
+			version: "1.2.3",
+			buildInfoFn: func() (*debug.BuildInfo, bool) {
+				return &debug.BuildInfo{
+					Main: debug.Module{Version: "v0.1.0"},
+				}, true
+			},
+			expectedValue: "1.2.3",
 		},
 		{
 			name:    "build info main version when ldflags is empty",
@@ -34,7 +44,7 @@ func TestResolveVersion(t *testing.T) {
 					Main: debug.Module{Version: "v0.2.0"},
 				}, true
 			},
-			expectedValue: "v0.2.0",
+			expectedValue: "0.2.0",
 		},
 		{
 			name:    "vcs revision fallback when main version is devel",
