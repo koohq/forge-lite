@@ -1,0 +1,9 @@
+{
+  "release-type": "go",
+  "packages": {
+    ".": {
+      "package-name": "forge-lite",
+      "changelog-path": "CHANGELOG.md"
+    }
+  }
+}
