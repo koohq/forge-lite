@@ -10,29 +10,16 @@ tasks:
     desc: "Build the game binary for current platform"
     cmds:
       - mkdir -p bin
-      - go build -o bin/forge-lite{{exeExt}} .
+      - go build -trimpath -o bin/forge-lite{{exeExt}} .
 
-  build:all:
-    desc: "Cross-compile game binaries for Windows, Linux, and macOS"
-    cmds:
-      - mkdir -p bin
-      - cmd: go build -o bin/forge-lite-windows-amd64.exe .
-        env:
-          GOOS: windows
-          GOARCH: amd64
-      - cmd: go build -o bin/forge-lite-linux-amd64 .
-        env:
-          GOOS: linux
-          GOARCH: amd64
-      - cmd: go build -o bin/forge-lite-darwin-arm64 .
-        env:
-          GOOS: darwin
-          GOARCH: arm64
+  release:
+    desc: "Snapshot build all release binaries using GoReleaser"
+    cmd: goreleaser build --snapshot --clean
 
   clean:
     desc: "Remove build outputs"
     cmds:
-      - rm -rf bin
+      - rm -rf bin dist
 
   test:
     desc: "Run all unit tests"
