@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/koohq/forge-lite/compare/v0.1.0...v0.1.1) (2026-09-15)
+
+
+### Bug Fixes
+
+* normalize version output by stripping the leading v ([#3](https://github.com/koohq/forge-lite/issues/3)) ([b9f23b6](https://github.com/koohq/forge-lite/commit/b9f23b6afb5a8a7ae5ae9b0c0c7707e5ecc402bf))
+
 ## 0.1.0 (2026-09-15)
 
 
