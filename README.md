@@ -41,7 +41,7 @@ A lightweight terminal CLI roguelite with zero external dependencies, powered en
 
 ## Requirements
 
-- **Go**: `1.27.1` or higher
+- **Go**: `1.22` or higher
 - **Task** ([go-task](https://taskfile.dev)): Optional (used for simplified build automation)
 
 ---
