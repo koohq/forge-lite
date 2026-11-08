@@ -179,6 +179,50 @@ type AutoCombatResult struct {
 	FinalEnemyHP      int
 }
 
+// DangerHPLine returns the danger threshold for the given maxHP (<= 30%).
+func DangerHPLine(maxHP int) int {
+	return int(float64(maxHP) * 0.3)
+}
+
+// EstimateAutoFight estimates turns and damage taken to defeat an enemy without crit, poison, or vampirism.
+func EstimateAutoFight(weapon model.Weapon, enemyHP, enemyAtk int) (turns, damage int) {
+	if enemyHP <= 0 {
+		return 0, 0
+	}
+
+	baseDmg := CalcWeaponAtk(weapon)
+	syn := GetOrbSynergies(weapon.Slots)
+
+	hits := 1
+	if syn.HasMulti {
+		hits = 2
+	}
+
+	rate := 1.0
+	if syn.HasMultiPlus {
+		rate = 0.75
+	} else if syn.HasMulti {
+		rate = 0.65
+	}
+
+	dmgPerHit := int(float64(baseDmg) * rate)
+	if dmgPerHit < 1 {
+		dmgPerHit = 1
+	}
+	turnDmg := hits * dmgPerHit
+	if turnDmg < 1 {
+		turnDmg = 1
+	}
+
+	turns = (enemyHP + turnDmg - 1) / turnDmg
+	if turns <= 1 {
+		damage = 0
+	} else {
+		damage = (turns - 1) * enemyAtk
+	}
+	return turns, damage
+}
+
 // RunAutoCombat simulates combat until enemy defeat, player fainting, or danger zone HP <= 30%.
 func RunAutoCombat(
 	weapon model.Weapon,
@@ -191,7 +235,7 @@ func RunAutoCombat(
 		randFloat = rand.Float64
 	}
 
-	dangerHP := int(float64(maxHP) * 0.3)
+	dangerHP := DangerHPLine(maxHP)
 	currPlayerHP := playerHP
 
 	res := AutoCombatResult{}

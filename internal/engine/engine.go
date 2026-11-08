@@ -14,20 +14,114 @@ import (
 	"github.com/koohq/forge-lite/internal/theme"
 )
 
-const abyssClearFloor = 100
+const (
+	abyssClearFloor            = 100
+	autoExploreMilestoneFloors = 10
+)
+
+type AutoExploreStopReasonKind int
+
+const (
+	StopReasonClear AutoExploreStopReasonKind = iota
+	StopReasonRecordBreak
+	StopReasonMilestone
+	StopReasonDangerLine
+)
+
+type AutoExploreStopReason struct {
+	Kind       AutoExploreStopReasonKind
+	Floor      int
+	PrevRecord int
+	EnemyAtk   int
+	EstTurns   int
+	EstDmg     int
+	CurHP      int
+	DangerHP   int
+}
+
+type AutoExploreStopParams struct {
+	IsEndless               bool
+	ClearedFloor            int
+	JustClearedAbyss        bool
+	StartDeepestFloor       int
+	StartFloor              int
+	AlreadyStoppedForRecord bool
+	HasNextFloor            bool
+	NextFloor               int
+	NextEnemyAtk            int
+	EstTurns                int
+	EstDmg                  int
+	CurPlayerHP             int
+	MaxPlayerHP             int
+}
+
+// EvaluateAutoExploreStopReasons evaluates whether auto explore should stop and returns reasons.
+func EvaluateAutoExploreStopReasons(params AutoExploreStopParams) []AutoExploreStopReason {
+	var reasons []AutoExploreStopReason
+
+	// 1. First clear of B100F
+	if params.IsEndless && params.JustClearedAbyss {
+		reasons = append(reasons, AutoExploreStopReason{
+			Kind:  StopReasonClear,
+			Floor: params.ClearedFloor,
+		})
+	}
+
+	// 2. Passing the deepest floor recorded at run start
+	if params.IsEndless &&
+		!params.AlreadyStoppedForRecord &&
+		params.StartDeepestFloor >= params.StartFloor &&
+		params.ClearedFloor == params.StartDeepestFloor {
+		reasons = append(reasons, AutoExploreStopReason{
+			Kind:       StopReasonRecordBreak,
+			PrevRecord: params.StartDeepestFloor,
+		})
+	}
+
+	// 3. Every 10 floors
+	if params.IsEndless && params.ClearedFloor%autoExploreMilestoneFloors == 0 {
+		// Skip when the clear reason already covers this floor
+		if !params.JustClearedAbyss || params.ClearedFloor != abyssClearFloor {
+			reasons = append(reasons, AutoExploreStopReason{
+				Kind:  StopReasonMilestone,
+				Floor: params.ClearedFloor,
+			})
+		}
+	}
+
+	// 4. Estimated danger before the next fight
+	if params.HasNextFloor {
+		dangerLine := DangerHPLine(params.MaxPlayerHP)
+		if params.CurPlayerHP-params.EstDmg <= dangerLine {
+			reasons = append(reasons, AutoExploreStopReason{
+				Kind:     StopReasonDangerLine,
+				Floor:    params.NextFloor,
+				EnemyAtk: params.NextEnemyAtk,
+				EstTurns: params.EstTurns,
+				EstDmg:   params.EstDmg,
+				CurHP:    params.CurPlayerHP,
+				DangerHP: dangerLine,
+			})
+		}
+	}
+
+	return reasons
+}
 
 type Game struct {
-	reader         *bufio.Reader
-	saveFilePath   string
-	language       model.Language
-	theme          model.Theme
-	customThemeDef *model.ThemeDefinition
-	player         model.Player
-	stockScrolls   int
-	stockOrbs      []model.OrbType
-	deepestFloor   int
-	abyssCleared   bool
-	isRunning      bool
+	reader              *bufio.Reader
+	saveFilePath        string
+	language            model.Language
+	theme               model.Theme
+	customThemeDef      *model.ThemeDefinition
+	player              model.Player
+	stockScrolls        int
+	stockOrbs           []model.OrbType
+	deepestFloor        int
+	abyssCleared        bool
+	isRunning           bool
+	autoExplore         bool
+	lastAutoCombatTurns int
 }
 
 func NewGame(r io.Reader) *Game {
@@ -621,14 +715,142 @@ func (g *Game) synthesizeOrbPhase() {
 	g.saveGame()
 }
 
+func (g *Game) printAutoCombatSummary(res AutoCombatResult, enemy *model.Enemy) {
+	fmt.Println(g.msg().BattleAutoSummaryTitle)
+	fmt.Println(g.msg().BattleAutoReason(res.StopReason))
+	fmt.Println(g.msg().BattleAutoTurns(res.Turns))
+	fmt.Println(g.msg().BattleAutoDamageDealt(res.TotalDmgDealt))
+	fmt.Println(g.msg().BattleAutoDamageTaken(res.TotalDmgTaken))
+	if res.TotalHealed > 0 {
+		fmt.Println(g.msg().BattleAutoHealed(res.TotalHealed))
+	}
+	fmt.Println(g.msg().BattleAutoRemainingHp(g.player.HP, g.player.MaxHP, enemy.Name, enemy.HP, enemy.MaxHP))
+	fmt.Println("==============================================")
+}
+
+func (g *Game) printAutoExploreStopReasons(reasons []AutoExploreStopReason) {
+	fmt.Println(g.msg().AutoExploreStoppedTitle)
+	for _, r := range reasons {
+		switch r.Kind {
+		case StopReasonClear:
+			fmt.Println(g.msg().AutoExploreStopReasonClear(r.Floor))
+		case StopReasonRecordBreak:
+			fmt.Println(g.msg().AutoExploreStopReasonRecord(r.PrevRecord))
+		case StopReasonMilestone:
+			fmt.Println(g.msg().AutoExploreStopReasonMilestone(r.Floor))
+		case StopReasonDangerLine:
+			fmt.Println(g.msg().AutoExploreStopReasonDangerLine(r.Floor, r.EnemyAtk, r.EstTurns, r.EstDmg, r.CurHP, r.DangerHP))
+		}
+	}
+}
+
+func (g *Game) printAutoExploreBattleSummary(floor int, enemyName string, turns int, scrolls int, orbs []model.OrbType) {
+	var orbNames []string
+	for _, o := range orbs {
+		name := string(o)
+		if d, ok := g.theme.Orbs[o]; ok {
+			name = d.Name
+		}
+		orbNames = append(orbNames, name)
+	}
+	fmt.Println(g.msg().AutoExploreBattleSummary(floor, enemyName, turns, g.player.HP, g.player.MaxHP, g.theme.ResourceName, scrolls, orbNames))
+}
+
+func (g *Game) executeAutoExploreFight(enemy *model.Enemy) (battleResult, bool) {
+	res := RunAutoCombat(g.player.Weapon, g.player.HP, g.player.MaxHP, enemy, g.msg(), nil)
+	g.player.HP = res.FinalPlayerHP
+	g.lastAutoCombatTurns = res.Turns
+
+	if res.EnemyDefeated {
+		return battleWon, true
+	}
+
+	g.autoExplore = false
+	g.printAutoCombatSummary(res, enemy)
+
+	if g.player.HP <= 0 {
+		return battleLost, false
+	}
+
+	manualRes := g.battle(enemy)
+	return manualRes, false
+}
+
+func (g *Game) handleAutoExplorePostVictory(
+	floor int,
+	enemyName string,
+	drops model.RunInventory,
+	isEndless bool,
+	justClearedAbyss bool,
+	startDeepestFloor int,
+	startFloor int,
+	alreadyStoppedForRecord *bool,
+	getNextEnemy func() (*model.EnemyTemplate, error),
+) (shouldStop bool, nextTemplate *model.EnemyTemplate) {
+	g.printAutoExploreBattleSummary(floor, enemyName, g.lastAutoCombatTurns, drops.Scrolls, drops.Orbs)
+
+	if justClearedAbyss {
+		fmt.Println(g.msg().AbyssCleared(g.theme.Dungeons.Abyss, abyssClearFloor))
+		g.saveGame()
+	}
+
+	nextTmpl, err := getNextEnemy()
+	if err != nil || nextTmpl == nil {
+		return false, nil
+	}
+
+	estTurns, estDmg := EstimateAutoFight(g.player.Weapon, nextTmpl.HP, nextTmpl.Atk)
+
+	params := AutoExploreStopParams{
+		IsEndless:               isEndless,
+		ClearedFloor:            floor,
+		JustClearedAbyss:        justClearedAbyss,
+		StartDeepestFloor:       startDeepestFloor,
+		StartFloor:              startFloor,
+		AlreadyStoppedForRecord: *alreadyStoppedForRecord,
+		HasNextFloor:            true,
+		NextFloor:               floor + 1,
+		NextEnemyAtk:            nextTmpl.Atk,
+		EstTurns:                estTurns,
+		EstDmg:                  estDmg,
+		CurPlayerHP:             g.player.HP,
+		MaxPlayerHP:             g.player.MaxHP,
+	}
+
+	reasons := EvaluateAutoExploreStopReasons(params)
+	if len(reasons) > 0 {
+		g.autoExplore = false
+		for _, r := range reasons {
+			if r.Kind == StopReasonRecordBreak {
+				*alreadyStoppedForRecord = true
+			}
+		}
+		g.printAutoExploreStopReasons(reasons)
+		return true, nextTmpl
+	}
+
+	return false, nextTmpl
+}
+
 func (g *Game) dungeonPhase(dungeon model.DungeonDef) {
 	fmt.Println(g.msg().DungeonEnter(dungeon.Name))
 	runInv := model.RunInventory{Scrolls: 0, Orbs: []model.OrbType{}}
+	g.autoExplore = false
+
+	var cachedTemplate *model.EnemyTemplate
+	alreadyStoppedForRecord := false
 
 	for floor := 1; floor <= dungeon.Floors; floor++ {
-		template, err := dungeon.GetEnemy(floor)
-		if err != nil {
-			break
+		var template model.EnemyTemplate
+		if cachedTemplate != nil {
+			template = *cachedTemplate
+			cachedTemplate = nil
+		} else {
+			var err error
+			template, err = dungeon.GetEnemy(floor)
+			if err != nil {
+				break
+			}
 		}
 
 		enemy := model.Enemy{
@@ -639,9 +861,16 @@ func (g *Game) dungeonPhase(dungeon model.DungeonDef) {
 			Poison: 0,
 		}
 
-		fmt.Println(g.msg().DungeonEncounter(floor, dungeon.Floors, enemy.Name))
-		result := g.battle(&enemy)
+		var result battleResult
+		if g.autoExplore {
+			result, _ = g.executeAutoExploreFight(&enemy)
+		} else {
+			fmt.Println(g.msg().DungeonEncounter(floor, dungeon.Floors, enemy.Name))
+			result = g.battle(&enemy)
+		}
+
 		if result != battleWon {
+			g.autoExplore = false
 			g.endRunLosingLoot(result, runInv)
 			return
 		}
@@ -650,24 +879,59 @@ func (g *Game) dungeonPhase(dungeon model.DungeonDef) {
 		runInv.Scrolls += drops.Scrolls
 		runInv.Orbs = append(runInv.Orbs, drops.Orbs...)
 
-		fmt.Println(g.msg().DungeonVictory(enemy.Name))
-		if drops.Scrolls > 0 {
-			fmt.Println(g.msg().DungeonDropScroll(g.theme.ResourceName, drops.Scrolls))
-		}
-		for _, o := range drops.Orbs {
-			name := string(o)
-			if d, ok := g.theme.Orbs[o]; ok {
-				name = d.Name
+		if g.autoExplore {
+			shouldStop, nextTmpl := g.handleAutoExplorePostVictory(
+				floor,
+				enemy.Name,
+				drops,
+				false,
+				false,
+				0,
+				1,
+				&alreadyStoppedForRecord,
+				func() (*model.EnemyTemplate, error) {
+					if floor+1 > dungeon.Floors {
+						return nil, nil
+					}
+					t, err := dungeon.GetEnemy(floor + 1)
+					if err != nil {
+						return nil, err
+					}
+					return &t, nil
+				},
+			)
+			cachedTemplate = nextTmpl
+			if floor == dungeon.Floors {
+				g.autoExplore = false
+				fmt.Println(g.msg().DungeonComplete(dungeon.Name))
+				g.stockScrolls += runInv.Scrolls
+				g.stockOrbs = append(g.stockOrbs, runInv.Orbs...)
+				g.saveGame()
+				return
 			}
-			fmt.Println(g.msg().DungeonDropOrb(string(o), name))
-		}
+			if !shouldStop {
+				continue
+			}
+		} else {
+			fmt.Println(g.msg().DungeonVictory(enemy.Name))
+			if drops.Scrolls > 0 {
+				fmt.Println(g.msg().DungeonDropScroll(g.theme.ResourceName, drops.Scrolls))
+			}
+			for _, o := range drops.Orbs {
+				name := string(o)
+				if d, ok := g.theme.Orbs[o]; ok {
+					name = d.Name
+				}
+				fmt.Println(g.msg().DungeonDropOrb(string(o), name))
+			}
 
-		if floor == dungeon.Floors {
-			fmt.Println(g.msg().DungeonComplete(dungeon.Name))
-			g.stockScrolls += runInv.Scrolls
-			g.stockOrbs = append(g.stockOrbs, runInv.Orbs...)
-			g.saveGame()
-			return
+			if floor == dungeon.Floors {
+				fmt.Println(g.msg().DungeonComplete(dungeon.Name))
+				g.stockScrolls += runInv.Scrolls
+				g.stockOrbs = append(g.stockOrbs, runInv.Orbs...)
+				g.saveGame()
+				return
+			}
 		}
 
 		fmt.Println(g.msg().DungeonCurrentStatus(g.player.HP, g.player.MaxHP, g.theme.ResourceName, runInv.Scrolls, len(runInv.Orbs)))
@@ -676,6 +940,7 @@ func (g *Game) dungeonPhase(dungeon model.DungeonDef) {
 
 		nextAct := g.readLine(g.msg().DungeonPromptAction)
 		if nextAct == "2" {
+			g.autoExplore = false
 			fmt.Printf("\n>> %s\n", g.theme.RetreatMessage)
 			g.stockScrolls += runInv.Scrolls
 			g.stockOrbs = append(g.stockOrbs, runInv.Orbs...)
@@ -689,6 +954,7 @@ func (g *Game) dungeonPhase(dungeon model.DungeonDef) {
 func (g *Game) endlessDungeonPhase() {
 	fmt.Println(g.msg().EndlessEnter(g.theme.Dungeons.Abyss))
 	fmt.Println(g.msg().EndlessIntro)
+	g.autoExplore = false
 
 	startFloor := 1
 	if g.deepestFloor >= 11 {
@@ -723,14 +989,26 @@ func (g *Game) endlessDungeonPhase() {
 	fmt.Println(g.msg().EndlessStartFrom(startFloor))
 	runInv := model.RunInventory{Scrolls: 0, Orbs: []model.OrbType{}}
 	floor := startFloor
+	startDeepestFloor := g.deepestFloor
+	alreadyStoppedForRecord := false
+	var cachedTemplate *model.EnemyTemplate
 
 	for {
 		if floor > g.deepestFloor {
 			g.deepestFloor = floor
-			fmt.Println(g.msg().EndlessRecordUpdated(floor))
+			if !g.autoExplore {
+				fmt.Println(g.msg().EndlessRecordUpdated(floor))
+			}
 		}
 
-		template := GenerateEndlessEnemy(floor, g.theme, nil)
+		var template model.EnemyTemplate
+		if cachedTemplate != nil {
+			template = *cachedTemplate
+			cachedTemplate = nil
+		} else {
+			template = GenerateEndlessEnemy(floor, g.theme, nil)
+		}
+
 		enemy := model.Enemy{
 			Name:   template.Name,
 			HP:     template.HP,
@@ -739,9 +1017,16 @@ func (g *Game) endlessDungeonPhase() {
 			Poison: 0,
 		}
 
-		fmt.Println(g.msg().EndlessFloorEncounter(floor, enemy.Name))
-		result := g.battle(&enemy)
+		var result battleResult
+		if g.autoExplore {
+			result, _ = g.executeAutoExploreFight(&enemy)
+		} else {
+			fmt.Println(g.msg().EndlessFloorEncounter(floor, enemy.Name))
+			result = g.battle(&enemy)
+		}
+
 		if result != battleWon {
+			g.autoExplore = false
 			g.endRunLosingLoot(result, runInv)
 			return
 		}
@@ -750,22 +1035,49 @@ func (g *Game) endlessDungeonPhase() {
 		runInv.Scrolls += drops.Scrolls
 		runInv.Orbs = append(runInv.Orbs, drops.Orbs...)
 
-		fmt.Println(g.msg().DungeonVictory(enemy.Name))
-		if drops.Scrolls > 0 {
-			fmt.Println(g.msg().DungeonDropScroll(g.theme.ResourceName, drops.Scrolls))
-		}
-		for _, o := range drops.Orbs {
-			name := string(o)
-			if d, ok := g.theme.Orbs[o]; ok {
-				name = d.Name
-			}
-			fmt.Println(g.msg().DungeonDropOrb(string(o), name))
-		}
-
+		justClearedAbyss := false
 		if floor == abyssClearFloor && !g.abyssCleared {
 			g.abyssCleared = true
-			fmt.Println(g.msg().AbyssCleared(g.theme.Dungeons.Abyss, abyssClearFloor))
-			g.saveGame()
+			justClearedAbyss = true
+		}
+
+		if g.autoExplore {
+			shouldStop, nextTmpl := g.handleAutoExplorePostVictory(
+				floor,
+				enemy.Name,
+				drops,
+				true,
+				justClearedAbyss,
+				startDeepestFloor,
+				startFloor,
+				&alreadyStoppedForRecord,
+				func() (*model.EnemyTemplate, error) {
+					t := GenerateEndlessEnemy(floor+1, g.theme, nil)
+					return &t, nil
+				},
+			)
+			cachedTemplate = nextTmpl
+			if !shouldStop {
+				floor++
+				continue
+			}
+		} else {
+			fmt.Println(g.msg().DungeonVictory(enemy.Name))
+			if drops.Scrolls > 0 {
+				fmt.Println(g.msg().DungeonDropScroll(g.theme.ResourceName, drops.Scrolls))
+			}
+			for _, o := range drops.Orbs {
+				name := string(o)
+				if d, ok := g.theme.Orbs[o]; ok {
+					name = d.Name
+				}
+				fmt.Println(g.msg().DungeonDropOrb(string(o), name))
+			}
+
+			if justClearedAbyss {
+				fmt.Println(g.msg().AbyssCleared(g.theme.Dungeons.Abyss, abyssClearFloor))
+				g.saveGame()
+			}
 		}
 
 		fmt.Println(g.msg().DungeonCurrentStatus(g.player.HP, g.player.MaxHP, g.theme.ResourceName, runInv.Scrolls, len(runInv.Orbs)))
@@ -774,6 +1086,7 @@ func (g *Game) endlessDungeonPhase() {
 
 		nextAct := g.readLine(g.msg().DungeonPromptAction)
 		if nextAct == "2" {
+			g.autoExplore = false
 			fmt.Printf("\n>> %s\n", g.theme.RetreatMessage)
 			g.stockScrolls += runInv.Scrolls
 			g.stockOrbs = append(g.stockOrbs, runInv.Orbs...)
@@ -811,10 +1124,12 @@ func (g *Game) battle(enemy *model.Enemy) battleResult {
 		fmt.Println(g.msg().BattleCmdAttack)
 		fmt.Println(g.msg().BattleCmdRetreat)
 		fmt.Println(g.msg().BattleCmdAuto)
+		fmt.Println(g.msg().BattleCmdAutoExplore)
 
 		act := g.readLine(g.msg().BattleCmdPrompt)
 		switch act {
 		case "2":
+			g.autoExplore = false
 			fmt.Println(g.msg().BattleRetreatCombat)
 			return battleFled
 		case "3":
@@ -822,16 +1137,7 @@ func (g *Game) battle(enemy *model.Enemy) battleResult {
 			res := RunAutoCombat(g.player.Weapon, g.player.HP, g.player.MaxHP, enemy, g.msg(), nil)
 			g.player.HP = res.FinalPlayerHP
 
-			fmt.Println(g.msg().BattleAutoSummaryTitle)
-			fmt.Println(g.msg().BattleAutoReason(res.StopReason))
-			fmt.Println(g.msg().BattleAutoTurns(res.Turns))
-			fmt.Println(g.msg().BattleAutoDamageDealt(res.TotalDmgDealt))
-			fmt.Println(g.msg().BattleAutoDamageTaken(res.TotalDmgTaken))
-			if res.TotalHealed > 0 {
-				fmt.Println(g.msg().BattleAutoHealed(res.TotalHealed))
-			}
-			fmt.Println(g.msg().BattleAutoRemainingHp(g.player.HP, g.player.MaxHP, enemy.Name, enemy.HP, enemy.MaxHP))
-			fmt.Println("==============================================")
+			g.printAutoCombatSummary(res, enemy)
 
 			if enemy.HP <= 0 {
 				return battleWon
@@ -840,7 +1146,28 @@ func (g *Game) battle(enemy *model.Enemy) battleResult {
 				return battleLost
 			}
 			continue
+		case "4":
+			g.autoExplore = true
+			fmt.Println(g.msg().BattleAutoExploreStart)
+			res := RunAutoCombat(g.player.Weapon, g.player.HP, g.player.MaxHP, enemy, g.msg(), nil)
+			g.player.HP = res.FinalPlayerHP
+			g.lastAutoCombatTurns = res.Turns
+
+			if enemy.HP <= 0 {
+				return battleWon
+			}
+
+			// Not won: end auto explore and show the same summary as command 3
+			g.autoExplore = false
+			g.printAutoCombatSummary(res, enemy)
+
+			if g.player.HP <= 0 {
+				return battleLost
+			}
+			// Danger zone: return to the battle command menu as before
+			continue
 		case "1":
+			g.autoExplore = false
 			syn := GetOrbSynergies(g.player.Weapon.Slots)
 			hits, nextHP := ResolvePlayerAttack(g.player.Weapon, g.player.HP, g.player.MaxHP, enemy, nil)
 			g.player.HP = nextHP

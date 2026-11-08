@@ -327,3 +327,158 @@ func TestTitle_ForgeLite(t *testing.T) {
 		})
 	}
 }
+
+func TestAutoExploreMessages_JA(t *testing.T) {
+	msg := GetMessages(model.LanguageJA)
+
+	if msg.BattleCmdAutoExplore != "4: オート探索 (止まる所まで進む)" {
+		t.Errorf("unexpected BattleCmdAutoExplore: %q", msg.BattleCmdAutoExplore)
+	}
+
+	if msg.BattleAutoExploreStart != "\n>> [オート探索開始] 止まる所まで、勝つたびに次の階層へ進みます..." {
+		t.Errorf("unexpected BattleAutoExploreStart: %q", msg.BattleAutoExploreStart)
+	}
+
+	if msg.AutoExploreStoppedTitle != "\n>> オート探索を止めました：" {
+		t.Errorf("unexpected AutoExploreStoppedTitle: %q", msg.AutoExploreStoppedTitle)
+	}
+
+	if got := msg.AutoExploreStopReasonClear(100); got != "   B100F を踏破しました（本編クリア）。" {
+		t.Errorf("unexpected AutoExploreStopReasonClear: %q", got)
+	}
+
+	if got := msg.AutoExploreStopReasonRecord(150); got != "   これまでの最高到達階層 B150F を突破しました。ここから先は未踏の階層です。" {
+		t.Errorf("unexpected AutoExploreStopReasonRecord: %q", got)
+	}
+
+	if got := msg.AutoExploreStopReasonMilestone(20); got != "   B20F を突破しました（10階ごとの区切り）。" {
+		t.Errorf("unexpected AutoExploreStopReasonMilestone: %q", got)
+	}
+
+	expectedDanger := "   次の B58F の敵（攻撃 153）は、倒すまでに約 6 ターン、被害 約 765 の見込みです（現在 HP 900、危険域 300 以下）。"
+	if got := msg.AutoExploreStopReasonDangerLine(58, 153, 6, 765, 900, 300); got != expectedDanger {
+		t.Errorf("unexpected AutoExploreStopReasonDangerLine: \ngot : %q\nwant: %q", got, expectedDanger)
+	}
+
+	if msg.BattleInvalidCmd != ">> 無効なコマンドです。1, 2, 3, 4 のいずれかを入力してください。" {
+		t.Errorf("unexpected BattleInvalidCmd: %q", msg.BattleInvalidCmd)
+	}
+
+	// Per-fight summary (JA)
+	// With resources and one orb
+	s1 := msg.AutoExploreBattleSummary(11, "闇のスライム", 2, 960, 1000, "強化の書", 6, []string{"猛毒の印"})
+	exp1 := "  B11F 闇のスライム を撃破（2ターン） HP 960/1000 ／ 強化の書 +6 ／ オーブ 猛毒の印"
+	if s1 != exp1 {
+		t.Errorf("summary 1:\ngot : %q\nwant: %q", s1, exp1)
+	}
+
+	// No resources (0) and no orbs
+	s2 := msg.AutoExploreBattleSummary(3, "コボルド", 1, 50, 50, "強化の書", 0, nil)
+	exp2 := "  B3F コボルド を撃破（1ターン） HP 50/50"
+	if s2 != exp2 {
+		t.Errorf("summary 2:\ngot : %q\nwant: %q", s2, exp2)
+	}
+
+	// With resources and two orbs
+	s3 := msg.AutoExploreBattleSummary(20, "氷のゴーレム", 3, 610, 1000, "強化の書", 10, []string{"猛毒の印", "吸血の印+"})
+	exp3 := "  B20F 氷のゴーレム を撃破（3ターン） HP 610/1000 ／ 強化の書 +10 ／ オーブ 猛毒の印 ／ オーブ 吸血の印+"
+	if s3 != exp3 {
+		t.Errorf("summary 3:\ngot : %q\nwant: %q", s3, exp3)
+	}
+}
+
+func TestAutoExploreMessages_EN(t *testing.T) {
+	msg := GetMessages(model.LanguageEN)
+
+	if msg.BattleCmdAutoExplore != "4: Auto Explore (keep going until a stop point)" {
+		t.Errorf("unexpected BattleCmdAutoExplore: %q", msg.BattleCmdAutoExplore)
+	}
+
+	if msg.BattleAutoExploreStart != "\n>> [Auto Explore Started] Advancing to the next floor after each win until a stop point..." {
+		t.Errorf("unexpected BattleAutoExploreStart: %q", msg.BattleAutoExploreStart)
+	}
+
+	if msg.AutoExploreStoppedTitle != "\n>> Auto Explore stopped:" {
+		t.Errorf("unexpected AutoExploreStoppedTitle: %q", msg.AutoExploreStoppedTitle)
+	}
+
+	if got := msg.AutoExploreStopReasonClear(100); got != "   You conquered B100F (game cleared)." {
+		t.Errorf("unexpected AutoExploreStopReasonClear: %q", got)
+	}
+
+	if got := msg.AutoExploreStopReasonRecord(150); got != "   You passed your previous record, B150F. The floors ahead are uncharted." {
+		t.Errorf("unexpected AutoExploreStopReasonRecord: %q", got)
+	}
+
+	if got := msg.AutoExploreStopReasonMilestone(20); got != "   You cleared B20F (every 10 floors)." {
+		t.Errorf("unexpected AutoExploreStopReasonMilestone: %q", got)
+	}
+
+	expectedDanger := "   The next enemy on B58F (ATK 153) would take about 6 turns to defeat, dealing about 765 damage (current HP 900, danger zone at 300 or below)."
+	if got := msg.AutoExploreStopReasonDangerLine(58, 153, 6, 765, 900, 300); got != expectedDanger {
+		t.Errorf("unexpected AutoExploreStopReasonDangerLine: \ngot : %q\nwant: %q", got, expectedDanger)
+	}
+
+	if msg.BattleInvalidCmd != ">> Invalid command. Please enter 1, 2, 3, or 4." {
+		t.Errorf("unexpected BattleInvalidCmd: %q", msg.BattleInvalidCmd)
+	}
+
+	// Per-fight summary (EN)
+	// 2 turns, resource + orb
+	s1 := msg.AutoExploreBattleSummary(11, "Dark Slime", 2, 960, 1000, "Upgrade Scroll", 6, []string{"Deadly Poison"})
+	exp1 := "  B11F Dark Slime defeated (2 turns) HP 960/1000 / Upgrade Scroll +6 / Orb: Deadly Poison"
+	if s1 != exp1 {
+		t.Errorf("EN summary 1:\ngot : %q\nwant: %q", s1, exp1)
+	}
+
+	// 1 turn, no resource, no orb
+	s2 := msg.AutoExploreBattleSummary(1, "Goblin", 1, 50, 50, "Upgrade Scroll", 0, nil)
+	exp2 := "  B1F Goblin defeated (1 turn) HP 50/50"
+	if s2 != exp2 {
+		t.Errorf("EN summary 2:\ngot : %q\nwant: %q", s2, exp2)
+	}
+
+	// 3 turns, resource + 2 orbs
+	s3 := msg.AutoExploreBattleSummary(20, "Ice Golem", 3, 610, 1000, "Upgrade Scroll", 10, []string{"Deadly Poison", "Vampiric+"})
+	exp3 := "  B20F Ice Golem defeated (3 turns) HP 610/1000 / Upgrade Scroll +10 / Orb: Deadly Poison / Orb: Vampiric+"
+	if s3 != exp3 {
+		t.Errorf("EN summary 3:\ngot : %q\nwant: %q", s3, exp3)
+	}
+}
+
+func TestAutoExploreMessages_AllThemes(t *testing.T) {
+	themes := []string{"classic_fantasy", "cyberpunk", "partner_sync"}
+	for _, thID := range themes {
+		t.Run(thID+"_JA", func(t *testing.T) {
+			th := theme.GetPresetTheme(thID, model.LanguageJA)
+			msg := GetMessages(model.LanguageJA)
+			orbName := th.Orbs[model.OrbMultiHit].Name
+			summary := msg.AutoExploreBattleSummary(15, "テスト敵", 2, 100, 100, th.ResourceName, 5, []string{orbName})
+			if !strings.HasPrefix(summary, "  B15F テスト敵 を撃破（2ターン）") {
+				t.Errorf("malformed prefix: %q", summary)
+			}
+			if !strings.Contains(summary, "／ "+th.ResourceName+" +5") {
+				t.Errorf("missing resource %s: %q", th.ResourceName, summary)
+			}
+			if !strings.Contains(summary, "／ オーブ "+orbName) {
+				t.Errorf("missing orb %s: %q", orbName, summary)
+			}
+		})
+
+		t.Run(thID+"_EN", func(t *testing.T) {
+			th := theme.GetPresetTheme(thID, model.LanguageEN)
+			msg := GetMessages(model.LanguageEN)
+			orbName := th.Orbs[model.OrbMultiHit].Name
+			summary := msg.AutoExploreBattleSummary(15, "Test Enemy", 1, 100, 100, th.ResourceName, 5, []string{orbName})
+			if !strings.HasPrefix(summary, "  B15F Test Enemy defeated (1 turn)") {
+				t.Errorf("malformed prefix: %q", summary)
+			}
+			if !strings.Contains(summary, "/ "+th.ResourceName+" +5") {
+				t.Errorf("missing resource %s: %q", th.ResourceName, summary)
+			}
+			if !strings.Contains(summary, "/ Orb: "+orbName) {
+				t.Errorf("missing orb %s: %q", orbName, summary)
+			}
+		})
+	}
+}

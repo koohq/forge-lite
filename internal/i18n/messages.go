@@ -149,32 +149,40 @@ type Messages struct {
 	AbyssCleared           func(name string, floor int) string
 
 	// Battle
-	BattleVs                       func(php, pmax int, ename string, ehp, emax, poison int) string
-	BattleCmdAttack                string
-	BattleCmdRetreat               string
-	BattleCmdAuto                  string
-	BattleCmdPrompt                string
-	BattleRetreatCombat            string
-	BattleAutoStart                string
-	BattleAutoSummaryTitle         string
-	BattleAutoReason               func(reason string) string
-	BattleAutoTurns                func(turns int) string
-	BattleAutoDamageDealt          func(dmg int) string
-	BattleAutoDamageTaken          func(dmg int) string
-	BattleAutoHealed               func(heal int) string
-	BattleAutoRemainingHp          func(php, pmax int, ename string, ehp, emax int) string
-	BattleAutoReasonEnemyDefeated  string
-	BattleAutoReasonPoisonDefeated string
-	BattleAutoReasonFainted        string
-	BattleAutoReasonDangerHp       func(hp, maxHp int) string
-	BattleInvalidCmd               string
-	BattlePlayerAttack             func(hitIndex string, isCrit bool, ename string, dmg int) string
-	BattleCritLabel                string
-	BattleHitNumber                func(hit int) string
-	BattleVampHeal                 func(heal, hp int) string
-	BattlePoisonInflict            func(ename string, added, total int) string
-	BattlePoisonTick               func(ename string, dmg int) string
-	BattleEnemyCounter             func(ename string, dmg int) string
+	BattleVs                        func(php, pmax int, ename string, ehp, emax, poison int) string
+	BattleCmdAttack                 string
+	BattleCmdRetreat                string
+	BattleCmdAuto                   string
+	BattleCmdAutoExplore            string
+	BattleCmdPrompt                 string
+	BattleRetreatCombat             string
+	BattleAutoStart                 string
+	BattleAutoExploreStart          string
+	AutoExploreBattleSummary        func(floor int, enemyName string, turns int, php, pmax int, resName string, scrolls int, orbNames []string) string
+	AutoExploreStoppedTitle         string
+	AutoExploreStopReasonClear      func(floor int) string
+	AutoExploreStopReasonRecord     func(prevRecord int) string
+	AutoExploreStopReasonMilestone  func(floor int) string
+	AutoExploreStopReasonDangerLine func(floor, atk, turns, dmg, hp, dangerHp int) string
+	BattleAutoSummaryTitle          string
+	BattleAutoReason                func(reason string) string
+	BattleAutoTurns                 func(turns int) string
+	BattleAutoDamageDealt           func(dmg int) string
+	BattleAutoDamageTaken           func(dmg int) string
+	BattleAutoHealed                func(heal int) string
+	BattleAutoRemainingHp           func(php, pmax int, ename string, ehp, emax int) string
+	BattleAutoReasonEnemyDefeated   string
+	BattleAutoReasonPoisonDefeated  string
+	BattleAutoReasonFainted         string
+	BattleAutoReasonDangerHp        func(hp, maxHp int) string
+	BattleInvalidCmd                string
+	BattlePlayerAttack              func(hitIndex string, isCrit bool, ename string, dmg int) string
+	BattleCritLabel                 string
+	BattleHitNumber                 func(hit int) string
+	BattleVampHeal                  func(heal, hp int) string
+	BattlePoisonInflict             func(ename string, added, total int) string
+	BattlePoisonTick                func(ename string, dmg int) string
+	BattleEnemyCounter              func(ename string, dmg int) string
 
 	// Settings
 	SettingsTitle                string
@@ -471,9 +479,35 @@ var (
 		BattleCmdAttack:        "1: 攻撃する",
 		BattleCmdRetreat:       "2: 撤退する (戦利品を捨てて拠点へ逃げる)",
 		BattleCmdAuto:          "3: オート戦闘",
+		BattleCmdAutoExplore:   "4: オート探索 (止まる所まで進む)",
 		BattleCmdPrompt:        "コマンド: ",
 		BattleRetreatCombat:    "\n>> 戦闘から離脱し、拠点へ逃げ帰りました。",
 		BattleAutoStart:        "\n>> [オート戦闘開始] 高速で戦闘を進行します...",
+		BattleAutoExploreStart: "\n>> [オート探索開始] 止まる所まで、勝つたびに次の階層へ進みます...",
+		AutoExploreBattleSummary: func(floor int, enemyName string, turns int, php, pmax int, resName string, scrolls int, orbNames []string) string {
+			resPart := ""
+			if scrolls > 0 {
+				resPart = fmt.Sprintf(" ／ %s +%d", resName, scrolls)
+			}
+			orbPart := ""
+			for _, o := range orbNames {
+				orbPart += fmt.Sprintf(" ／ オーブ %s", o)
+			}
+			return fmt.Sprintf("  B%dF %s を撃破（%dターン） HP %d/%d%s%s", floor, enemyName, turns, php, pmax, resPart, orbPart)
+		},
+		AutoExploreStoppedTitle: "\n>> オート探索を止めました：",
+		AutoExploreStopReasonClear: func(floor int) string {
+			return fmt.Sprintf("   B%dF を踏破しました（本編クリア）。", floor)
+		},
+		AutoExploreStopReasonRecord: func(prevRecord int) string {
+			return fmt.Sprintf("   これまでの最高到達階層 B%dF を突破しました。ここから先は未踏の階層です。", prevRecord)
+		},
+		AutoExploreStopReasonMilestone: func(floor int) string {
+			return fmt.Sprintf("   B%dF を突破しました（10階ごとの区切り）。", floor)
+		},
+		AutoExploreStopReasonDangerLine: func(floor, atk, turns, dmg, hp, dangerHp int) string {
+			return fmt.Sprintf("   次の B%dF の敵（攻撃 %d）は、倒すまでに約 %d ターン、被害 約 %d の見込みです（現在 HP %d、危険域 %d 以下）。", floor, atk, turns, dmg, hp, dangerHp)
+		},
 		BattleAutoSummaryTitle: "\n==============================================\n             【オート戦闘 終了要約】            \n==============================================",
 		BattleAutoReason: func(reason string) string {
 			return fmt.Sprintf("- 終了理由: %s", reason)
@@ -507,7 +541,7 @@ var (
 		BattleAutoReasonDangerHp: func(hp, maxHp int) string {
 			return fmt.Sprintf("危険域 (HP %d/%d <= 30%%) に到達したため自動停止", hp, maxHp)
 		},
-		BattleInvalidCmd: ">> 無効なコマンドです。1, 2, 3 のいずれかを入力してください。",
+		BattleInvalidCmd: ">> 無効なコマンドです。1, 2, 3, 4 のいずれかを入力してください。",
 		BattlePlayerAttack: func(hitIndex string, isCrit bool, ename string, dmg int) string {
 			critStr := ""
 			if isCrit {
@@ -842,9 +876,39 @@ var (
 		BattleCmdAttack:        "1: Attack",
 		BattleCmdRetreat:       "2: Retreat (Flee to base, losing this run's loot)",
 		BattleCmdAuto:          "3: Auto Combat",
+		BattleCmdAutoExplore:   "4: Auto Explore (keep going until a stop point)",
 		BattleCmdPrompt:        "Command: ",
 		BattleRetreatCombat:    "\n>> Fled from battle and escaped back to base.",
 		BattleAutoStart:        "\n>> [Auto Combat Started] Resolving combat at high speed...",
+		BattleAutoExploreStart: "\n>> [Auto Explore Started] Advancing to the next floor after each win until a stop point...",
+		AutoExploreBattleSummary: func(floor int, enemyName string, turns int, php, pmax int, resName string, scrolls int, orbNames []string) string {
+			turnStr := fmt.Sprintf("%d turns", turns)
+			if turns == 1 {
+				turnStr = "1 turn"
+			}
+			resPart := ""
+			if scrolls > 0 {
+				resPart = fmt.Sprintf(" / %s +%d", resName, scrolls)
+			}
+			orbPart := ""
+			for _, o := range orbNames {
+				orbPart += fmt.Sprintf(" / Orb: %s", o)
+			}
+			return fmt.Sprintf("  B%dF %s defeated (%s) HP %d/%d%s%s", floor, enemyName, turnStr, php, pmax, resPart, orbPart)
+		},
+		AutoExploreStoppedTitle: "\n>> Auto Explore stopped:",
+		AutoExploreStopReasonClear: func(floor int) string {
+			return fmt.Sprintf("   You conquered B%dF (game cleared).", floor)
+		},
+		AutoExploreStopReasonRecord: func(prevRecord int) string {
+			return fmt.Sprintf("   You passed your previous record, B%dF. The floors ahead are uncharted.", prevRecord)
+		},
+		AutoExploreStopReasonMilestone: func(floor int) string {
+			return fmt.Sprintf("   You cleared B%dF (every 10 floors).", floor)
+		},
+		AutoExploreStopReasonDangerLine: func(floor, atk, turns, dmg, hp, dangerHp int) string {
+			return fmt.Sprintf("   The next enemy on B%dF (ATK %d) would take about %d turns to defeat, dealing about %d damage (current HP %d, danger zone at %d or below).", floor, atk, turns, dmg, hp, dangerHp)
+		},
 		BattleAutoSummaryTitle: "\n==============================================\n          【Auto Combat Summary Report】         \n==============================================",
 		BattleAutoReason: func(reason string) string {
 			return fmt.Sprintf("- End Reason: %s", reason)
@@ -878,7 +942,7 @@ var (
 		BattleAutoReasonDangerHp: func(hp, maxHp int) string {
 			return fmt.Sprintf("Auto stopped upon reaching danger zone (HP %d/%d <= 30%%)", hp, maxHp)
 		},
-		BattleInvalidCmd: ">> Invalid command. Please enter 1, 2, or 3.",
+		BattleInvalidCmd: ">> Invalid command. Please enter 1, 2, 3, or 4.",
 		BattlePlayerAttack: func(hitIndex string, isCrit bool, ename string, dmg int) string {
 			critStr := ""
 			if isCrit {

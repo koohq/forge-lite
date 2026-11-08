@@ -120,3 +120,131 @@ func TestRunAutoCombat_EnemyDefeated(t *testing.T) {
 		t.Errorf("expected 1 turn, got %d", res.Turns)
 	}
 }
+
+func TestEstimateAutoFight(t *testing.T) {
+	// 1. No multi-hit: atk 10, enemy HP 25, atk 7 -> 3 turns, 14 damage
+	wStandard := model.Weapon{BaseAtk: 10}
+	turns, dmg := EstimateAutoFight(wStandard, 25, 7)
+	if turns != 3 || dmg != 14 {
+		t.Errorf("expected turns=3, dmg=14, got turns=%d, dmg=%d", turns, dmg)
+	}
+
+	// 2. Multi-hit: int(10*0.65)=6 per hit, 12 per turn. Enemy HP 25 -> 3 turns, 14 damage
+	wMulti := model.Weapon{BaseAtk: 10, Slots: []model.OrbType{model.OrbMultiHit}}
+	turns, dmg = EstimateAutoFight(wMulti, 25, 7)
+	if turns != 3 || dmg != 14 {
+		t.Errorf("multi hit: expected turns=3, dmg=14, got turns=%d, dmg=%d", turns, dmg)
+	}
+	// Enemy HP 12 -> 1 turn, 0 damage
+	turns, dmg = EstimateAutoFight(wMulti, 12, 7)
+	if turns != 1 || dmg != 0 {
+		t.Errorf("multi hit 1-turn: expected turns=1, dmg=0, got turns=%d, dmg=%d", turns, dmg)
+	}
+
+	// 3. Multi-hit+: int(10*0.75)=7 per hit, 14 per turn. Enemy HP 25 -> 2 turns, 7 damage
+	wMultiPlus := model.Weapon{BaseAtk: 10, Slots: []model.OrbType{model.OrbMultiHitPlus}}
+	turns, dmg = EstimateAutoFight(wMultiPlus, 25, 7)
+	if turns != 2 || dmg != 7 {
+		t.Errorf("multi hit+: expected turns=2, dmg=7, got turns=%d, dmg=%d", turns, dmg)
+	}
+
+	// 4. Weak weapon below 1 per hit (minimum 1): BaseAtk=0, rate=0.65 -> dmgPerHit=1, 2 hits -> 2 dmg/turn
+	wWeak := model.Weapon{BaseAtk: 0, Slots: []model.OrbType{model.OrbMultiHit}}
+	turns, dmg = EstimateAutoFight(wWeak, 5, 3)
+	if turns != 3 || dmg != 6 {
+		t.Errorf("weak weapon: expected turns=3, dmg=6, got turns=%d, dmg=%d", turns, dmg)
+	}
+
+	// 5. One-shot enemy (1 turn, 0 damage)
+	turns, dmg = EstimateAutoFight(wStandard, 10, 50)
+	if turns != 1 || dmg != 0 {
+		t.Errorf("1-shot: expected turns=1, dmg=0, got turns=%d, dmg=%d", turns, dmg)
+	}
+
+	// 6. Critical, poison and vamp orbs do not change the estimate
+	wAllOtherOrbs := model.Weapon{
+		BaseAtk: 10,
+		Slots: []model.OrbType{
+			model.OrbCriticalPlus,
+			model.OrbPoisonPlus,
+			model.OrbVampPlus,
+		},
+	}
+	turnsOther, dmgOther := EstimateAutoFight(wAllOtherOrbs, 25, 7)
+	if turnsOther != 3 || dmgOther != 14 {
+		t.Errorf("other orbs: expected turns=3, dmg=14, got turns=%d, dmg=%d", turnsOther, dmgOther)
+	}
+}
+
+func TestDangerHPLine(t *testing.T) {
+	tests := []struct {
+		maxHP    int
+		expected int
+	}{
+		{100, 30},
+		{50, 15},
+		{33, 9},
+		{1000, 300},
+	}
+	for _, tc := range tests {
+		got := DangerHPLine(tc.maxHP)
+		if got != tc.expected {
+			t.Errorf("DangerHPLine(%d) = %d; want %d", tc.maxHP, got, tc.expected)
+		}
+	}
+}
+
+func TestEstimateAutoFight_ConservativeProperty(t *testing.T) {
+	// The estimate must be pessimistic (turns >= actual turns, damage >= actual damage)
+	testCases := []struct {
+		weapon   model.Weapon
+		enemyHP  int
+		enemyAtk int
+	}{
+		{
+			weapon: model.Weapon{
+				BaseAtk: 20,
+				Slots:   []model.OrbType{model.OrbCriticalPlus, model.OrbMultiHitPlus, model.OrbVampPlus},
+			},
+			enemyHP:  100,
+			enemyAtk: 15,
+		},
+		{
+			weapon: model.Weapon{
+				BaseAtk: 15,
+				Slots:   []model.OrbType{model.OrbPoisonPlus, model.OrbCritical},
+			},
+			enemyHP:  80,
+			enemyAtk: 10,
+		},
+		{
+			weapon: model.Weapon{
+				BaseAtk: 30,
+				Slots:   []model.OrbType{model.OrbMultiHit, model.OrbPoison},
+			},
+			enemyHP:  120,
+			enemyAtk: 20,
+		},
+	}
+
+	msgs := i18n.GetMessages(model.LanguageJA)
+	for idx, tc := range testCases {
+		estTurns, estDmg := EstimateAutoFight(tc.weapon, tc.enemyHP, tc.enemyAtk)
+
+		// Run the random simulation several times
+		for seed := 0; seed < 10; seed++ {
+			enemy := &model.Enemy{HP: tc.enemyHP, MaxHP: tc.enemyHP, Atk: tc.enemyAtk}
+			res := RunAutoCombat(tc.weapon, 1000, 1000, enemy, msgs, nil)
+
+			if !res.EnemyDefeated {
+				t.Fatalf("case %d seed %d: expected enemy defeat", idx, seed)
+			}
+			if res.Turns > estTurns {
+				t.Errorf("case %d seed %d: actual turns %d > estimated turns %d", idx, seed, res.Turns, estTurns)
+			}
+			if res.TotalDmgTaken > estDmg {
+				t.Errorf("case %d seed %d: actual dmg %d > estimated dmg %d", idx, seed, res.TotalDmgTaken, estDmg)
+			}
+		}
+	}
+}

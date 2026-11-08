@@ -34,7 +34,7 @@ A lightweight terminal CLI roguelite with zero external dependencies, powered en
 
 - **Zero External Dependencies**: Implemented using strictly Go standard libraries (`fmt`, `bufio`, `embed`, etc.). No CGo, no heavy third-party TUI frameworks.
 - **Rapid Inflation Gameplay**: Weapon damage scales exponentially as plus values rise into the hundreds and thousands.
-- **Hands-Free Auto Combat**: Clean, fast-paced turn resolution with automated safety stops when player HP falls to 30% or below.
+- **Hands-Free Auto Combat**: Clean, fast-paced turn resolution with automated safety stops when player HP falls to 30% or below. Auto Explore keeps advancing floor by floor and stops before things get dangerous or at milestone floors.
 - **Built-in & Custom Themes**: Switch effortlessly between distinct fantasy, sci-fi, and tactical themes, or create your own custom theme via JSON.
 
 ---
@@ -112,6 +112,7 @@ goreleaser build --snapshot --clean
 ### Town Hub & QoL Features
 
 - **Auto-Combat**: Seamlessly battles dungeon enemies turn-by-turn. Automatically yields control back to you when HP drops to 30% or below, or when encountering lethal danger.
+- **Auto Explore**: Choose 4 in battle to advance to the next floor automatically after each win. It stops when the next fight is expected to push your HP into the danger zone (showing the estimated damage), every 10 floors, when you pass your previous record, and on clearing B100F, so you can choose to proceed or retreat.
 - **Bulk & Target Enhancements**:
   - **Single Enhance**: Spend 1 scroll to upgrade weapon (+1).
   - **Target / Count Enhance**: Specify an exact number of scrolls or target plus value.
