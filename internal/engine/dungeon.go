@@ -122,6 +122,27 @@ func CreateStarterDungeon(theme model.Theme, randInt func(n int) int) model.Dung
 	}
 }
 
+// joinEnemyName combines an enemy prefix and base name appropriately for the given language.
+// It preserves direct concatenation for Japanese and normalizes boundary spaces and hyphens for other languages.
+func joinEnemyName(prefix, base string, lang model.Language) string {
+	if lang == model.LanguageJA {
+		return strings.TrimSpace(prefix + base)
+	}
+
+	p := strings.TrimSpace(prefix)
+	b := strings.TrimSpace(base)
+	if p == "" {
+		return b
+	}
+	if b == "" {
+		return p
+	}
+	if strings.HasSuffix(p, "-") {
+		return p + b
+	}
+	return p + " " + b
+}
+
 // CreateDeepDungeon generates the 10-floor deep dungeon definition.
 func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int) int) model.DungeonDef {
 	if randInt == nil {
@@ -144,11 +165,6 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 		return bases[idx%len(bases)]
 	}
 
-	separator := " "
-	if theme.Language == model.LanguageJA {
-		separator = ""
-	}
-
 	return model.DungeonDef{
 		Name:        theme.Dungeons.Deep,
 		Floors:      10,
@@ -160,7 +176,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 
 			if floor >= 1 && floor <= 3 {
 				c1 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(0) + separator + getBase(2)),
+					Name: joinEnemyName(getPrefix(0), getBase(2), theme.Language),
 					HP:   80,
 					Atk:  12,
 					GetDrops: func() model.RunInventory {
@@ -168,7 +184,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 					},
 				}
 				c2 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(1) + separator + getBase(4)),
+					Name: joinEnemyName(getPrefix(1), getBase(4), theme.Language),
 					HP:   120,
 					Atk:  16,
 					GetDrops: func() model.RunInventory {
@@ -183,7 +199,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 
 			if floor >= 4 && floor <= 6 {
 				c1 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(2) + separator + getBase(3)),
+					Name: joinEnemyName(getPrefix(2), getBase(3), theme.Language),
 					HP:   180,
 					Atk:  20,
 					GetDrops: func() model.RunInventory {
@@ -191,7 +207,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 					},
 				}
 				c2 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(3) + separator + getBase(7)),
+					Name: joinEnemyName(getPrefix(3), getBase(7), theme.Language),
 					HP:   220,
 					Atk:  24,
 					GetDrops: func() model.RunInventory {
@@ -206,7 +222,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 
 			if floor >= 7 && floor <= 9 {
 				c1 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(4) + separator + getBase(5)),
+					Name: joinEnemyName(getPrefix(4), getBase(5), theme.Language),
 					HP:   280,
 					Atk:  28,
 					GetDrops: func() model.RunInventory {
@@ -214,7 +230,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 					},
 				}
 				c2 := model.EnemyTemplate{
-					Name: strings.TrimSpace(getPrefix(5) + separator + getBase(6)),
+					Name: joinEnemyName(getPrefix(5), getBase(6), theme.Language),
 					HP:   350,
 					Atk:  32,
 					GetDrops: func() model.RunInventory {
@@ -229,7 +245,7 @@ func CreateDeepDungeon(theme model.Theme, recommended string, randInt func(n int
 
 			if floor == 10 {
 				return model.EnemyTemplate{
-					Name: strings.TrimSpace(fmt.Sprintf("%s%s%s (BOSS)", getPrefix(6), separator, getBase(7))),
+					Name: fmt.Sprintf("%s (BOSS)", joinEnemyName(getPrefix(6), getBase(7), theme.Language)),
 					HP:   500,
 					Atk:  36,
 					GetDrops: func() model.RunInventory {
@@ -267,17 +283,13 @@ func GenerateEndlessEnemy(floor int, theme model.Theme, randInt func(n int) int)
 
 	isBoss := (floor%5 == 0)
 	bossTag := "(Mini-Boss)"
-	separator := " "
 	if theme.Language == model.LanguageJA {
 		bossTag = "(中ボス)"
-		separator = ""
 	}
 
-	var name string
+	name := joinEnemyName(prefix, baseName, theme.Language)
 	if isBoss {
-		name = fmt.Sprintf("%s%s%s %s", prefix, separator, baseName, bossTag)
-	} else {
-		name = fmt.Sprintf("%s%s%s", prefix, separator, baseName)
+		name = fmt.Sprintf("%s %s", name, bossTag)
 	}
 
 	hp := int(60 + math.Pow(float64(floor), 1.4)*12)
