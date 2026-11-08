@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/koohq/forge-lite/internal/model"
@@ -228,5 +229,27 @@ func TestRankUpgraded_Message(t *testing.T) {
 	expectedEN := ">> Rank upgraded! Evolved to 【Blade of Armageddon】!"
 	if enRes != expectedEN {
 		t.Errorf("got: %s, want: %s", enRes, expectedEN)
+	}
+}
+
+func TestTitle_ForgeLite(t *testing.T) {
+	tests := []struct {
+		name string
+		lang model.Language
+	}{
+		{"JA", model.LanguageJA},
+		{"EN", model.LanguageEN},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			title := GetMessages(tc.lang).Title
+			if !strings.Contains(title, "Forge Lite") {
+				t.Errorf("expected Title to contain 'Forge Lite', got %q", title)
+			}
+			if strings.Contains(title, "Prototype") {
+				t.Errorf("expected Title to not contain 'Prototype', got %q", title)
+			}
+		})
 	}
 }

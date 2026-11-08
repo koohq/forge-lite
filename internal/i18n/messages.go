@@ -191,7 +191,7 @@ type Messages struct {
 
 var (
 	MessagesJA = Messages{
-		Title:             "==============================================\n   Minimal Rogue-lite Prototype (CUI Ver)   \n==============================================",
+		Title:             "==============================================\n                  Forge Lite                  \n==============================================",
 		StartPrompt:       "\n選択してください: ",
 		StartContinue:     "1: つづきから (save.json を読み込んで開始)",
 		StartNew:          "2: はじめから (初期状態で開始)",
@@ -461,10 +461,10 @@ var (
 			return fmt.Sprintf("\n[YOU] HP: %d/%d  vs  [%s] HP: %d/%d%s", php, pmax, ename, ehp, emax, poisonStr)
 		},
 		BattleCmdAttack:        "1: 攻撃する",
-		BattleCmdRetreat:       "2: 撤退する (戦闘から逃げて拠点へ)",
+		BattleCmdRetreat:       "2: 撤退する (戦利品を捨てて拠点へ逃げる)",
 		BattleCmdAuto:          "3: オート戦闘",
 		BattleCmdPrompt:        "コマンド: ",
-		BattleRetreatCombat:    "\n>> 戦闘から離脱し、命からがら帰還しました。（戦利品は持ち帰れません）",
+		BattleRetreatCombat:    "\n>> 戦闘から離脱し、拠点へ逃げ帰りました。",
 		BattleAutoStart:        "\n>> [オート戦闘開始] 高速で戦闘を進行します...",
 		BattleAutoSummaryTitle: "\n==============================================\n             【オート戦闘 終了要約】            \n==============================================",
 		BattleAutoReason: func(reason string) string {
@@ -555,7 +555,7 @@ var (
 	}
 
 	MessagesEN = Messages{
-		Title:             "==============================================\n   Minimal Rogue-lite Prototype (CUI Ver)   \n==============================================",
+		Title:             "==============================================\n                  Forge Lite                  \n==============================================",
 		StartPrompt:       "\nPlease choose an option: ",
 		StartContinue:     "1: Continue (Load save.json)",
 		StartNew:          "2: New Game (Start with initial stats)",
@@ -825,10 +825,10 @@ var (
 			return fmt.Sprintf("\n[YOU] HP: %d/%d  vs  [%s] HP: %d/%d%s", php, pmax, ename, ehp, emax, poisonStr)
 		},
 		BattleCmdAttack:        "1: Attack",
-		BattleCmdRetreat:       "2: Retreat (Flee to base)",
+		BattleCmdRetreat:       "2: Retreat (Flee to base, losing this run's loot)",
 		BattleCmdAuto:          "3: Auto Combat",
 		BattleCmdPrompt:        "Command: ",
-		BattleRetreatCombat:    "\n>> Fled from battle and escaped back to base. (Loot lost)",
+		BattleRetreatCombat:    "\n>> Fled from battle and escaped back to base.",
 		BattleAutoStart:        "\n>> [Auto Combat Started] Resolving combat at high speed...",
 		BattleAutoSummaryTitle: "\n==============================================\n          【Auto Combat Summary Report】         \n==============================================",
 		BattleAutoReason: func(reason string) string {

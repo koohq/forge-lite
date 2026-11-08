@@ -628,12 +628,9 @@ func (g *Game) dungeonPhase(dungeon model.DungeonDef) {
 		}
 
 		fmt.Println(g.msg().DungeonEncounter(floor, dungeon.Floors, enemy.Name))
-		survived := g.battle(&enemy)
-		if !survived {
-			fmt.Println(g.msg().DungeonDefeatPrompt)
-			fmt.Println(g.msg().DungeonItemsLost(g.theme.ResourceName, runInv.Scrolls, len(runInv.Orbs)))
-			fmt.Println(g.msg().DungeonCarriedBack)
-			g.saveGame()
+		result := g.battle(&enemy)
+		if result != battleWon {
+			g.endRunLosingLoot(result, runInv)
 			return
 		}
 
@@ -731,12 +728,9 @@ func (g *Game) endlessDungeonPhase() {
 		}
 
 		fmt.Println(g.msg().EndlessFloorEncounter(floor, enemy.Name))
-		survived := g.battle(&enemy)
-		if !survived {
-			fmt.Println(g.msg().DungeonDefeatPrompt)
-			fmt.Println(g.msg().DungeonItemsLost(g.theme.ResourceName, runInv.Scrolls, len(runInv.Orbs)))
-			fmt.Println(g.msg().DungeonCarriedBack)
-			g.saveGame()
+		result := g.battle(&enemy)
+		if result != battleWon {
+			g.endRunLosingLoot(result, runInv)
 			return
 		}
 
@@ -774,7 +768,26 @@ func (g *Game) endlessDungeonPhase() {
 	}
 }
 
-func (g *Game) battle(enemy *model.Enemy) bool {
+type battleResult int
+
+const (
+	battleWon battleResult = iota
+	battleLost
+	battleFled
+)
+
+func (g *Game) endRunLosingLoot(result battleResult, runInv model.RunInventory) {
+	if result == battleLost {
+		fmt.Println(g.msg().DungeonDefeatPrompt)
+	}
+	fmt.Println(g.msg().DungeonItemsLost(g.theme.ResourceName, runInv.Scrolls, len(runInv.Orbs)))
+	if result == battleLost {
+		fmt.Println(g.msg().DungeonCarriedBack)
+	}
+	g.saveGame()
+}
+
+func (g *Game) battle(enemy *model.Enemy) battleResult {
 	for g.player.HP > 0 && enemy.HP > 0 {
 		fmt.Println(g.msg().BattleVs(g.player.HP, g.player.MaxHP, enemy.Name, enemy.HP, enemy.MaxHP, enemy.Poison))
 		fmt.Println(g.msg().BattleCmdAttack)
@@ -785,7 +798,7 @@ func (g *Game) battle(enemy *model.Enemy) bool {
 		switch act {
 		case "2":
 			fmt.Println(g.msg().BattleRetreatCombat)
-			return false
+			return battleFled
 		case "3":
 			fmt.Println(g.msg().BattleAutoStart)
 			res := RunAutoCombat(g.player.Weapon, g.player.HP, g.player.MaxHP, enemy, g.msg(), nil)
@@ -803,10 +816,10 @@ func (g *Game) battle(enemy *model.Enemy) bool {
 			fmt.Println("==============================================")
 
 			if enemy.HP <= 0 {
-				return true
+				return battleWon
 			}
 			if g.player.HP <= 0 {
-				return false
+				return battleLost
 			}
 			continue
 		case "1":
@@ -829,7 +842,7 @@ func (g *Game) battle(enemy *model.Enemy) bool {
 			}
 
 			if enemy.HP <= 0 {
-				return true
+				return battleWon
 			}
 
 			// Poison tick
@@ -838,7 +851,7 @@ func (g *Game) battle(enemy *model.Enemy) bool {
 				enemy.HP -= poisonDmg
 				fmt.Println(g.msg().BattlePoisonTick(enemy.Name, poisonDmg))
 				if enemy.HP <= 0 {
-					return true
+					return battleWon
 				}
 			}
 
@@ -846,12 +859,15 @@ func (g *Game) battle(enemy *model.Enemy) bool {
 			fmt.Println(g.msg().BattleEnemyCounter(enemy.Name, enemy.Atk))
 			g.player.HP -= enemy.Atk
 			if g.player.HP <= 0 {
-				return false
+				return battleLost
 			}
 		default:
 			fmt.Println(g.msg().BattleInvalidCmd)
 		}
 	}
 
-	return g.player.HP > 0
+	if g.player.HP > 0 {
+		return battleWon
+	}
+	return battleLost
 }

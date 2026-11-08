@@ -107,7 +107,7 @@ goreleaser build --snapshot --clean
 2. **Scorching Depths (灼熱の深層)**: 10 Floors. Intermediate challenge with hazardous enemies and richer rewards.
 3. **Infinite Abyss (無限の深淵)**: Endless floors. Features procedural enemy scaling and checkpoint skips every 10 floors based on your highest recorded floor.
 
-> **Risk & Return**: Retiring or clearing a floor lets you carry all gathered scrolls and orbs safely back to town. Falling in battle loses that expedition's loot, but all weapon levels, maximum HP, and highest reached depths persist permanently.
+> **Risk & Return**: Retreating between floors or clearing a dungeon lets you carry all gathered scrolls and orbs safely back to town. Fleeing mid-battle or falling in battle loses that expedition's loot, but all weapon levels, maximum HP, and highest reached depths persist permanently.
 
 ### Town Hub & QoL Features
 
