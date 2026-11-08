@@ -61,6 +61,11 @@ func LoadSaveData(filePath string) (*model.SaveData, error) {
 		save.ThemeID = &defaultTheme
 	}
 
+	defaultAbyssCleared := false
+	if save.AbyssCleared == nil {
+		save.AbyssCleared = &defaultAbyssCleared
+	}
+
 	return &save, nil
 }
 

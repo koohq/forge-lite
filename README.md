@@ -105,7 +105,7 @@ goreleaser build --snapshot --clean
 
 1. **Starter Cave (始まりの洞窟)**: 5 Floors. Designed for new runs to gather initial scrolls and establish basic orb loadouts.
 2. **Scorching Depths (灼熱の深層)**: 10 Floors. Intermediate challenge with hazardous enemies and richer rewards.
-3. **Infinite Abyss (無限の深淵)**: Endless floors. Features procedural enemy scaling and checkpoint skips every 10 floors based on your highest recorded floor.
+3. **Infinite Abyss (無限の深淵)**: Endless floors. Features procedural enemy scaling and checkpoint skips every 10 floors based on your highest recorded floor. Defeating the B100F enemy clears the game and marks your base as cleared; you can keep descending beyond it to push your record.
 
 > **Risk & Return**: Retreating between floors or clearing a dungeon lets you carry all gathered scrolls and orbs safely back to town. Fleeing mid-battle or falling in battle loses that expedition's loot, but all weapon levels, maximum HP, and highest reached depths persist permanently.
 

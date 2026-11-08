@@ -27,7 +27,7 @@ type Messages struct {
 
 	// Hub
 	HubHeader           func(title string) string
-	HubStats            func(hpLabel string, hp int, abyssName string, deepest int) string
+	HubStats            func(hpLabel string, hp int, abyssName string, deepest int, cleared bool) string
 	HubEquip            func(label, name, plusPrefix string, plus int, statLabel string, atk int) string
 	HubSlots            func(slotLabel string, count int, slots string) string
 	HubEmptySlot        string
@@ -146,6 +146,7 @@ type Messages struct {
 	EndlessStartFrom       func(floor int) string
 	EndlessFloorEncounter  func(floor int, name string) string
 	EndlessRecordUpdated   func(floor int) string
+	AbyssCleared           func(name string, floor int) string
 
 	// Battle
 	BattleVs                       func(php, pmax int, ename string, ehp, emax, poison int) string
@@ -214,12 +215,16 @@ var (
 
 		// Hub
 		HubHeader: func(title string) string { return title },
-		HubStats: func(hpLabel string, hp int, abyssName string, deepest int) string {
+		HubStats: func(hpLabel string, hp int, abyssName string, deepest int, cleared bool) string {
 			rec := "未挑戦"
 			if deepest > 0 {
 				rec = fmt.Sprintf("B%dF", deepest)
 			}
-			return fmt.Sprintf("%s: %d | %s 最高到達: %s", hpLabel, hp, abyssName, rec)
+			clearSuffix := ""
+			if cleared {
+				clearSuffix = " ★本編クリア"
+			}
+			return fmt.Sprintf("%s: %d | %s 最高到達: %s%s", hpLabel, hp, abyssName, rec, clearSuffix)
 		},
 		HubEquip: func(label, name, plusPrefix string, plus int, statLabel string, atk int) string {
 			return fmt.Sprintf("%s: %s%s%d (%s: %d)", label, name, plusPrefix, plus, statLabel, atk)
@@ -451,6 +456,9 @@ var (
 		EndlessRecordUpdated: func(floor int) string {
 			return fmt.Sprintf("★ 最高到達階層を更新！ (B%dF)", floor)
 		},
+		AbyssCleared: func(name string, floor int) string {
+			return fmt.Sprintf("\n**********************************************\n   【%s】B%dF 踏破！ 本編クリア、おめでとうございます！\n   ここから先も潜り続けて、最高記録に挑戦できます。\n**********************************************", name, floor)
+		},
 
 		// Battle
 		BattleVs: func(php, pmax int, ename string, ehp, emax, poison int) string {
@@ -578,12 +586,16 @@ var (
 
 		// Hub
 		HubHeader: func(title string) string { return title },
-		HubStats: func(hpLabel string, hp int, abyssName string, deepest int) string {
+		HubStats: func(hpLabel string, hp int, abyssName string, deepest int, cleared bool) string {
 			rec := "None"
 			if deepest > 0 {
 				rec = fmt.Sprintf("B%dF", deepest)
 			}
-			return fmt.Sprintf("%s: %d | %s Record: %s", hpLabel, hp, abyssName, rec)
+			clearSuffix := ""
+			if cleared {
+				clearSuffix = " ★Game Cleared"
+			}
+			return fmt.Sprintf("%s: %d | %s Record: %s%s", hpLabel, hp, abyssName, rec, clearSuffix)
 		},
 		HubEquip: func(label, name, plusPrefix string, plus int, statLabel string, atk int) string {
 			return fmt.Sprintf("%s: %s%s%d (%s: %d)", label, name, plusPrefix, plus, statLabel, atk)
@@ -814,6 +826,9 @@ var (
 		},
 		EndlessRecordUpdated: func(floor int) string {
 			return fmt.Sprintf("★ New highest record reached! (B%dF)", floor)
+		},
+		AbyssCleared: func(name string, floor int) string {
+			return fmt.Sprintf("\n**********************************************\n   【%s】 B%dF conquered! You've cleared the game. Congratulations!\n   The depths go on. Keep descending to push your record.\n**********************************************", name, floor)
 		},
 
 		// Battle

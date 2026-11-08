@@ -180,16 +180,90 @@ func TestHubStats_DynamicAbyss(t *testing.T) {
 	jaMsg := GetMessages(model.LanguageJA)
 	enMsg := GetMessages(model.LanguageEN)
 
-	jaRes := jaMsg.HubStats("最大体力", 100, "事象の地平線", 42)
+	jaRes := jaMsg.HubStats("最大体力", 100, "事象の地平線", 42, false)
 	expectedJA := "最大体力: 100 | 事象の地平線 最高到達: B42F"
 	if jaRes != expectedJA {
 		t.Errorf("got: %s, want: %s", jaRes, expectedJA)
 	}
 
-	enRes := enMsg.HubStats("Max Shields", 150, "Event Horizon Void", 0)
+	enRes := enMsg.HubStats("Max Shields", 150, "Event Horizon Void", 0, false)
 	expectedEN := "Max Shields: 150 | Event Horizon Void Record: None"
 	if enRes != expectedEN {
 		t.Errorf("got: %s, want: %s", enRes, expectedEN)
+	}
+
+	jaCleared := jaMsg.HubStats("最大体力", 100, "事象の地平線", 42, true)
+	expectedJACleared := "最大体力: 100 | 事象の地平線 最高到達: B42F ★本編クリア"
+	if jaCleared != expectedJACleared {
+		t.Errorf("got: %s, want: %s", jaCleared, expectedJACleared)
+	}
+
+	enCleared := enMsg.HubStats("Max Shields", 150, "Event Horizon Void", 0, true)
+	expectedENCleared := "Max Shields: 150 | Event Horizon Void Record: None ★Game Cleared"
+	if enCleared != expectedENCleared {
+		t.Errorf("got: %s, want: %s", enCleared, expectedENCleared)
+	}
+}
+
+func TestAbyssCleared_Message(t *testing.T) {
+	jaMsg := GetMessages(model.LanguageJA)
+	enMsg := GetMessages(model.LanguageEN)
+
+	tests := []struct {
+		themeID    string
+		expectedJA string
+		expectedEN string
+	}{
+		{
+			themeID: "classic_fantasy",
+			expectedJA: "\n**********************************************\n" +
+				"   【無限の深淵】B100F 踏破！ 本編クリア、おめでとうございます！\n" +
+				"   ここから先も潜り続けて、最高記録に挑戦できます。\n" +
+				"**********************************************",
+			expectedEN: "\n**********************************************\n" +
+				"   【Infinite Abyss】 B100F conquered! You've cleared the game. Congratulations!\n" +
+				"   The depths go on. Keep descending to push your record.\n" +
+				"**********************************************",
+		},
+		{
+			themeID: "cyberpunk",
+			expectedJA: "\n**********************************************\n" +
+				"   【無限の電脳網】B100F 踏破！ 本編クリア、おめでとうございます！\n" +
+				"   ここから先も潜り続けて、最高記録に挑戦できます。\n" +
+				"**********************************************",
+			expectedEN: "\n**********************************************\n" +
+				"   【Infinite Cyberspace】 B100F conquered! You've cleared the game. Congratulations!\n" +
+				"   The depths go on. Keep descending to push your record.\n" +
+				"**********************************************",
+		},
+		{
+			themeID: "partner_sync",
+			expectedJA: "\n**********************************************\n" +
+				"   【未知の最深部】B100F 踏破！ 本編クリア、おめでとうございます！\n" +
+				"   ここから先も潜り続けて、最高記録に挑戦できます。\n" +
+				"**********************************************",
+			expectedEN: "\n**********************************************\n" +
+				"   【Unknown Depths】 B100F conquered! You've cleared the game. Congratulations!\n" +
+				"   The depths go on. Keep descending to push your record.\n" +
+				"**********************************************",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.themeID, func(t *testing.T) {
+			thJA := theme.GetPresetTheme(tc.themeID, model.LanguageJA)
+			thEN := theme.GetPresetTheme(tc.themeID, model.LanguageEN)
+
+			jaRes := jaMsg.AbyssCleared(thJA.Dungeons.Abyss, 100)
+			if jaRes != tc.expectedJA {
+				t.Errorf("\ngot : %s\nwant: %s", jaRes, tc.expectedJA)
+			}
+
+			enRes := enMsg.AbyssCleared(thEN.Dungeons.Abyss, 100)
+			if enRes != tc.expectedEN {
+				t.Errorf("\ngot : %s\nwant: %s", enRes, tc.expectedEN)
+			}
+		})
 	}
 }
 

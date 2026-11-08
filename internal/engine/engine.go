@@ -14,6 +14,8 @@ import (
 	"github.com/koohq/forge-lite/internal/theme"
 )
 
+const abyssClearFloor = 100
+
 type Game struct {
 	reader         *bufio.Reader
 	saveFilePath   string
@@ -24,6 +26,7 @@ type Game struct {
 	stockScrolls   int
 	stockOrbs      []model.OrbType
 	deepestFloor   int
+	abyssCleared   bool
 	isRunning      bool
 }
 
@@ -60,6 +63,7 @@ func NewGame(r io.Reader) *Game {
 		stockScrolls: 0,
 		stockOrbs:    []model.OrbType{},
 		deepestFloor: 0,
+		abyssCleared: false,
 		isRunning:    true,
 	}
 }
@@ -104,6 +108,7 @@ func (g *Game) saveGame() {
 	maxHp := g.player.MaxHP
 	lang := g.language
 	themeID := g.theme.ID
+	cleared := g.abyssCleared
 
 	data := &model.SaveData{
 		Weapon:       g.player.Weapon,
@@ -113,6 +118,7 @@ func (g *Game) saveGame() {
 		DeepestFloor: &deepest,
 		Language:     &lang,
 		ThemeID:      &themeID,
+		AbyssCleared: &cleared,
 	}
 
 	err := save.SaveSaveData(g.saveFilePath, data)
@@ -167,6 +173,12 @@ func (g *Game) loadGame() bool {
 		g.deepestFloor = 0
 	}
 
+	if data.AbyssCleared != nil && *data.AbyssCleared {
+		g.abyssCleared = true
+	} else {
+		g.abyssCleared = false
+	}
+
 	return true
 }
 
@@ -202,7 +214,7 @@ func (g *Game) hubPhase() {
 	g.player.HP = g.player.MaxHP
 	fmt.Println("\n----------------------------------------------")
 	fmt.Println(g.msg().HubHeader(g.theme.HubTitle))
-	fmt.Println(g.msg().HubStats(g.theme.HPLabel, g.player.MaxHP, g.theme.Dungeons.Abyss, g.deepestFloor))
+	fmt.Println(g.msg().HubStats(g.theme.HPLabel, g.player.MaxHP, g.theme.Dungeons.Abyss, g.deepestFloor, g.abyssCleared))
 	fmt.Println(g.msg().HubEquip(g.theme.GetTargetPrefix(), g.player.Weapon.Name, g.theme.PlusPrefix, g.player.Weapon.Plus, g.theme.StatLabel, g.getWeaponAtk()))
 
 	slotsStr := g.msg().HubEmptySlot
@@ -748,6 +760,12 @@ func (g *Game) endlessDungeonPhase() {
 				name = d.Name
 			}
 			fmt.Println(g.msg().DungeonDropOrb(string(o), name))
+		}
+
+		if floor == abyssClearFloor && !g.abyssCleared {
+			g.abyssCleared = true
+			fmt.Println(g.msg().AbyssCleared(g.theme.Dungeons.Abyss, abyssClearFloor))
+			g.saveGame()
 		}
 
 		fmt.Println(g.msg().DungeonCurrentStatus(g.player.HP, g.player.MaxHP, g.theme.ResourceName, runInv.Scrolls, len(runInv.Orbs)))

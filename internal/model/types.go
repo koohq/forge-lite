@@ -59,6 +59,7 @@ type SaveData struct {
 	DeepestFloor *int      `json:"deepestFloor,omitempty"`
 	Language     *string   `json:"language,omitempty"`
 	ThemeID      *string   `json:"themeId,omitempty"`
+	AbyssCleared *bool     `json:"abyssCleared,omitempty"`
 }
 
 // EnemyTemplate defines an enemy generation archetype.

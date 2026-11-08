@@ -15,6 +15,7 @@ func TestSaveAndLoad_RoundTrip(t *testing.T) {
 	deepest := 15
 	lang := model.LanguageJA
 	themeID := "cyberpunk"
+	abyssCleared := true
 
 	original := &model.SaveData{
 		Weapon: model.Weapon{
@@ -29,6 +30,7 @@ func TestSaveAndLoad_RoundTrip(t *testing.T) {
 		DeepestFloor: &deepest,
 		Language:     &lang,
 		ThemeID:      &themeID,
+		AbyssCleared: &abyssCleared,
 	}
 
 	err := SaveSaveData(tmpFile, original)
@@ -55,6 +57,9 @@ func TestSaveAndLoad_RoundTrip(t *testing.T) {
 	}
 	if *loaded.Language != "ja" || *loaded.ThemeID != "cyberpunk" {
 		t.Errorf("meta mismatch: lang=%s, theme=%s", *loaded.Language, *loaded.ThemeID)
+	}
+	if loaded.AbyssCleared == nil || !*loaded.AbyssCleared {
+		t.Errorf("abyssCleared mismatch: got %+v, want true", loaded.AbyssCleared)
 	}
 }
 
@@ -88,6 +93,9 @@ func TestLoad_DefaultsWhenMissingFields(t *testing.T) {
 	}
 	if *loaded.ThemeID != "classic_fantasy" {
 		t.Errorf("expected default ThemeID classic_fantasy, got %s", *loaded.ThemeID)
+	}
+	if loaded.AbyssCleared == nil || *loaded.AbyssCleared {
+		t.Errorf("expected default AbyssCleared false, got %+v", loaded.AbyssCleared)
 	}
 	if loaded.Weapon.Slots == nil || len(loaded.Weapon.Slots) != 0 {
 		t.Errorf("expected empty non-nil slots")
