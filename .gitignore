@@ -7,6 +7,9 @@ custom_theme.json
 *.local
 .temp/
 
+# Local planning notes (not published)
+docs/
+
 # Build artifacts
 *.exe
 /forge-lite
