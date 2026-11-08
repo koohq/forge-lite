@@ -64,7 +64,7 @@ func TestLoad_DefaultsWhenMissingFields(t *testing.T) {
 
 	minimalJSON := []byte(`{
 		"weapon": {
-			"name": "どうのつるぎ",
+			"name": "銅の剣",
 			"baseAtk": 10,
 			"plus": 0
 		},

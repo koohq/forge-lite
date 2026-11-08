@@ -3,11 +3,11 @@
 	"ja": {
 		"name": "王道ファンタジー (Classic Fantasy)",
 		"targetNameLabel": "所持装備",
-		"defaultTargetName": "どうのつるぎ",
+		"defaultTargetName": "銅の剣",
 		"targetRanks": [
-			{ "minPlus": 0, "name": "どうのつるぎ" },
-			{ "minPlus": 50, "name": "はがねのつるぎ" },
-			{ "minPlus": 200, "name": "勇者のつるぎ" },
+			{ "minPlus": 0, "name": "銅の剣" },
+			{ "minPlus": 50, "name": "鋼の剣" },
+			{ "minPlus": 200, "name": "勇者の剣" },
 			{ "minPlus": 500, "name": "竜殺しの神剣" },
 			{ "minPlus": 1000, "name": "終焉を断つ刃" }
 		],

@@ -21,7 +21,7 @@ func TestClassicFantasy_Fidelity(t *testing.T) {
 	ja := GetPresetTheme("classic_fantasy", model.LanguageJA)
 	en := GetPresetTheme("classic_fantasy", model.LanguageEN)
 
-	if ja.DefaultTargetName != "どうのつるぎ" {
+	if ja.DefaultTargetName != "銅の剣" {
 		t.Errorf("unexpected ja.DefaultTargetName: %s", ja.DefaultTargetName)
 	}
 	if en.DefaultTargetName != "Bronze Sword" {
@@ -116,13 +116,13 @@ func TestTargetRanks_Thresholds(t *testing.T) {
 		plus     int
 		expected string
 	}{
-		{0, "どうのつるぎ"},
-		{10, "どうのつるぎ"},
-		{49, "どうのつるぎ"},
-		{50, "はがねのつるぎ"},
-		{199, "はがねのつるぎ"},
-		{200, "勇者のつるぎ"},
-		{499, "勇者のつるぎ"},
+		{0, "銅の剣"},
+		{10, "銅の剣"},
+		{49, "銅の剣"},
+		{50, "鋼の剣"},
+		{199, "鋼の剣"},
+		{200, "勇者の剣"},
+		{499, "勇者の剣"},
 		{500, "竜殺しの神剣"},
 		{999, "竜殺しの神剣"},
 		{1000, "終焉を断つ刃"},

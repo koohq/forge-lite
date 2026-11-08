@@ -2,7 +2,7 @@ package engine
 
 import (
 	"bytes"
-	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -11,9 +11,8 @@ import (
 	"github.com/koohq/forge-lite/internal/theme"
 )
 
-func TestEngine_LoadGame_DynamicRankResolution(t *testing.T) {
-	// Setup a temporary save file with plus: 2188 and old default weapon name
-	tmpSave := "test_save_rank.json"
+func writeTestSave(t *testing.T, path, weaponName string, plus int) {
+	t.Helper()
 	maxHp := 50
 	deepest := 15
 	lang := model.LanguageJA
@@ -21,9 +20,9 @@ func TestEngine_LoadGame_DynamicRankResolution(t *testing.T) {
 
 	saveData := &model.SaveData{
 		Weapon: model.Weapon{
-			Name:    "どうのつるぎ",
+			Name:    weaponName,
 			BaseAtk: 10,
-			Plus:    2188,
+			Plus:    plus,
 			Slots:   []model.OrbType{},
 		},
 		StockScrolls: 10,
@@ -34,11 +33,15 @@ func TestEngine_LoadGame_DynamicRankResolution(t *testing.T) {
 		ThemeID:      &themeID,
 	}
 
-	err := save.SaveSaveData(tmpSave, saveData)
-	if err != nil {
+	if err := save.SaveSaveData(path, saveData); err != nil {
 		t.Fatalf("failed to save test save: %v", err)
 	}
-	defer os.Remove(tmpSave)
+}
+
+func TestEngine_LoadGame_DynamicRankResolution(t *testing.T) {
+	// Setup a temporary save file with plus: 2188 and old default weapon name
+	tmpSave := filepath.Join(t.TempDir(), "test_save_rank.json")
+	writeTestSave(t, tmpSave, "どうのつるぎ", 2188)
 
 	in := bytes.NewBufferString("1\n0\n")
 	game := NewGame(in)
@@ -82,7 +85,7 @@ func TestEngine_UpgradeWeapon_RankUpgradedFanfare(t *testing.T) {
 	game.language = model.LanguageJA
 	game.theme = theme.GetPresetTheme("classic_fantasy", model.LanguageJA)
 	game.player.Weapon = model.Weapon{
-		Name:    "どうのつるぎ",
+		Name:    "銅の剣",
 		BaseAtk: 10,
 		Plus:    49,
 		Slots:   []model.OrbType{},
@@ -91,8 +94,8 @@ func TestEngine_UpgradeWeapon_RankUpgradedFanfare(t *testing.T) {
 
 	// Check pre-rank
 	prevRank := game.theme.GetTargetRankName(game.player.Weapon.Plus)
-	if prevRank != "どうのつるぎ" {
-		t.Fatalf("expected initial rank 'どうのつるぎ', got '%s'", prevRank)
+	if prevRank != "銅の剣" {
+		t.Fatalf("expected initial rank '銅の剣', got '%s'", prevRank)
 	}
 
 	// Enhance by 1 (49 -> 50)
@@ -102,12 +105,12 @@ func TestEngine_UpgradeWeapon_RankUpgradedFanfare(t *testing.T) {
 	newRank := game.theme.GetTargetRankName(game.player.Weapon.Plus)
 	game.player.Weapon.Name = newRank
 
-	if newRank != "はがねのつるぎ" {
-		t.Errorf("expected upgraded rank 'はがねのつるぎ', got '%s'", newRank)
+	if newRank != "鋼の剣" {
+		t.Errorf("expected upgraded rank '鋼の剣', got '%s'", newRank)
 	}
 
 	msgJA := game.msg().RankUpgraded(newRank)
-	if !strings.Contains(msgJA, "【はがねのつるぎ】に進化した！") {
+	if !strings.Contains(msgJA, "【鋼の剣】に進化した！") {
 		t.Errorf("unexpected JA rank upgraded message: %s", msgJA)
 	}
 
@@ -116,5 +119,21 @@ func TestEngine_UpgradeWeapon_RankUpgradedFanfare(t *testing.T) {
 	msgEN := game.msg().RankUpgraded("Steel Sword")
 	if !strings.Contains(msgEN, "Rank upgraded! Evolved to 【Steel Sword】!") {
 		t.Errorf("unexpected EN rank upgraded message: %s", msgEN)
+	}
+}
+
+func TestEngine_LoadGame_RenamesOldClassicFantasyName(t *testing.T) {
+	tmpSave := filepath.Join(t.TempDir(), "save.json")
+	writeTestSave(t, tmpSave, "どうのつるぎ", 0)
+
+	in := bytes.NewBufferString("1\n0\n")
+	game := NewGame(in)
+	game.saveFilePath = tmpSave
+	if !game.loadGame() {
+		t.Fatal("expected loadGame to succeed")
+	}
+
+	if game.player.Weapon.Name != "銅の剣" {
+		t.Errorf("expected weapon name '銅の剣', got '%s'", game.player.Weapon.Name)
 	}
 }
