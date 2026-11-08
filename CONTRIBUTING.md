@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Forge Lite! This document provide
 
 - **Go**: 1.27.1 or higher
 - **Task** ([go-task](https://taskfile.dev)): Recommended for task automation
-- **golangci-lint**: 2.13.2 or higher
+- **golangci-lint**: 2.15.0 or higher
 - **GoReleaser**: v2.18.1 or higher (for release snapshot builds)
 
 ## Development Workflow
