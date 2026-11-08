@@ -267,7 +267,11 @@ func (g *Game) loadGame() bool {
 		g.deepestFloor = 0
 	}
 
-	if data.AbyssCleared != nil && *data.AbyssCleared {
+	// Saves written before abyssCleared existed lack the flag. A record
+	// deeper than abyssClearFloor still proves the clear: start floors only
+	// go up to the record, so the first visit to the next floor always
+	// follows a win on abyssClearFloor.
+	if (data.AbyssCleared != nil && *data.AbyssCleared) || g.deepestFloor > abyssClearFloor {
 		g.abyssCleared = true
 	} else {
 		g.abyssCleared = false

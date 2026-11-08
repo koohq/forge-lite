@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -232,53 +233,157 @@ func TestHubPhase_AbyssClearedMark(t *testing.T) {
 }
 
 func TestLoadGame_LegacySaveWithoutAbyssCleared(t *testing.T) {
-	tmpDir := t.TempDir()
+	intPtr := func(v int) *int { return &v }
+	boolPtr := func(v bool) *bool { return &v }
 
-	// 1. Legacy save: deepestFloor 150, no abyssCleared field
-	legacyJSON := `{
-		"weapon": {"name": "銅の剣", "baseAtk": 10, "plus": 0},
-		"stockScrolls": 0,
-		"stockOrbs": [],
-		"maxHp": 50,
-		"deepestFloor": 150
-	}`
-	legacyPath := filepath.Join(tmpDir, "legacy.json")
-	if err := os.WriteFile(legacyPath, []byte(legacyJSON), 0644); err != nil {
-		t.Fatal(err)
-	}
-
-	game := NewGame(strings.NewReader(""))
-	game.saveFilePath = legacyPath
-	if !game.loadGame() {
-		t.Fatalf("expected loadGame to succeed for legacy save")
-	}
-	if game.abyssCleared {
-		t.Errorf("expected abyssCleared to be false for legacy save, got true")
-	}
-	if game.deepestFloor != 150 {
-		t.Errorf("expected deepestFloor 150, got %d", game.deepestFloor)
+	makeSaveJSON := func(deepestFloor *int, abyssCleared *bool) string {
+		parts := []string{
+			`"weapon": {"name": "銅の剣", "baseAtk": 10, "plus": 0}`,
+			`"stockScrolls": 0`,
+			`"stockOrbs": []`,
+			`"maxHp": 50`,
+		}
+		if deepestFloor != nil {
+			parts = append(parts, fmt.Sprintf(`"deepestFloor": %d`, *deepestFloor))
+		}
+		if abyssCleared != nil {
+			parts = append(parts, fmt.Sprintf(`"abyssCleared": %t`, *abyssCleared))
+		}
+		return "{\n  " + strings.Join(parts, ",\n  ") + "\n}"
 	}
 
-	// 2. Save with abyssCleared: true
-	clearedJSON := `{
-		"weapon": {"name": "銅の剣", "baseAtk": 10, "plus": 0},
-		"stockScrolls": 0,
-		"stockOrbs": [],
-		"maxHp": 50,
-		"deepestFloor": 150,
-		"abyssCleared": true
-	}`
-	clearedPath := filepath.Join(tmpDir, "cleared.json")
-	if err := os.WriteFile(clearedPath, []byte(clearedJSON), 0644); err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		name             string
+		deepestFloor     *int
+		abyssCleared     *bool
+		wantAbyssCleared bool
+		wantDeepestFloor int
+	}{
+		{
+			name:             "deepestFloor omitted, abyssCleared omitted -> false",
+			deepestFloor:     nil,
+			abyssCleared:     nil,
+			wantAbyssCleared: false,
+			wantDeepestFloor: 0,
+		},
+		{
+			name:             "deepestFloor 0, abyssCleared omitted -> false",
+			deepestFloor:     intPtr(0),
+			abyssCleared:     nil,
+			wantAbyssCleared: false,
+			wantDeepestFloor: 0,
+		},
+		{
+			name:             "deepestFloor 100, abyssCleared omitted -> false",
+			deepestFloor:     intPtr(100),
+			abyssCleared:     nil,
+			wantAbyssCleared: false,
+			wantDeepestFloor: 100,
+		},
+		{
+			name:             "deepestFloor 100, abyssCleared false -> false",
+			deepestFloor:     intPtr(100),
+			abyssCleared:     boolPtr(false),
+			wantAbyssCleared: false,
+			wantDeepestFloor: 100,
+		},
+		{
+			name:             "deepestFloor 100, abyssCleared true -> true",
+			deepestFloor:     intPtr(100),
+			abyssCleared:     boolPtr(true),
+			wantAbyssCleared: true,
+			wantDeepestFloor: 100,
+		},
+		{
+			name:             "deepestFloor 101, abyssCleared omitted -> true",
+			deepestFloor:     intPtr(101),
+			abyssCleared:     nil,
+			wantAbyssCleared: true,
+			wantDeepestFloor: 101,
+		},
+		{
+			name:             "deepestFloor 101, abyssCleared false -> true",
+			deepestFloor:     intPtr(101),
+			abyssCleared:     boolPtr(false),
+			wantAbyssCleared: true,
+			wantDeepestFloor: 101,
+		},
+		{
+			name:             "deepestFloor 150, abyssCleared omitted -> true",
+			deepestFloor:     intPtr(150),
+			abyssCleared:     nil,
+			wantAbyssCleared: true,
+			wantDeepestFloor: 150,
+		},
+		{
+			name:             "deepestFloor 150, abyssCleared true -> true",
+			deepestFloor:     intPtr(150),
+			abyssCleared:     boolPtr(true),
+			wantAbyssCleared: true,
+			wantDeepestFloor: 150,
+		},
 	}
 
-	game2 := NewGame(strings.NewReader(""))
-	game2.saveFilePath = clearedPath
-	if !game2.loadGame() {
-		t.Fatalf("expected loadGame to succeed for cleared save")
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			rawJSON := makeSaveJSON(tc.deepestFloor, tc.abyssCleared)
+			savePath := filepath.Join(t.TempDir(), "save.json")
+			if err := os.WriteFile(savePath, []byte(rawJSON), 0644); err != nil {
+				t.Fatal(err)
+			}
+
+			game := NewGame(strings.NewReader(""))
+			game.saveFilePath = savePath
+			if !game.loadGame() {
+				t.Fatalf("expected loadGame to succeed")
+			}
+
+			if game.abyssCleared != tc.wantAbyssCleared {
+				t.Errorf("abyssCleared mismatch: got %v, want %v", game.abyssCleared, tc.wantAbyssCleared)
+			}
+			if game.deepestFloor != tc.wantDeepestFloor {
+				t.Errorf("deepestFloor mismatch: got %d, want %d", game.deepestFloor, tc.wantDeepestFloor)
+			}
+
+			// Acceptance criteria 4: Loading save data must not modify the file on disk.
+			afterBytes, err := os.ReadFile(savePath)
+			if err != nil {
+				t.Fatalf("failed to read back save file: %v", err)
+			}
+			if string(afterBytes) != rawJSON {
+				t.Errorf("save file was modified upon loadGame()")
+			}
+		})
 	}
-	if !game2.abyssCleared {
-		t.Errorf("expected abyssCleared to be true, got false")
-	}
+
+	// Acceptance criteria 3: Saving after loading a legacy save (deepestFloor 101, no abyssCleared)
+	// writes "abyssCleared": true to the save file.
+	t.Run("saveGame writes abyssCleared true after loading legacy 101F save", func(t *testing.T) {
+		savePath := filepath.Join(t.TempDir(), "save.json")
+		rawJSON := makeSaveJSON(intPtr(101), nil)
+		if err := os.WriteFile(savePath, []byte(rawJSON), 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		game := NewGame(strings.NewReader(""))
+		game.saveFilePath = savePath
+		if !game.loadGame() {
+			t.Fatalf("expected loadGame to succeed")
+		}
+		if !game.abyssCleared {
+			t.Fatalf("expected abyssCleared to be true for 101F save, got false")
+		}
+
+		captureStdout(t, func() {
+			game.saveGame()
+		})
+
+		savedData, err := save.LoadSaveData(savePath)
+		if err != nil {
+			t.Fatalf("failed to reload saved data: %v", err)
+		}
+		if savedData.AbyssCleared == nil || !*savedData.AbyssCleared {
+			t.Errorf("expected saved AbyssCleared to be true, got %v", savedData.AbyssCleared)
+		}
+	})
 }
