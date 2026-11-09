@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.0](https://github.com/koohq/forge-lite/compare/v0.1.1...v0.2.0) (2026-11-09)
+
+
+### Features
+
+* add Auto Explore to keep descending until a stop point ([cb8fdf9](https://github.com/koohq/forge-lite/commit/cb8fdf9fb97305fe8a3e205366d067ad06f394e3))
+* mark B100F of the endless dungeon as the main-game clear ([d997458](https://github.com/koohq/forge-lite/commit/d9974585c71a0df70510ce7ee937f4ddbdbd240b))
+
+
+### Bug Fixes
+
+* join English enemy names without doubled spaces ([6723470](https://github.com/koohq/forge-lite/commit/672347074118997fa03e9cde712b68d8479bf347))
+* stop showing the defeat message when fleeing mid-battle ([c18389f](https://github.com/koohq/forge-lite/commit/c18389f3ccf51f813b043708f6637ebfc3c0ba82))
+* treat old saves with a record past B100F as cleared ([8b2843a](https://github.com/koohq/forge-lite/commit/8b2843a6fb0c7adbdfd61573a58366cac24116ba))
+* write Classic Fantasy weapon rank names in kanji ([0fd7507](https://github.com/koohq/forge-lite/commit/0fd75072ceececb94c567b25afda08b391ada944))
+
 ## [0.1.1](https://github.com/koohq/forge-lite/compare/v0.1.0...v0.1.1) (2026-09-15)
 
 
