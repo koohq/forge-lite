@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Forge Lite! This document provide
 
 - **Go**: 1.27.1 or higher
 - **Task** ([go-task](https://taskfile.dev)): Recommended for task automation
-- **golangci-lint**: 2.15.0 or higher
+- **golangci-lint**: 2.15.0 or higher (pinned in `mise.toml`)
 - **GoReleaser**: v2.18.1 or higher (for release snapshot builds)
 
 ## Development Workflow
@@ -96,4 +96,4 @@ All commit messages must be written in English.
 ## Automated Releases & Tool Maintenance
 
 - **Release Automation**: Releases are automated using Release Please and GoReleaser. Merging a release pull request automatically creates a tag and publishes cross-compiled binary assets to GitHub Releases.
-- **Tool Version Maintenance**: Note that tool versions specified in CI workflows (such as `golangci-lint` in `ci.yml` and `goreleaser` in `ci.yml` / `release.yml`) are pinned by version strings and must be verified and updated manually when new tool versions are released.
+- **Tool Version Maintenance**: The Go and `golangci-lint` versions used by the CI Lint job come from `mise.toml`, so update them there to change both local and CI versions. `goreleaser` in `ci.yml` / `release.yml` is still pinned by a version string in the workflows and must be verified and updated manually when new versions are released.
